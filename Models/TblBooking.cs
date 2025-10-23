@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Travely.Models;
+
+public partial class TblBooking
+{
+    public int BookingId { get; set; }
+
+    public int UserId { get; set; }
+
+    public int RoomId { get; set; }
+
+    public DateOnly? CheckIn { get; set; }
+
+    public DateOnly? CheckOut { get; set; }
+
+    public string Status { get; set; } = null!;
+
+    public decimal TotalPrice { get; set; }
+
+    public string BookingReference { get; set; } = null!;
+
+    public byte Adults { get; set; }
+
+    public byte? Children { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public virtual TblRoom Room { get; set; } = null!;
+
+    public virtual ICollection<TblPayment> TblPayments { get; set; } = new List<TblPayment>();
+
+    public virtual TblUser User { get; set; } = null!;
+}

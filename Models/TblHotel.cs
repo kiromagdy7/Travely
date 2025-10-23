@@ -1,0 +1,41 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Travely.Models;
+
+public partial class TblHotel
+{
+    public int HotelId { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public byte? Stars { get; set; }
+
+    public string? ContactInfo { get; set; }
+
+    public string? Location { get; set; }
+
+    public string? Address { get; set; }
+
+    public string? Phone { get; set; }
+
+    public TimeOnly? CheckInTime { get; set; }
+
+    public TimeOnly? CheckOutTime { get; set; }
+
+    public string? CancellationPolicy { get; set; }
+
+    public string? Fees { get; set; }
+
+    public decimal? Commission { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public virtual ICollection<TblHotelImage> TblHotelImages { get; set; } = new List<TblHotelImage>();
+
+    public virtual ICollection<TblRoom> TblRooms { get; set; } = new List<TblRoom>();
+
+    public virtual ICollection<TblUserHotelBooking> TblUserHotelBookings { get; set; } = new List<TblUserHotelBooking>();
+
+    public virtual ICollection<LkpAmenity> Amenities { get; set; } = new List<LkpAmenity>();
+}

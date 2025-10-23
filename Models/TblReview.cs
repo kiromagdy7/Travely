@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Travely.Models;
+
+public partial class TblReview
+{
+    public int ReviewId { get; set; }
+
+    public int BookingId { get; set; }
+
+    public byte? Rating { get; set; }
+
+    public string? Comment { get; set; }
+
+    public DateTime ReviewDate { get; set; }
+
+    public int HelpfulCount { get; set; }
+
+    public virtual TblUserHotelBooking Booking { get; set; } = null!;
+}
