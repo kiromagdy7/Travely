@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Travely.Models.TblRoom>
+
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<h1>Rooms</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Room</a>
+</p>
+
+<div class="mb-3">
+    <form asp-action="GetAvailableRooms" method="get" class="form-inline">
+        <select name="roomType" class="form-control mr-2">
+            <option value="">All Room Types</option>
+            <option value="Single">Single</option>
+            <option value="Double">Double</option>
+            <option value="Suite">Suite</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Filter Available Rooms</button>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.RoomNumber)</th>
+            <th>@Html.DisplayNameFor(model => model.RoomType)</th>
+            <th>@Html.DisplayNameFor(model => model.Price)</th>
+            <th>@Html.DisplayNameFor(model => model.IsAvailable)</th>
+            <th>@Html.DisplayNameFor(model => model.Capacity)</th>
+            <th>@Html.DisplayNameFor(model => model.TblHotel)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.RoomNumber)</td>
+            <td>@Html.DisplayFor(modelItem => item.RoomType)</td>
+            <td>@Html.DisplayFor(modelItem => item.Price)</td>
+            <td>
+                <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")">
+                    @(item.IsAvailable ? "Available" : "Occupied")
+                </span>
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Capacity)</td>
+            <td>@Html.DisplayFor(modelItem => item.TblHotel.HotelName)</td>
+            <td>
+                <div class="btn-group">
+                    <a asp-action="Edit" asp-route-id="@item.RoomId" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.RoomId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.RoomId" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="UpdateAvailability" asp-route-id="@item.RoomId" 
+                       asp-route-isAvailable="@(!item.IsAvailable)"
+                       class="btn btn-sm @(item.IsAvailable ? "btn-warning" : "btn-success")">
+                        @(item.IsAvailable ? "Mark Occupied" : "Mark Available")
+                    </a>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
