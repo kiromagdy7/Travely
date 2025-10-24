@@ -25,6 +25,8 @@ public partial class TblRoom
 
     public bool PetsAllowed { get; set; }
 
+    public bool Available { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public virtual TblHotel Hotel { get; set; } = null!;
