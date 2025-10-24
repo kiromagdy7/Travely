@@ -1,0 +1,26 @@
+﻿@model Travely.Models.TblPayment
+
+@{
+    ViewData["Title"] = "Payment Receipt";
+}
+
+<h1>Payment Receipt</h1>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Receipt - Payment #@Model.PaymentId</h5>
+        <p class="card-text">
+            <strong>Booking:</strong> @Model.Booking?.BookingReference <br />
+            <strong>User:</strong> @Model.User?.Fullname <br />
+            <strong>Amount:</strong> @Model.Amount.ToString("F2") <br />
+            <strong>Method:</strong> @Model.PaymentMethod <br />
+            <strong>Status:</strong> @Model.PaymentStatus <br />
+            <strong>Date:</strong> @(Model.PaymentDate == default ? "" : Model.PaymentDate.ToString("g")) <br />
+        </p>
+
+        <div class="mt-3">
+            <a href="javascript:window.print();" class="btn btn-primary">Print Receipt</a>
+            @Html.ActionLink("Back to Payments", "Index", null, new { @class = "btn btn-secondary ms-2" })
+        </div>
+    </div>
+</div>

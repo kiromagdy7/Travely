@@ -1,0 +1,39 @@
+﻿@model Travely.Models.TblPayment  
+  
+@{  
+    ViewData["Title"] = "Details";  
+}  
+  
+<h1>Details</h1>  
+  
+<div>  
+    <h4>TblPayment</h4>  
+    <hr />  
+    <dl class="row">  
+        <dt class="col-sm-2">PaymentId</dt>  
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.PaymentId)</dd>  
+  
+        <dt class="col-sm-2">Booking</dt>  
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Booking != null ? model.Booking.BookingReference : "N/A")</dd>  
+  
+        <dt class="col-sm-2">User</dt>  
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.User != null ? model.User.Fullname : "N/A")</dd>  
+  
+        <dt class="col-sm-2">Method</dt>  
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.PaymentMethod)</dd>  
+  
+        <dt class="col-sm-2">Status</dt>  
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.PaymentStatus)</dd>  
+  
+        <dt class="col-sm-2">Amount</dt>  
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Amount)</dd>  
+  
+        <dt class="col-sm-2">Payment Date</dt>  
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.PaymentDate)</dd>  
+    </dl>  
+  
+    <p>  
+        <a asp-action="Edit" asp-route-id="@Model.PaymentId" class="btn btn-primary">Edit</a>  
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>  
+    </p>  
+</div>
