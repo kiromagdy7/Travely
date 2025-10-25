@@ -48,8 +48,7 @@ namespace Travely.Controllers
                 // 1. اتأكد إن الإيميل ده مش موجود قبل كده
                 if (await _context.TblUsers.AnyAsync(u => u.Email == model.Email))
                 {
-                    ModelState.AddModelError("Email", "This email is already in use.");
-                    return View(model);
+                    return RedirectToAction("Index", "Home");
                 }
 
                 // 2. شفر الباسورد
