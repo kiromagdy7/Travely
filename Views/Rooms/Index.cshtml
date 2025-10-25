@@ -28,8 +28,8 @@
             <th>@Html.DisplayNameFor(model => model.RoomNumber)</th>
             <th>@Html.DisplayNameFor(model => model.RoomType)</th>
             <th>@Html.DisplayNameFor(model => model.Price)</th>
-            <th>@Html.DisplayNameFor(model => model.IsAvailable)</th>
-            <th>@Html.DisplayNameFor(model => model.Capacity)</th>
+            <th>@Html.DisplayNameFor(model => model.Available)</th>
+            <th>@Html.DisplayNameFor(model => model.BedsCount)</th>
             <th>@Html.DisplayNameFor(model => model.TblHotel)</th>
             <th>Actions</th>
         </tr>
@@ -41,21 +41,21 @@
             <td>@Html.DisplayFor(modelItem => item.RoomType)</td>
             <td>@Html.DisplayFor(modelItem => item.Price)</td>
             <td>
-                <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")">
-                    @(item.IsAvailable ? "Available" : "Occupied")
+                <span class="badge @(item.Available ? "bg-success" : "bg-danger")">
+                    @(item.Available ? "Available" : "Occupied")
                 </span>
             </td>
-            <td>@Html.DisplayFor(modelItem => item.Capacity)</td>
-            <td>@Html.DisplayFor(modelItem => item.TblHotel.HotelName)</td>
+            <td>@Html.DisplayFor(modelItem => item.BedsCount)</td>
+            <td>@Html.DisplayFor(modelItem => item.TblHotel.Name)</td>
             <td>
                 <div class="btn-group">
                     <a asp-action="Edit" asp-route-id="@item.RoomId" class="btn btn-sm btn-primary">Edit</a>
                     <a asp-action="Details" asp-route-id="@item.RoomId" class="btn btn-sm btn-info">Details</a>
                     <a asp-action="Delete" asp-route-id="@item.RoomId" class="btn btn-sm btn-danger">Delete</a>
                     <a asp-action="UpdateAvailability" asp-route-id="@item.RoomId" 
-                       asp-route-isAvailable="@(!item.IsAvailable)"
-                       class="btn btn-sm @(item.IsAvailable ? "btn-warning" : "btn-success")">
-                        @(item.IsAvailable ? "Mark Occupied" : "Mark Available")
+                       asp-route-isAvailable="@(!item.Available)"
+                       class="btn btn-sm @(item.Available ? "btn-warning" : "btn-success")">
+                        @(item.Available ? "Mark Occupied" : "Mark Available")
                     </a>
                 </div>
             </td>

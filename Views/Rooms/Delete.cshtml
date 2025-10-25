@@ -10,7 +10,7 @@
 <div>
     <dl class="row">
         <dt class="col-sm-3">Hotel</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.TblHotel.HotelName)</dd>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.TblHotel.Name)</dd>
 
         <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RoomNumber)</dt>
         <dd class="col-sm-9">@Html.DisplayFor(model => model.RoomNumber)</dd>
@@ -21,10 +21,10 @@
         <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Price)</dt>
         <dd class="col-sm-9">@Html.DisplayFor(model => model.Price)</dd>
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IsAvailable)</dt>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Available)</dt>
         <dd class="col-sm-9">
-            <span class="badge @(Model.IsAvailable ? "bg-success" : "bg-danger")">
-                @(Model.IsAvailable ? "Available" : "Occupied")
+            <span class="badge @(Model.Available ? "bg-success" : "bg-danger")">
+                @(Model.Available ? "Available" : "Occupied")
             </span>
         </dd>
     </dl>
