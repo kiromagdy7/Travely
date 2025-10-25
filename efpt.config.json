@@ -1,0 +1,94 @@
+﻿{
+   "CodeGenerationMode": 5,
+   "ContextClassName": "TravelyDBContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "MinimumProductVersion": "2.6.1186",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "Travely",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[lkpAmenities]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblBookings]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblHotelAmenities]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblHotelImages]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblHotels]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblPayments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblReviews]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblRoomImages]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblRooms]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblUserHotelBooking]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblUsers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblWishList]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false
+}

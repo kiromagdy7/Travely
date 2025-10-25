@@ -33,7 +33,7 @@
             <th>@Html.DisplayNameFor(model => model.MaxGuests)</th>
             <th>@Html.DisplayNameFor(model => model.Hotel)</th>
             <th>@Html.DisplayNameFor(model => model.BedsCount)</th>
-            <th>@Html.DisplayNameFor(model => model.TblHotel)</th>
+            <th>@Html.DisplayNameFor(model => model.Hotel)</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -76,7 +76,7 @@
                 </span>
             </td>
             <td>@Html.DisplayFor(modelItem => item.BedsCount)</td>
-            <td>@Html.DisplayFor(modelItem => item.TblHotel.Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Hotel.Name)</td>
             <td>
                 <div class="btn-group">
                     <a asp-action="Edit" asp-route-id="@item.RoomId" class="btn btn-sm btn-primary">Edit</a>
