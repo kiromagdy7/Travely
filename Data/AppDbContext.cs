@@ -246,7 +246,7 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK_WishList_User");
 
             // Added relationship with Hotel
-            entity.HasOne(d => d.Hotel)
+            entity.HasOne(d => d.Hotels)
                 .WithMany() // Assuming TblHotel doesn't have a navigation property back to WishList
                 .HasForeignKey(d => d.HotelId)
                 .OnDelete(DeleteBehavior.Cascade) // Changed to Cascade: if hotel deleted, remove it from wishlists

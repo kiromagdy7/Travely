@@ -37,7 +37,7 @@ namespace Travely.Controllers
             // وهنعمل Include للفندق عشان نعرض بياناته (وده سبب الخطوة 1)
             var wishlist = await _context.TblWishLists
                 .Where(w => w.UserId == currentUserId)
-                .Include(w => w.Hotel) // <-- عشان كده صلحنا الموديل
+                .Include(w => w.Hotels) // <-- عشان كده صلحنا الموديل
                 .ToListAsync();
 
             return View(wishlist);

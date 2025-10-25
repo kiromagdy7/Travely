@@ -16,4 +16,6 @@ public partial class TblWishList
     public DateTime AddedDate { get; set; }
 
     public virtual TblUser User { get; set; }
+    public virtual TblHotel Hotels { get; internal set; }
+
 }

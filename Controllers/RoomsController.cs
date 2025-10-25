@@ -45,7 +45,7 @@ namespace Travely.Controllers
         public IActionResult Create()
         {
             // Corrected SelectList: Use "HotelId" and "Name" which are likely the correct properties
-            ViewData["HotelId"] = new SelectList(_context.TblHotel, "HotelId", "Name");
+            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name");
             return View();
         }
 
@@ -61,7 +61,7 @@ namespace Travely.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HotelId"] = new SelectList(_context.TblHotel, "HotelId", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
@@ -74,7 +74,7 @@ namespace Travely.Controllers
             {
                 return NotFound();
             }
-            ViewData["HotelId"] = new SelectList(_context.TblHotel, "HotelId", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
