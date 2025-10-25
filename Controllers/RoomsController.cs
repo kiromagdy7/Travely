@@ -44,7 +44,8 @@ namespace Travely.Controllers
         // GET: Rooms/Create (مقفولة للأدمن والاستاف)
         public IActionResult Create()
         {
-            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name");
+            // Corrected SelectList: Use "HotelId" and "Name" which are likely the correct properties
+            ViewData["HotelId"] = new SelectList(_context.TblHotel, "HotelId", "Name");
             return View();
         }
 
@@ -60,7 +61,7 @@ namespace Travely.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new SelectList(_context.TblHotel, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
@@ -69,8 +70,11 @@ namespace Travely.Controllers
         {
             if (id == null) return NotFound();
             var tblRoom = await _context.TblRooms.FindAsync(id);
-            if (tblRoom == null) return NotFound();
-            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
+            if (tblRoom == null)
+            {
+                return NotFound();
+            }
+            ViewData["HotelId"] = new SelectList(_context.TblHotel, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 

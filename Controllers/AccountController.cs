@@ -57,8 +57,7 @@ namespace Travely.Controllers
             {
                 if (await _context.TblUsers.AnyAsync(u => u.Email == model.Email))
                 {
-                    ModelState.AddModelError("Email", "This email is already in use.");
-                    return View(model);
+                    return RedirectToAction("Index", "Home");
                 }
 
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);

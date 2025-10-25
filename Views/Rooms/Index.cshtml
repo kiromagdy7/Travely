@@ -31,6 +31,8 @@
             <th>@Html.DisplayNameFor(model => model.Available)</th>
             <th>@Html.DisplayNameFor(model => model.MaxGuests)</th>
             <th>@Html.DisplayNameFor(model => model.Hotel)</th>
+            <th>@Html.DisplayNameFor(model => model.BedsCount)</th>
+            <th>@Html.DisplayNameFor(model => model.Hotel)</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -62,5 +64,31 @@
                 </td>
             </tr>
         }
+    @foreach (var item in Model) {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.RoomNumber)</td>
+            <td>@Html.DisplayFor(modelItem => item.RoomType)</td>
+            <td>@Html.DisplayFor(modelItem => item.Price)</td>
+            <td>
+                <span class="badge @(item.Available ? "bg-success" : "bg-danger")">
+                    @(item.Available ? "Available" : "Occupied")
+                </span>
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.BedsCount)</td>
+            <td>@Html.DisplayFor(modelItem => item.Hotel.Name)</td>
+            <td>
+                <div class="btn-group">
+                    <a asp-action="Edit" asp-route-id="@item.RoomId" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.RoomId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.RoomId" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="UpdateAvailability" asp-route-id="@item.RoomId" 
+                       asp-route-isAvailable="@(!item.Available)"
+                       class="btn btn-sm @(item.Available ? "btn-warning" : "btn-success")">
+                        @(item.Available ? "Mark Occupied" : "Mark Available")
+                    </a>
+                </div>
+            </td>
+        </tr>
+    }
     </tbody>
 </table>
