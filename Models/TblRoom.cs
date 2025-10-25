@@ -22,6 +22,8 @@ public partial class TblRoom
     public string? Description { get; set; }
 
     public bool BreakfastIncluded { get; set; }
+    
+    public bool Available { get; set; }
 
     public bool PetsAllowed { get; set; }
 
@@ -29,7 +31,7 @@ public partial class TblRoom
 
     public DateTime CreatedAt { get; set; }
 
-    public virtual TblHotel Hotel { get; set; } = null!;
+    public virtual TblHotel TblHotel { get; set; } = null!;
 
     public virtual ICollection<TblBooking> TblBookings { get; set; } = new List<TblBooking>();
 
