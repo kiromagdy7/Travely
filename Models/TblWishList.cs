@@ -14,4 +14,7 @@ public partial class TblWishList
     public DateTime AddedDate { get; set; }
 
     public virtual TblUser User { get; set; } = null!;
+
+    // === ضيف السطر ده ===
+    public virtual TblHotel Hotel { get; set; } = null!;
 }

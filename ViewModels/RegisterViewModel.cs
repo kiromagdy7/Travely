@@ -22,5 +22,11 @@ namespace Travely.ViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = null!;
+
+        // === START: الإضافة الجديدة ===
+        [Required(ErrorMessage = "Please select a role")]
+        [Display(Name = "Register As")]
+        public string Role { get; set; } = "customer"; // القيمة الافتراضية
+        // === END: الإضافة الجديدة ===
     }
 }
