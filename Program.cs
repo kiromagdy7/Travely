@@ -1,5 +1,9 @@
+﻿using Microsoft.AspNetCore.Authentication.Cookies; // <-- 1. ضيف السطر ده
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Travely.Data;
+
 namespace Travely
 {
     public class Program
@@ -9,8 +13,26 @@ namespace Travely
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // هنضيف سياسة (Policy) بتقول إن كل الصفحات مقفولة إلا لو قولنا غير كده
+            builder.Services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                                .RequireAuthenticatedUser()
+                                .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }); builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // --- 2. ضيف خدمات الكوكيز هنا ---
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // مدة الكوكى
+                    options.LoginPath = "/Account/Login"; // يروح فين لو مش مسجل دخول
+                    options.AccessDeniedPath = "/Account/AccessDenied"; // يروح فين لو معندوش صلاحية
+                    options.SlidingExpiration = true;
+                });
+            // ------------------------------------
 
             var app = builder.Build();
 
@@ -18,20 +40,24 @@ namespace Travely
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
+
+            // --- 3. تعديل ترتيب السطور دي ---
+            app.MapStaticAssets(); // خليه هنا أو بدله بـ app.UseStaticFiles();
+
             app.UseRouting();
 
+            app.UseAuthentication(); // <-- 4. ضيف السطر ده (قبل Authorization)
             app.UseAuthorization();
 
-            app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
+                .WithStaticAssets(); // (WithStaticAssets() دي غريبة شوية، بس هنسيبها زي ما هي)
+
 
             app.Run();
         }
