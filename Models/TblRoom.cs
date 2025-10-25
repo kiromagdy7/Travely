@@ -36,4 +36,3 @@ public partial class TblRoom
     public virtual ICollection<TblBooking> TblBookings { get; set; } = new List<TblBooking>();
 
     public virtual ICollection<TblRoomImage> TblRoomImages { get; set; } = new List<TblRoomImage>();
-}

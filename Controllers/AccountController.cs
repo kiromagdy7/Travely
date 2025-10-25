@@ -43,18 +43,25 @@ namespace Travely.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // === START: Validation مهم جداً للأمان ===
+            // نتأكد إن الدور المختار هو customer أو staff فقط
+            if (model.Role != "customer" && model.Role != "staff")
+            {
+                ModelState.AddModelError("Role", "Invalid role selection.");
+                return View(model);
+            }
+            // === END: Validation ===
+
+
             if (ModelState.IsValid)
             {
-                // 1. اتأكد إن الإيميل ده مش موجود قبل كده
                 if (await _context.TblUsers.AnyAsync(u => u.Email == model.Email))
                 {
                     return RedirectToAction("Index", "Home");
                 }
 
-                // 2. شفر الباسورد
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-                // 3. جهز موديل اليوزر الجديد
                 var tblUser = new TblUser
                 {
                     Fullname = model.Fullname,
@@ -62,42 +69,34 @@ namespace Travely.Controllers
                     PasswordHash = hashedPassword,
                     CreatedAt = DateTime.UtcNow,
 
-                    // !!! أهم خطوة: إجبار الصلاحية والحالة
-                    Role = "customer", // <-- هنا بنجبره يكون كاستمر
-                    Status = "active"    // <-- بنخليه فعال علطول
-
-                    // باقي الحقول زي (Phone, Age, Country) هتكون null
+                    // === التعديل هنا: ناخد الدور من الموديل ===
+                    Role = model.Role, // <-- هياخد customer أو staff
+                    Status = "active"
                 };
 
-                // 4. ضيف اليوزر للداتابيز
                 _context.Add(tblUser);
                 await _context.SaveChangesAsync();
 
-                // 5. (اختياري بس أفضل) سجل دخول اليوزر علطول بعد التسجيل
+                // سجل دخوله علطول
                 var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
             new Claim(ClaimTypes.Name, tblUser.Fullname),
             new Claim(ClaimTypes.Email, tblUser.Email),
-            new Claim(ClaimTypes.Role, tblUser.Role) // اللي هي "customer"
+            new Claim(ClaimTypes.Role, tblUser.Role)
         };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true // خليه فاكره
-                };
+                var authProperties = new AuthenticationProperties { IsPersistent = true };
 
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
 
-                // 6. وديه على صفحة الهوم
                 return RedirectToAction("Index", "Home");
             }
 
-            // لو الموديل فيه أخطاء، ارجع لنفس الصفحة
             return View(model);
         }
         // GET: /Account/Login
