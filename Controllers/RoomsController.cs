@@ -1,4 +1,4 @@
-﻿    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Travely.Data;
@@ -46,7 +46,7 @@ namespace Travely.Controllers
         // GET: Rooms/Create
         public IActionResult Create()
         {
-            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotel, "Id", "Name");
+            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotels, "Id", "Name");
             return View();
         }
 
@@ -61,7 +61,7 @@ namespace Travely.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotel, "Id", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotels, "Id", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
@@ -78,7 +78,7 @@ namespace Travely.Controllers
             {
                 return NotFound();
             }
-            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotel, "Id", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotels, "Id", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
@@ -125,7 +125,7 @@ namespace Travely.Controllers
             }
 
             var tblRoom = await _context.TblRooms
-                .Include(r => r.TblHotel)
+                .Include(r => r.Hotel)
                 .FirstOrDefaultAsync(m => m.RoomId == id);
             if (tblRoom == null)
             {
