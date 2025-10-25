@@ -33,7 +33,7 @@ namespace Travely.Controllers
             }
 
             var tblRoom = await _context.TblRooms
-                .Include(r => r.Hotel)
+                .Include(r => r.TblHotel)
                 .FirstOrDefaultAsync(m => m.RoomId == id);
 
             if (tblRoom == null)
@@ -117,7 +117,7 @@ namespace Travely.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotel, "HotelId", "HotelName", tblRoom.HotelId);
             return View(tblRoom);
         }
 
@@ -198,7 +198,7 @@ namespace Travely.Controllers
             }
 
             var availableRooms = await query
-                .Include(r => r.Hotel)
+                .Include(r => r.TblHotel)
                 .OrderBy(r => r.Price)
                 .ToListAsync();
 

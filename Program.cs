@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Travely.Data;
+using Travely.Extensions;
 
 namespace Travely
 {
@@ -33,6 +34,9 @@ namespace Travely
                     options.SlidingExpiration = true;
                 });
             // ------------------------------------
+
+            // Booking module registration (clean architecture: inject services)
+            builder.Services.AddBookingModule();
 
             var app = builder.Build();
 
