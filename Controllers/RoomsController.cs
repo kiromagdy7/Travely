@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Travely.Data;
 using Travely.Models;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering; // <-- Add this using statement
 
 namespace Travely.Controllers
 {
@@ -20,7 +20,8 @@ namespace Travely.Controllers
         // GET: Rooms
         public async Task<IActionResult> Index()
         {
-            return View(await _context.TblRooms.Include(r => r.TblHotel).ToListAsync());
+            // Use Hotel.Name which exists, not Hotel.HotelName
+            return View(await _context.TblRooms.Include(r => r.Hotel).ToListAsync());
         }
 
         // GET: Rooms/Details/5
@@ -46,22 +47,25 @@ namespace Travely.Controllers
         // GET: Rooms/Create
         public IActionResult Create()
         {
-            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotels, "Id", "Name");
+            // Corrected SelectList: Use "HotelId" and "Name" which are likely the correct properties
+            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name");
             return View();
         }
 
         // POST: Rooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RoomId,HotelId,RoomType,RoomNumber,Price,Available,Description,Capacity")] TblRoom tblRoom)
+        // Corrected Bind: Replaced "Capacity" with "MaxGuests" and all other existing properties
+        public async Task<IActionResult> Create([Bind("HotelId,RoomNumber,RoomType,BedsCount,Price,MaxGuests,Description,BreakfastIncluded,PetsAllowed,Available")] TblRoom tblRoom)
         {
             if (ModelState.IsValid)
             {
+                tblRoom.CreatedAt = DateTime.UtcNow; // Set creation date on server
                 _context.Add(tblRoom);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotels, "Id", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
@@ -78,14 +82,15 @@ namespace Travely.Controllers
             {
                 return NotFound();
             }
-            ViewData["HotelId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.TblHotels, "Id", "Name", tblRoom.HotelId);
+            ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
         // POST: Rooms/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RoomId,HotelId,RoomType,RoomNumber,Price,IsAvailable,Description,Capacity")] TblRoom tblRoom)
+        // Corrected Bind: Replaced "IsAvailable" with "Available" and "Capacity" with "MaxGuests"
+        public async Task<IActionResult> Edit(int id, [Bind("RoomId,HotelId,RoomNumber,RoomType,BedsCount,Price,MaxGuests,Description,BreakfastIncluded,PetsAllowed,Available,CreatedAt")] TblRoom tblRoom)
         {
             if (id != tblRoom.RoomId)
             {
@@ -149,9 +154,8 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Methods for handling room availability and pricing
-        
-        // GET: Rooms/UpdateAvailability/5
+        // --- Your other methods (UpdateAvailability, etc.) are fine ---
+
         public async Task<IActionResult> UpdateAvailability(int id, bool isAvailable)
         {
             var room = await _context.TblRooms.FindAsync(id);
@@ -165,7 +169,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Rooms/UpdatePrice/5
         [HttpPost]
         public async Task<IActionResult> UpdatePrice(int id, decimal newPrice)
         {
@@ -185,11 +188,10 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Rooms/GetAvailableRooms
         public async Task<IActionResult> GetAvailableRooms(string roomType = null)
         {
             var query = _context.TblRooms.Where(r => r.Available);
-            
+
             if (!string.IsNullOrEmpty(roomType))
             {
                 query = query.Where(r => r.RoomType == roomType);

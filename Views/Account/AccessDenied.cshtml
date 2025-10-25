@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<header>
+    <h1 class="text-danger">@ViewData["Title"]</h1>
+    <p class="text-danger">You do not have permission to access this resource.</p>
+    <p>
+        Please contact your administrator if you believe you should have access.
+    </p>
+    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Go to Homepage</a>
+</header>

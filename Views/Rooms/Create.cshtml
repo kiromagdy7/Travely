@@ -10,7 +10,7 @@
     <div class="col-md-8">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
+
             <div class="form-group">
                 <label asp-for="HotelId" class="control-label">Hotel</label>
                 <select asp-for="HotelId" class="form-control" asp-items="ViewBag.HotelId"></select>
@@ -40,6 +40,10 @@
             </div>
 
             <div class="form-group">
+                <label asp-for="MaxGuests" class="control-label"></label>
+                <input asp-for="MaxGuests" class="form-control" />
+                <span asp-validation-for="MaxGuests" class="text-danger"></span>
+
                 <label asp-for="BedsCount" class="control-label"></label>
                 <input asp-for="BedsCount" class="form-control" />
                 <span asp-validation-for="BedsCount" class="text-danger"></span>
@@ -66,5 +70,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

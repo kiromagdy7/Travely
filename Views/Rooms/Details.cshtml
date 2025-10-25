@@ -1,41 +1,62 @@
 ﻿@model Travely.Models.TblRoom
 
 @{
-    ViewData["Title"] = "Room Details";
+    ViewData["Title"] = "Details";
 }
 
 <h1>Room Details</h1>
 
 <div>
+    <h4>TblRoom</h4>
+    <hr />
     <dl class="row">
-        <dt class="col-sm-3">Hotel</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.TblHotel.Name)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RoomNumber)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.RoomNumber)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RoomType)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.RoomType)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Price)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Price)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.BedsCount)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.BedsCount)</dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Available)</dt>
-        <dd class="col-sm-9">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Hotel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Hotel.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RoomNumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.RoomNumber)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RoomType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.RoomType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MaxGuests)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MaxGuests)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Available)
+        </dt>
+        <dd class="col-sm-10">
             <span class="badge @(Model.Available ? "bg-success" : "bg-danger")">
                 @(Model.Available ? "Available" : "Occupied")
             </span>
         </dd>
-
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
     </dl>
 </div>
-
-<div class="mt-3">
+<div>
     <a asp-action="Edit" asp-route-id="@Model.RoomId" class="btn btn-primary">Edit</a>
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
