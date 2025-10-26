@@ -75,7 +75,7 @@
                                     <li><a asp-area="" asp-controller="WishList" asp-action="Index">My Wishlist</a></li>
                                 }
 
-                                <li><span>Welcome, @User.Identity.Name!</span></li>
+                                <li><a asp-area="" asp-controller="Account" asp-action="Profile">Profile</a></li>
 
                                 <li><a asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
                             }
@@ -91,11 +91,20 @@
 
             </div>
     </header>
+
+
+
+
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
+
+
+
+
 
         <footer id="footer" class="footer position-relative dark-background">
             <div class="footer-top">
