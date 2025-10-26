@@ -51,7 +51,7 @@
                     <nav id="navmenu" class="navmenu">
                         <ul>
                             <li><a class="active" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                            <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                            <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
                             <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                             <li><a asp-area="" asp-controller="Hotels" asp-action="Index">Hotels</a></li>
 
@@ -175,6 +175,26 @@
                 </div>
             </div>
         </footer>
+
     @await RenderSectionAsync("Scripts", required: false)
+
+
+
+    <!-- Scroll Top -->
+@*     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+ *@    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <!-- Vendor JS Files -->
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/aos/aos.js"></script>
+    <script src="~/lib/purecounter/purecounter_vanilla.js"></script>
+    <script src="~/lib/glightbox/js/glightbox.min.js"></script>
+    <script src="~/lib/swiper/swiper-bundle.min.js"></script>
+    <script src="~/lib/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="~/lib/isotope-layout/isotope.pkgd.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="~/js/main.js"></script>
 </body>
 </html>

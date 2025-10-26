@@ -1,10 +1,3 @@
-/**
-* Template Name: Grandoria
-* Template URL: https://bootstrapmade.com/grandoria-bootstrap-hotel-template/
-* Updated: Jul 29 2025 with Bootstrap v5.3.7
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
 
 (function() {
   "use strict";
@@ -12,15 +5,15 @@
   /**
    * Apply .scrolled class to the body as the page is scrolled down
    */
-  function toggleScrolled() {
-    const selectBody = document.querySelector('body');
-    const selectHeader = document.querySelector('#header');
-    if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
-    window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
-  }
+  //function toggleScrolled() {
+  //  const selectBody = document.querySelector('body');
+  //  const selectHeader = document.querySelector('#header');
+  //  if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
+  //  window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
+  //}
 
-  document.addEventListener('scroll', toggleScrolled);
-  window.addEventListener('load', toggleScrolled);
+  //document.addEventListener('scroll', toggleScrolled);
+  //window.addEventListener('load', toggleScrolled);
 
   /**
    * Mobile nav toggle
@@ -73,23 +66,23 @@
   /**
    * Scroll top button
    */
-  let scrollTop = document.querySelector('.scroll-top');
+  //let scrollTop = document.querySelector('.scroll-top');
 
-  function toggleScrollTop() {
-    if (scrollTop) {
-      window.scrollY > 100 ? scrollTop.classList.add('active') : scrollTop.classList.remove('active');
-    }
-  }
-  scrollTop.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  });
+  //function toggleScrollTop() {
+  //  if (scrollTop) {
+  //    window.scrollY > 100 ? scrollTop.classList.add('active') : scrollTop.classList.remove('active');
+  //  }
+  //}
+  //scrollTop.addEventListener('click', (e) => {
+  //  e.preventDefault();
+  //  window.scrollTo({
+  //    top: 0,
+  //    behavior: 'smooth'
+  //  });
+  //});
 
-  window.addEventListener('load', toggleScrollTop);
-  document.addEventListener('scroll', toggleScrollTop);
+  //window.addEventListener('load', toggleScrollTop);
+  //document.addEventListener('scroll', toggleScrollTop);
 
   /**
    * Animation on scroll function and init
