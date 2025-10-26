@@ -23,69 +23,117 @@
 
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Travely</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Hotels" asp-action="Index">Hotels</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Rooms" asp-action="Index">Rooms</a>
-                        </li>
+        <header id="header" class="header sticky-top">
 
-                        @if (User.IsInRole("admin") || User.IsInRole("staff"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-danger" asp-area="" asp-controller="Rooms" asp-action="Index">Manage Rooms</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-danger" asp-area="" asp-controller="TblUsers" asp-action="Index">Manage Users</a>
-                            </li>
-                        }
-                    </ul>
+            <div class="topbar d-flex align-items-center dark-background">
+                <div class="container d-flex justify-content-center justify-content-md-between">
+                    <div class="contact-info d-flex align-items-center">
+                        <i class="bi bi-envelope d-flex align-items-center"><a href="#">info@Travely.com</a></i>
+                        <i class="bi bi-phone d-flex align-items-center ms-4"><span>+2 33 123 4567 8901</span></i>
+                    </div>
+                    <div class="social-links d-none d-md-flex align-items-center">
+                        <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div><!-- End Top Bar -->
 
-                    <ul class="navbar-nav">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            @if (User.IsInRole("customer"))
+
+            <div class="branding d-flex align-items-cente">
+
+                <div class="container position-relative d-flex align-items-center justify-content-between">
+                    <a href="index.html" class="logo d-flex align-items-center site-logo hover-effect">
+                        <img src="~/img/logo.webp" alt="logo">
+                    </a>
+
+                    <nav id="navmenu" class="navmenu">
+                        <ul>
+                            <li><a class="active" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li><a asp-area="" asp-controller="Hotels" asp-action="Index">Hotels</a></li>
+                            <li><a asp-area="" asp-controller="Rooms" asp-action="Index">Rooms</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="Amenities">Amenities</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="Location">Location</a></li>
+
+
+                            @if (User.IsInRole("admin") || User.IsInRole("staff"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-primary" asp-area="" asp-controller="WishList" asp-action="Index">My Wishlist</a>
+                                <li>
+                                    <a class="nav-link text-danger" asp-area="" asp-controller="Rooms" asp-action="Index">Manage Rooms</a>
                                 </li>
                             }
-                            <li class="nav-item">
-                                <span class="navbar-text text-dark me-3">Welcome, @User.Identity.Name!</span>
+                            @if (User.IsInRole("admin"))
+                            {
+                                <li>
+                                    <a class="nav-link text-danger" asp-area="" asp-controller="TblUsers" asp-action="Index">Manage Users</a>
+                                </li>
+                            }
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @if (User.IsInRole("customer"))
+                                {
+                                    <li>
+                                        <a class="nav-link text-primary" asp-area="" asp-controller="WishList" asp-action="Index">My Wishlist</a>
+                                    </li>
+                                }
+                                <li>
+                                    <span class="navbar-text text-dark me-3">Welcome, @User.Identity.Name!</span>
+                                </li>
+                                <li>
+                                    <a class="nav-link btn btn-outline-danger btn-sm" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a class="nav-link btn btn-outline-primary btn-sm" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                                </li>
+                            }
+                            <li class="dropdown">
+                                <a href="#"><span>Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                                <ul>
+                                    <li><a href="#">Room Details</a></li>
+                                    <li><a href="#">Restaurant</a></li>
+                                    <li><a href="#">Offers</a></li>
+                                    <li><a href="#">Events</a></li>
+                                    <li><a href="#">Gallery</a></li>
+                                    <li><a href="#">Booking</a></li>
+                                    <li><a href="#">Terms Page</a></li>
+                                    <li><a href="#">Privacy Page</a></li>
+                                    <li><a href="#">404 Page</a></li>
+                                    <li><a href="#">Starter Page</a></li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-danger btn-sm" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                            <li><a href="#">Contact</a></li>
+
+                            <li class="dropdown">
+                                <a href="#english">
+                                    <svg class="icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g id="SVGRepo_iconCarrier">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M4 0H6V2H10V4H8.86807C8.57073 5.66996 7.78574 7.17117 6.6656 8.35112C7.46567 8.73941 8.35737 8.96842 9.29948 8.99697L10.2735 6H12.7265L15.9765 16H13.8735L13.2235 14H9.77647L9.12647 16H7.0235L8.66176 10.9592C7.32639 10.8285 6.08165 10.3888 4.99999 9.71246C3.69496 10.5284 2.15255 11 0.5 11H0V9H0.5C1.5161 9 2.47775 8.76685 3.33437 8.35112C2.68381 7.66582 2.14629 6.87215 1.75171 6H4.02179C4.30023 6.43491 4.62904 6.83446 4.99999 7.19044C5.88743 6.33881 6.53369 5.23777 6.82607 4H0V2H4V0ZM12.5735 12L11.5 8.69688L10.4265 12H12.5735Z" fill="currentColor"></path>
+                                        </g>
+                                    </svg>
+                                    <span>English</span>
+                                    <i class="bi bi-chevron-down toggle-dropdown"></i>
+                                </a>
+                                <ul>
+                                    <li><a href="#french">French</a></li>
+                                    <li><a href="#deutsch">Deutsch</a></li>
+                                    <li><a href="#spanish">Spanish</a></li>
+                                </ul>
                             </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-primary btn-sm" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                        }
-                    </ul>
+
+                        </ul>
+                        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                    </nav>
+
                 </div>
+
             </div>
-        </nav>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
