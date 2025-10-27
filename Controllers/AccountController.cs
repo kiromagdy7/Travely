@@ -196,3 +196,5 @@ namespace Travely.Controllers
         }
     }
 }
+
+// In your Startup.cs or Program.cs (depending on your ASP.NET Core version)

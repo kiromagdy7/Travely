@@ -2,6 +2,7 @@
 using Travely.Data;
 using Travely.Services.Hotels;
 using Travely.Services.Storage;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +17,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IImageStorage, FileSystemImageStorage>();
 
-// Existing auth/cookie configuration assumed present
+// Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+    });
 
 var app = builder.Build();
 
-// Existing middleware pipeline assumed present
+// Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
