@@ -4,10 +4,7 @@
     ViewData["Title"] = "Edit User";
 }
 
-<h1>Edit User</h1>
-<h4>@Model.Fullname</h4>
-<hr />
-<div class="row">
+<div class="row" style="margin-top:20px; margin-bottom:20px;">
     <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -28,8 +25,7 @@
 
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" type="password" class="form-control" />
-                <small class="form-text text-muted">Leave blank to keep the current password.</small>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Leave blank to keep the current password." />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
@@ -37,6 +33,12 @@
                 <label asp-for="Phone" class="control-label"></label>
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Imagepath" class="control-label"></label>
+                <input asp-for="Imagepath" class="form-control" />
+                <span asp-validation-for="Imagepath" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -71,8 +73,8 @@
             </div>
 
             <div class="form-group mt-3">
-                <input type="submit" value="Save Changes" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                <input type="submit" value="Save Changes" class="ColorBtn" />
+                <a asp-action="Index" class="BackBtnGray">Back to List</a>
             </div>
         </form>
     </div>
