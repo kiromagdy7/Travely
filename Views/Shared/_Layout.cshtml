@@ -55,7 +55,7 @@
     <ul>
         <li><a asp-area="" asp-controller="Home" asp-action="Index" class="@(Context.Request.Path.Value?.EndsWith("/Home") == true || Context.Request.Path.Value == "/" ? "active" : "")">Home</a></li>
         <li><a asp-area="" asp-controller="About" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/About") == true ? "active" : "")">About</a></li>
-        <li><a asp-area="" asp-controller="Home" asp-action="Contact" class="@(Context.Request.Path.Value?.Contains("/Contact") == true ? "active" : "")">Contact</a></li>
+        <li><a asp-area="" asp-controller="ContactUS" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/ContactUS") == true ? "active" : "")">Contact</a></li>
         <li><a asp-area="" asp-controller="Hotels" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Hotels") == true ? "active" : "")">Hotels</a></li>
 
         @if (User.IsInRole("admin") || User.IsInRole("staff"))

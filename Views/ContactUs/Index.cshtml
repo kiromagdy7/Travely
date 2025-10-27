@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Contact Us";
+}
+
+
+
+<main class="main">
+    <section id="contact" class="contact section">
+
+        <!-- Contact Info -->
+        <div class="row g-4 mb-5" data-aos="fade-up" data-aos-delay="300">
+            <div class="col-md-6">
+                <div class="contact-info-card">
+                    <div class="icon-box">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h4>Location</h4>
+                        <p>123 Main Street</p>
+                        <p>Anytown, Anycountry</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="contact-info-card">
+                    <div class="icon-box">
+                        <i class="bi bi-telephone"></i>
+                    </div>
+                    <div class="info-content">
+                        <h4>Phone &amp; Email</h4>
+                        <p>++2 (331) 23 4567 8901</p>
+                        <p>info@Travely.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="row justify-content-center mb-5" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-lg-10">
+                <div class="contact-form-wrapper">
+                    <h2 class="text-center mb-4">Send a Message</h2>
+
+                    <form action="" method="post" class="">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="name" placeholder="Your Name" required="">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="email" class="form-control" name="email" placeholder="Email Address" required="">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <textarea class="form-control" name="message" placeholder="Your Message" rows="6" required=""></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="loading">Loading</div>
+                                <div class="error-message"></div>
+                                <div class="sent-message">Your message has been sent. Thank you!</div>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn-submit">SEND MESSAGE</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+    </section><!-- /Contact Section -->
+
+</main>

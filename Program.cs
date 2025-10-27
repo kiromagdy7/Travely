@@ -13,15 +13,7 @@ namespace Travely
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            // هنضيف سياسة (Policy) بتقول إن كل الصفحات مقفولة إلا لو قولنا غير كده
-            builder.Services.AddControllersWithViews(options =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                                .RequireAuthenticatedUser()
-                                .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection"),
