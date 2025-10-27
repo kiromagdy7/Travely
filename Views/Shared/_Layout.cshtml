@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=flight_takeoff" rel="stylesheet" />
     <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/lib/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     <link href="~/lib/aos/aos.css" rel="stylesheet">
@@ -20,7 +21,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link href="~/css/main.css" rel="stylesheet">
     <link rel="stylesheet" href="~/Travely.styles.css" asp-append-version="true" />
-
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true" />
 </head>
 <body>
         <header id="header" class="header sticky-top">
@@ -49,43 +51,42 @@
                 </a>
 
                     <nav id="navmenu" class="navmenu">
-                        <ul>
-                            <li><a class="active" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                            <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
-                            <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                            <li><a asp-area="" asp-controller="Hotels" asp-action="Index">Hotels</a></li>
+    <ul>
+        <li><a asp-area="" asp-controller="Home" asp-action="Index" class="@(Context.Request.Path.Value?.EndsWith("/Home") == true || Context.Request.Path.Value == "/" ? "active" : "")">Home</a></li>
+        <li><a asp-area="" asp-controller="About" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/About") == true ? "active" : "")">About</a></li>
+        <li><a asp-area="" asp-controller="Home" asp-action="Contact" class="@(Context.Request.Path.Value?.Contains("/Contact") == true ? "active" : "")">Contact</a></li>
+        <li><a asp-area="" asp-controller="Hotels" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Hotels") == true ? "active" : "")">Hotels</a></li>
 
-                            @if (User.IsInRole("admin") || User.IsInRole("staff"))
-                            {
-                                <li>
-                                    <a asp-area="" asp-controller="Rooms" asp-action="Index">Manage Rooms</a>
-                                </li>
-                            }
-                            @if (User.IsInRole("admin"))
-                            {
-                                <li>
-                                    <a asp-area="" asp-controller="TblUsers" asp-action="Index">Manage Users</a>
-                                </li>
-                            }
+        @if (User.IsInRole("admin") || User.IsInRole("staff"))
+        {
+            <li>
+                <a asp-area="" asp-controller="Rooms" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Rooms") == true ? "active" : "")">Manage Rooms</a>
+            </li>
+        }
+        @if (User.IsInRole("admin"))
+        {
+            <li>
+                <a asp-area="" asp-controller="TblUsers" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/TblUsers") == true ? "active" : "")">Manage Users</a>
+            </li>
+        }
 
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                @if (User.IsInRole("customer"))
-                                {
-                                    <li><a asp-area="" asp-controller="WishList" asp-action="Index">My Wishlist</a></li>
-                                }
+        @if (User.Identity.IsAuthenticated)
+        {
+            @if (User.IsInRole("customer"))
+            {
+                <li><a asp-area="" asp-controller="WishList" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/WishList") == true ? "active" : "")">My Wishlist</a></li>
+            }
 
-                                <li><a asp-area="" asp-controller="Account" asp-action="Profile">Profile</a></li>
-
-                                <li><a asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
-                            }
-                            else
-                            {
-                                <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
-                            }
-                        </ul>
-                        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-                    </nav>
+            <li><a asp-area="" asp-controller="Account" asp-action="Profile" class="@(Context.Request.Path.Value?.Contains("/Account/Profile") == true ? "active" : "")">Profile</a></li>
+            <li><a asp-area="" asp-controller="Account" asp-action="Logout" class="@(Context.Request.Path.Value?.Contains("/Account/Logout") == true ? "active" : "")">Logout</a></li>
+        }
+        else
+        {
+            <li><a asp-area="" asp-controller="Account" asp-action="Login" class="@(Context.Request.Path.Value?.Contains("/Account/Login") == true ? "active" : "")">Login</a></li>
+        }
+    </ul>
+    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+</nav>
 
                 </div>
 
@@ -106,84 +107,36 @@
 
 
 
-        <footer id="footer" class="footer position-relative dark-background">
-            <div class="footer-top">
-                <div class="container">
-                    <div class="row gy-4">
-                        <div class="col-lg-4 col-md-6 footer-about">
-                            <a href="index.html" class="logo d-flex align-items-center">
-                                <span class="sitename">Travely</span>
-                            </a>
-                            <div class="footer-contact pt-3">
-                                <p>123 Main Street</p>
-                                <p>Anytown, Anycountry</p>
-                                <p class="mt-3"><strong>Phone:</strong> <span>+2 33 123 4567 8901</span></p>
-                                <p><strong>Email:</strong> <span>info@Travely.com</span></p>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-3 footer-links">
-                            <h4>Useful Links</h4>
-                            <ul>
-                                <li><a href="#">Home</a></li>
-                                <li><a href="#">About us</a></li>
-                                <li><a href="#">Services</a></li>
-                                <li><a href="#">Terms of service</a></li>
-                                <li><a href="#">Privacy policy</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-2 col-md-3 footer-links">
-                            <h4>Our Services</h4>
-                            <ul>
-                                <li><a href="#">Web Design</a></li>
-                                <li><a href="#">Web Development</a></li>
-                                <li><a href="#">Product Management</a></li>
-                                <li><a href="#">Marketing</a></li>
-                                <li><a href="#">Graphic Design</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-2 col-md-3 footer-links">
-                            <h4>Hic solutasetp</h4>
-                            <ul>
-                                <li><a href="#">Molestiae accusamus iure</a></li>
-                                <li><a href="#">Excepturi dignissimos</a></li>
-                                <li><a href="#">Suscipit distinctio</a></li>
-                                <li><a href="#">Dilecta</a></li>
-                                <li><a href="#">Sit quas consectetur</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-2 col-md-3 footer-links">
-                            <h4>Nobis illum</h4>
-                            <ul>
-                                <li><a href="#">Ipsam</a></li>
-                                <li><a href="#">Laudantium dolorum</a></li>
-                                <li><a href="#">Dinera</a></li>
-                                <li><a href="#">Trodelas</a></li>
-                                <li><a href="#">Flexo</a></li>
-                            </ul>
-                        </div>
-
-                    </div>
-                </div>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h2>Travely</h2>
+                <p>123 Main Street</p>
+                <p>Anytown, Anycountry</p>
+                <p><strong>Phone:</strong> <span>+2 33 123 4567 8901</span></p>
+                <p><strong>Email:</strong> <span>info@Travely.com</span></p>
             </div>
-            <div class="copyright text-center">
-            <div class="container d-flex flex-column flex-lg-row justify-content-center justify-content-lg-between align-items-center">
-                    <div class="d-flex flex-column align-items-center align-items-lg-start">
-                        <div>
-                            © Copyright <strong><span>Travely</span></strong>. All Rights Reserved
-                        </div>
-                        <div class="credits">
-                            Designed by <a href="#" class="text-white">Travely Team</a>
-                        </div>
-                    </div>
-                    <div class="social-links order-first order-lg-last mb-3 mb-lg-0 position-relative">
-                        <a href=""><i class="bi bi-twitter-x"></i></a>
-                        <a href=""><i class="bi bi-facebook"></i></a>
-                        <a href=""><i class="bi bi-instagram"></i></a>
-                        <a href=""><i class="bi bi-linkedin"></i></a>
-                    </div>
-                </div>
+            <div class="footer-column">
+                <h4>Our Services</h4>
+                <a asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-area="" asp-controller="About" asp-action="Index">About</a>
+                <a href="">Services</a>
+                <a href="">Terms of service</a>
+                <a href="">Privacy policy</a>
             </div>
-        </footer>
+            <div class="footer-column" style="align-items: center;">
+                <h4>Follow Us</h4>
+                <a href=""><i class="bi bi-twitter-x"></i></a>
+                <a href=""><i class="bi bi-facebook"></i></a>
+                <a href=""><i class="bi bi-instagram"></i></a>
+                <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+        </div>
+        <div class="footer-row">
+            <p>© Copyright Travely. All Rights Reserved.</p>
+            <p>Designed by Travely Team.</p>
+        </div>
+    </footer>
 
     @await RenderSectionAsync("Scripts", required: false)
 
