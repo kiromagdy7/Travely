@@ -10,38 +10,33 @@
     <div asp-validation-summary="ModelOnly"></div>
 
     <div>
-        <h6 class="fullname-label">Fullname</h6>
-        <input class="fullname-input" asp-for="Fullname" placeholder="Enter your fullname" />
         <label asp-for="Fullname"></label>
+        <input class="fullname-input" asp-for="Fullname" placeholder="Enter your fullname" />
         <span asp-validation-for="Fullname"></span>
     </div>
 
     <div>
-        <h6 class="email-label">Email</h6>
-        <input class="email-input" asp-for="Email" autocomplete="username" placeholder="Enter your email" />
         <label asp-for="Email"></label>
+        <input class="email-input" asp-for="Email" autocomplete="username" placeholder="Enter your email" />
         <span asp-validation-for="Email"></span>
     </div>
 
-@*     <div>
-        <h6 class="phone-label">Phone</h6>
-        <input class="phone-input" asp-for="Phone" autocomplete="username" placeholder="Enter your phone" />
+    <div>
         <label asp-for="Phone"></label>
+        <input class="phone-input" asp-for="Phone" autocomplete="username" placeholder="Enter your phone" />
         <span asp-validation-for="Phone"></span>
-    </div> *@
+    </div> 
 
     <div>
-        <h6 class="password-label">Password</h6>
-        <input class="password-input" asp-for="Password" type="password" autocomplete="new-password" placeholder="Enter your password" />
         <label asp-for="Password"></label>
+        <input class="password-input" asp-for="Password" type="password" autocomplete="new-password" placeholder="Enter your password" />
         <span asp-validation-for="Password"></span>
     </div>
 
     <div>
-        <h6 class="password-label">Confirm Password</h6>
-        <input class="password-input" asp-for="ConfirmPassword" type="password" autocomplete="new-password" placeholder="Confirm your password" />
         <label asp-for="ConfirmPassword"></label>
         <span asp-validation-for="ConfirmPassword"></span>
+        <input class="password-input" asp-for="ConfirmPassword" type="password" autocomplete="new-password" placeholder="Confirm your password" />
     </div>
 
     <button class="register-submit-button" id="registerSubmit" type="submit">Register</button>

@@ -13,6 +13,11 @@ namespace Travely.ViewModels
         [StringLength(255)]
         public string Email { get; set; } = null!;
 
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Invalid phone number")]
+        public required string Phone { get; set; }
+
+
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
         [DataType(DataType.Password)]

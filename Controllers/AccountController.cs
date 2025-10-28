@@ -72,6 +72,7 @@ namespace Travely.Controllers
                 {
                     Fullname = model.Fullname,
                     Email = model.Email,
+                    Phone = model.Phone,
                     PasswordHash = hashedPassword,
                     CreatedAt = DateTime.UtcNow,
 
