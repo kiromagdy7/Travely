@@ -6,7 +6,7 @@ using Travely.Models;
 
 namespace Travely.Controllers
 {
-    [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "staff")]
     public class StaffRoomsController : Controller
     {
         private readonly AppDbContext _context;
