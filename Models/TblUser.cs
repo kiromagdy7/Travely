@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Travely.Models;
 
@@ -28,6 +29,10 @@ public partial class TblUser
     public string Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
+    public int? HotelId { get; set; }
+    [ForeignKey("HotelId")]
+    public TblHotel? Hotel { get; set; }
+
 
     public virtual ICollection<TblBooking> TblBookings { get; set; } = new List<TblBooking>();
 

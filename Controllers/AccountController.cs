@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Travely.Data;
 using Travely.Models;
 using Travely.ViewModels;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
 
 namespace Travely.Controllers
 {
@@ -125,6 +126,7 @@ namespace Travely.Controllers
                 }
 
                 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
+
 
                 if (isPasswordValid)
                 {
