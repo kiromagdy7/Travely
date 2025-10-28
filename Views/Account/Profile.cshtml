@@ -1,18 +1,79 @@
-﻿@{
-    ViewData["Title"] = "Profile";
+﻿@model Travely.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "_Layout";
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
-<!DOCTYPE html>
-<html lang="en">
+<div class="profile-page-container">
 
-<head>
-</head>
+    <aside class="sidebar">
+        <div class="user-profile">
 
-<body class="index-page">
+            @if (!string.IsNullOrEmpty(Model.Imagepath))
+            {
+                <img src="@Model.Imagepath" alt="Profile Picture" class="profile-avatar-image">
+            }
+            else
+            {
+                <div class="user-avatar">@(Model.Fullname?.Length > 0 ? Model.Fullname.Substring(0, 1) : "U")</div>
+            }
 
+            <span class="user-name">@Model.Fullname</span>
+            <span class="user-email">@Model.Email</span>
+            <span class="user-country">@Model.Country</span>
+            <span class="user-status">@Model.Status</span>
+            <span class="user-age">@Model.Age</span>
+            <span class="user-role">@Model.Role</span>
+            <span class="user-phone">@Model.Phone</span>
+        </div>
 
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a asp-action="Profile" asp-controller="Account" class="active"><i class="fas fa-briefcase"></i> My Bookings</a></li>
+                <li><a asp-action="Edit" asp-controller="Account"><i class="fas fa-user"></i> Personal Info</a></li>
+                <li><a asp-action="Wishlist" asp-controller="Account"><i class="fas fa-heart"></i> My Wishlist</a></li>
+            </ul>
+        </nav>
 
-</body>
+        <div class="logout-link">
+            <a asp-action="Logout" asp-controller="Account"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
+    </aside>
 
-</html>
+    <main class="main-content">
+        <h1>Your Past Adventures</h1>
+
+        @if (Model.PastBookings != null && Model.PastBookings.Any())
+        {
+            foreach (var booking in Model.PastBookings)
+            {
+                <div class="booking-card">
+                    <div class="booking-details">
+                        <h2>@booking.HotelName</h2>
+                        <p class="location-date">@booking.Location</p>
+                        <p class="location-date">
+                            @booking.StartDate.ToString("MMM dd, yyyy") - @booking.EndDate.ToString("MMM dd, yyyy")
+                        </p>
+                        <p class="price">@booking.Price.ToString("C0")</p>
+                        <a href="/Bookings/Details/@booking.BookingId" class="btn btn-details">View Details</a>
+                    </div>
+                    <div class="booking-image">
+                        <img src="@booking.ImageUrl" alt="@booking.HotelName">
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state-card">
+                <div class="empty-icon">
+                    <i class="fas fa-suitcase-rolling"></i>
+                </div>
+                <p>You haven't booked any trips yet. Start your next adventure!</p>
+                <a href="/Home/Index" class="btn btn-book">Book a Trip</a>
+            </div>
+        }
+    </main>
+</div>

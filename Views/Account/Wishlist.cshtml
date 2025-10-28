@@ -1,0 +1,85 @@
+﻿@model Travely.ViewModels.WishlistPageViewModel
+@{
+    ViewData["Title"] = "My Wishlist";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+<div class="profile-page-container">
+
+    <aside class="sidebar">
+        <div class="user-profile">
+            @if (!string.IsNullOrEmpty(Model.Imagepath))
+            {
+                <img src="@Model.Imagepath" alt="Profile Picture" class="profile-avatar-image">
+            }
+            else
+            {
+                <div class="user-avatar">@(Model.Fullname?.Length > 0 ? Model.Fullname.Substring(0, 1) : "U")</div>
+            }
+            <span class="user-name">@Model.Fullname</span>
+            <span class="user-email">@Model.Email</span>
+            <span class="user-country">@Model.Country</span>
+            <span class="user-status">@Model.Status</span>
+            <span class="user-age">@Model.Age</span>
+            <span class="user-role">@Model.Role</span>
+            <span class="user-phone">@Model.Phone</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a asp-action="Profile" asp-controller="Account"><i class="fas fa-briefcase"></i> My Bookings</a></li>
+                <li><a asp-action="Edit" asp-controller="Account"><i class="fas fa-user"></i> Personal Info</a></li>
+                <li><a asp-action="Wishlist" asp-controller="Account" class="active"><i class="fas fa-heart"></i> My Wishlist</a></li>
+            </ul>
+        </nav>
+
+        <div class="logout-link">
+            <a asp-action="Logout" asp-controller="Account"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <h1>My Wishlist</h1>
+
+        @if (!Model.WishlistItems.Any())
+        {
+            <div class="empty-state-card">
+                <div class="empty-icon"><i class="fas fa-heart-broken"></i></div>
+                <p>Your wishlist is currently empty. Start by adding some hotels!</p>
+                <a asp-controller="Hotels" asp-action="Index" class="btn btn-book">Browse Hotels</a>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var item in Model.WishlistItems)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 booking-card" style="flex-direction: column;">
+
+                            <img src="@(item.Hotels.TblHotelImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-hotel.png")"
+                                 class="card-img-top" alt="@item.Hotels.Name" style="height: 200px; object-fit: cover;">
+
+                            <div class="card-body d-flex flex-column booking-details" style="padding: 20px;">
+                                <h5 class="card-title" style="font-size: 1.4rem;">@item.Hotels.Name</h5>
+                                <p class="location-date"><i class="fas fa-map-marker-alt"></i> @item.Hotels.Address</p>
+                                <p class="card-text small text-muted">Added: @item.AddedDate.ToShortDateString()</p>
+
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <a asp-controller="Hotels" asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-details">View Details</a>
+
+                                    <form asp-controller="Wishlist" asp-action="Remove" method="post" style="margin:0;">
+                                        <input type="hidden" name="id" value="@item.WishlistId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i> Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </main>
+</div>

@@ -1,0 +1,89 @@
+﻿@model Travely.ViewModels.ProfileEditViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "_Layout";
+}
+
+<div class="profile-page-container">
+
+    <aside class="sidebar">
+        <div class="user-profile">
+            @if (!string.IsNullOrEmpty(Model.CurrentImagePath))
+            {
+                <img src="@Model.CurrentImagePath" alt="Profile Picture" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px; display: block; object-fit: cover;">
+            }
+            else
+            {
+                <div class="user-avatar">@(Model.Fullname.Substring(0, 1))</div>
+            }
+            <span class="user-name">@Model.Fullname</span>
+            <span class="user-email">@Model.Email</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a asp-action="Profile" asp-controller="Account"><i class="fas fa-briefcase"></i> My Bookings</a></li>
+                <li><a asp-action="Edit" asp-controller="Account" class="active"><i class="fas fa-user"></i> Personal Info</a></li>
+                <li><a asp-action="Wishlist" asp-controller="Account"><i class="fas fa-heart"></i> My Wishlist</a></li>
+            </ul>
+        </nav>
+
+        <div class="logout-link">
+            <a asp-action="Logout" asp-controller="Account"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <h1>Edit Personal Info</h1>
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+            @Html.AntiForgeryToken()
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+
+            <div class="form-group mb-3">
+                <label asp-for="Fullname" class="control-label"></label>
+                <input asp-for="Fullname" class="form-control" />
+                <span asp-validation-for="Fullname" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Country" class="control-label"></label>
+                <input asp-for="Country" class="form-control" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" type="number" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+            </div>
+
+            <hr />
+
+            <div class="form-group mb-3">
+                <label asp-for="NewImage" class="control-label"></label>
+                <input asp-for="NewImage" class="form-control" type="file" accept="image/*" />
+                <span asp-validation-for="NewImage" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-action="Profile" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </main>
+</div>

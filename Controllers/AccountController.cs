@@ -9,16 +9,22 @@ using System.Threading.Tasks;
 using Travely.Data;
 using Travely.Models;
 using Travely.ViewModels;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting; // <-- 1. ضيف ده
+using System.IO; // <-- 2. ضيف ده
 
 namespace Travely.Controllers
 {
     public class AccountController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment; // <-- 3. ضيف السطر ده
 
-        public AccountController(AppDbContext context)
+        // 4. عدل الـ Constructor
+        public AccountController(AppDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment; // <-- 5. ضيف السطر ده
         }
         [HttpGet]
         [AllowAnonymous]
@@ -190,11 +196,195 @@ namespace Travely.Controllers
         {
             return View();
         }
-        public IActionResult Profile()
-        {
-            return View();
-        }
-    }
-}
 
-// In your Startup.cs or Program.cs (depending on your ASP.NET Core version)
+        [Authorize] // لازم اليوزر يكون مسجل دخوله
+        public async Task<IActionResult> Profile()
+        {
+            // 1. هات الـ ID بتاع اليوزر اللي مسجل دخوله حالياً
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var userId = int.Parse(userIdString);
+
+            // 2. هات بيانات اليوزر نفسه من الداتابيز
+            var user = await _context.TblUsers.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // 3. هات حجوزات اليوزر (اللي فاتت فقط)
+            var bookings = await _context.TblBookings
+                .Include(b => b.Room)
+                    .ThenInclude(r => r.Hotel)
+                        .ThenInclude(h => h.TblHotelImages)
+                .Where(b => b.UserId == userId && b.CheckOut < DateOnly.FromDateTime(DateTime.Now)) // استخدمنا الحل بتاع المرة اللي فاتت
+                .OrderByDescending(b => b.CheckOut)
+                .Select(b => new BookingInfoViewModel
+                {
+                    BookingId = b.BookingId,
+                    HotelName = b.Room.Hotel.Name,
+                    Location = b.Room.Hotel.Address,
+                    // (TimeOnly.MinValue) يعني هتضيف وقت افتراضي (الساعة 12 بالليل)
+                    StartDate = b.CheckIn.Value.ToDateTime(TimeOnly.MinValue),
+                    EndDate = b.CheckOut.Value.ToDateTime(TimeOnly.MinValue),
+                    Price = b.TotalPrice,
+                    ImageUrl = b.Room.Hotel.TblHotelImages.FirstOrDefault().ImageUrl ?? "/images/default-hotel.png"
+                })
+                .ToListAsync();
+
+            // 4. جهز الـ ViewModel الرئيسي (هنا التعديل)
+            var viewModel = new ProfileViewModel
+            {
+                // === بداية التعديل: ملء البيانات الجديدة ===
+                // افترضت إن الأسماء دي موجودة في (user) اللي هو TblUser
+                Fullname = user.Fullname,
+                Email = user.Email,
+                Country = user.Country,
+                Status = user.Status,
+                Age = user.Age,
+                Role = user.Role,
+                Phone = user.Phone,
+                Imagepath = user.Imagepath,
+                // === نهاية التعديل ===
+
+                PastBookings = bookings
+            };
+
+            // 5. ابعت الـ ViewModel للـ View
+            return View(viewModel);
+        }
+        // GET: /Account/Edit
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            // هات اليوزر الحالي
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = await _context.TblUsers.FindAsync(userId);
+
+            if (user == null) return NotFound();
+
+            // جهز الـ ViewModel بالبيانات الحالية
+            var viewModel = new ProfileEditViewModel
+            {
+                Fullname = user.Fullname,
+                Email = user.Email,
+                Country = user.Country,
+                Age = user.Age,
+                Phone = user.Phone,
+                CurrentImagePath = user.Imagepath // ابعت مسار الصورة الحالية
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: /Account/Edit
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ProfileEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model); // لو الفورم فيه أخطاء، ارجع تاني
+            }
+
+            // هات اليوزر من الداتابيز عشان نعدل عليه
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = await _context.TblUsers.FindAsync(userId);
+
+            if (user == null) return NotFound();
+
+            // --- 1. جزء معالجة الصورة ---
+            if (model.NewImage != null && model.NewImage.Length > 0)
+            {
+                // 1.1: امسح الصورة القديمة (لو موجودة ومش هي الصورة الافتراضية)
+                if (!string.IsNullOrEmpty(user.Imagepath) && user.Imagepath != "/images/default-avatar.png")
+                {
+                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, user.Imagepath.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                // 1.2: احفظ الصورة الجديدة
+                // جهز المسار اللي هنحفظ فيه (مثلاً wwwroot/images/profiles)
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "profiles");
+                Directory.CreateDirectory(uploadsFolder); // اتأكد إن المجلد موجود
+
+                // اعمل اسم فريد للصورة عشان ميحصلش تكرار
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetExtension(model.NewImage.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // احفظ الصورة في المسار ده
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.NewImage.CopyToAsync(fileStream);
+                }
+
+                // 1.3: حدث المسار في الداتابيز (لازم يبدأ بـ /)
+                user.Imagepath = "/images/profiles/" + uniqueFileName;
+            }
+
+            // --- 2. تحديث باقي البيانات ---
+            user.Fullname = model.Fullname;
+            user.Email = model.Email;
+            user.Country = model.Country;
+            user.Age = (byte?)model.Age;
+            user.Phone = model.Phone;
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Profile updated successfully!"; // رسالة نجاح
+            return RedirectToAction("Edit"); // ارجع لنفس الصفحة عشان يشوف التعديلات
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Wishlist()
+        {
+            // 1. هات الـ ID بتاع اليوزر
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login");
+
+            var userId = int.Parse(userIdString);
+
+            // 2. هات بيانات اليوزر (عشان الـ Sidebar)
+            var user = await _context.TblUsers.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            // 3. هات الـ Wishlist بتاعته (عشان المحتوى)
+            var wishlistItems = await _context.TblWishLists
+                .Include(w => w.Hotels) // <-- افترضت إن اسمها Hotel
+                    .ThenInclude(h => h.TblHotelImages) // <-- عشان نجيب الصورة
+                .Where(w => w.UserId == userId) // <-- افترضت وجود UserId هنا
+                .OrderByDescending(w => w.AddedDate)
+                .ToListAsync();
+
+            // 4. جهز الـ ViewModel
+            var viewModel = new WishlistPageViewModel
+            {
+                // بيانات اليوزر للـ Sidebar
+                Fullname = user.Fullname,
+                Email = user.Email,
+                Country = user.Country,
+                Status = user.Status,
+                Age = user.Age,
+                Role = user.Role,
+                Phone = user.Phone,
+                Imagepath = user.Imagepath,
+
+                // بيانات الـ Wishlist للمحتوى
+                WishlistItems = wishlistItems
+            };
+
+            // 5. ابعت الـ ViewModel للـ View الجديد
+            return View(viewModel); // هيدور على Views/Account/Wishlist.cshtml
+        }
+        // In your Startup.cs or Program.cs (depending on your ASP.NET Core version)
+    } }
