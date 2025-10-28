@@ -1,36 +1,35 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization; // Make sure this is included for [AllowAnonymous]
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic; // Make sure this is included for List<Claim>
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Travely.Data;
 using Travely.Models;
 using Travely.ViewModels;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting; // <-- 1. ضيف ده
-using System.IO; // <-- 2. ضيف ده
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Travely.Controllers
 {
     public class AccountController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment; // <-- 3. ضيف السطر ده
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        // 4. عدل الـ Constructor
         public AccountController(AppDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
-            _webHostEnvironment = webHostEnvironment; // <-- 5. ضيف السطر ده
+            _webHostEnvironment = webHostEnvironment;
         }
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
-            // لو اليوزر مسجل دخول أصلاً، وديه على الهوم
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
@@ -38,7 +37,6 @@ namespace Travely.Controllers
             return View();
         }
 
-        // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -49,15 +47,11 @@ namespace Travely.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // === START: Validation مهم جداً للأمان ===
-            // نتأكد إن الدور المختار هو customer أو staff فقط
             if (model.Role != "customer" && model.Role != "staff")
             {
                 ModelState.AddModelError("Role", "Invalid role selection.");
                 return View(model);
             }
-            // === END: Validation ===
-
 
             if (ModelState.IsValid)
             {
@@ -75,23 +69,20 @@ namespace Travely.Controllers
                     Phone = model.Phone,
                     PasswordHash = hashedPassword,
                     CreatedAt = DateTime.UtcNow,
-
-                    
-                    Role = model.Role, 
+                    Role = model.Role,
                     Status = "active"
                 };
 
                 _context.Add(tblUser);
                 await _context.SaveChangesAsync();
 
-                
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
-            new Claim(ClaimTypes.Name, tblUser.Fullname),
-            new Claim(ClaimTypes.Email, tblUser.Email),
-            new Claim(ClaimTypes.Role, tblUser.Role)
-        };
+                {
+                    new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, tblUser.Fullname),
+                    new Claim(ClaimTypes.Email, tblUser.Email),
+                    new Claim(ClaimTypes.Role, tblUser.Role)
+                };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var authProperties = new AuthenticationProperties { IsPersistent = true };
@@ -106,12 +97,11 @@ namespace Travely.Controllers
 
             return View(model);
         }
-        // GET: /Account/Login
+
         [HttpGet]
-        [AllowAnonymous] // Allows access without being logged in
+        [AllowAnonymous]
         public IActionResult Login()
         {
-            // If user is already logged in, redirect them
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
@@ -119,70 +109,55 @@ namespace Travely.Controllers
             return View();
         }
 
-        // POST: /Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous] // Allows access without being logged in
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // 1. Find the user by email
-                var user = await _context.TblUsers
-                                 .FirstOrDefaultAsync(u => u.Email == model.Email);
+                var user = await _context.TblUsers.FirstOrDefaultAsync(u => u.Email == model.Email);
 
-                // 2. Check if user exists and is active
                 if (user == null || user.Status != "active")
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt or account is inactive.");
                     return View(model);
                 }
 
-                // 3. Verify the password
                 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
 
                 if (isPasswordValid)
                 {
-                    // 4. Create Claims (User's identity info)
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                         new Claim(ClaimTypes.Name, user.Fullname),
                         new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Role, user.Role) // <-- This is crucial for Authorization!
+                        new Claim(ClaimTypes.Role, user.Role)
                     };
 
-                    // 5. Create ClaimsIdentity
-                    var claimsIdentity = new ClaimsIdentity(
-                        claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    // 6. Define Authentication Properties
                     var authProperties = new AuthenticationProperties
                     {
-                        IsPersistent = model.RememberMe, // "Remember Me"
-                        // You can set other properties like ExpiresUtc here if needed
+                        IsPersistent = model.RememberMe,
                     };
 
-                    // 7. Sign in the user
                     await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties);
 
-                    // Redirect to home page
                     return RedirectToAction("Index", "Home");
                 }
 
-                // If password is invalid
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(model);
             }
 
-            // If model state is invalid
             return View(model);
         }
 
-        // GET: /Account/Logout
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
@@ -190,18 +165,16 @@ namespace Travely.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Account/AccessDenied
         [HttpGet]
-        [AllowAnonymous] // Allow anyone to see the access denied page
+        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
             return View();
         }
 
-        [Authorize] // لازم اليوزر يكون مسجل دخوله
+        [Authorize]
         public async Task<IActionResult> Profile()
         {
-            // 1. هات الـ ID بتاع اليوزر اللي مسجل دخوله حالياً
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString))
             {
@@ -209,27 +182,23 @@ namespace Travely.Controllers
             }
 
             var userId = int.Parse(userIdString);
-
-            // 2. هات بيانات اليوزر نفسه من الداتابيز
             var user = await _context.TblUsers.FindAsync(userId);
             if (user == null)
             {
                 return NotFound("User not found.");
             }
 
-            // 3. هات حجوزات اليوزر (اللي فاتت فقط)
             var bookings = await _context.TblBookings
                 .Include(b => b.Room)
                     .ThenInclude(r => r.Hotel)
                         .ThenInclude(h => h.TblHotelImages)
-                .Where(b => b.UserId == userId && b.CheckOut < DateOnly.FromDateTime(DateTime.Now)) // استخدمنا الحل بتاع المرة اللي فاتت
+                .Where(b => b.UserId == userId && b.CheckOut < DateOnly.FromDateTime(DateTime.Now))
                 .OrderByDescending(b => b.CheckOut)
                 .Select(b => new BookingInfoViewModel
                 {
                     BookingId = b.BookingId,
                     HotelName = b.Room.Hotel.Name,
                     Location = b.Room.Hotel.Address,
-                    // (TimeOnly.MinValue) يعني هتضيف وقت افتراضي (الساعة 12 بالليل)
                     StartDate = b.CheckIn.Value.ToDateTime(TimeOnly.MinValue),
                     EndDate = b.CheckOut.Value.ToDateTime(TimeOnly.MinValue),
                     Price = b.TotalPrice,
@@ -237,11 +206,8 @@ namespace Travely.Controllers
                 })
                 .ToListAsync();
 
-            // 4. جهز الـ ViewModel الرئيسي (هنا التعديل)
             var viewModel = new ProfileViewModel
             {
-                // === بداية التعديل: ملء البيانات الجديدة ===
-                // افترضت إن الأسماء دي موجودة في (user) اللي هو TblUser
                 Fullname = user.Fullname,
                 Email = user.Email,
                 Country = user.Country,
@@ -250,26 +216,21 @@ namespace Travely.Controllers
                 Role = user.Role,
                 Phone = user.Phone,
                 Imagepath = user.Imagepath,
-                // === نهاية التعديل ===
-
                 PastBookings = bookings
             };
 
-            // 5. ابعت الـ ViewModel للـ View
             return View(viewModel);
         }
-        // GET: /Account/Edit
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
-            // هات اليوزر الحالي
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var user = await _context.TblUsers.FindAsync(userId);
 
             if (user == null) return NotFound();
 
-            // جهز الـ ViewModel بالبيانات الحالية
             var viewModel = new ProfileEditViewModel
             {
                 Fullname = user.Fullname,
@@ -277,100 +238,103 @@ namespace Travely.Controllers
                 Country = user.Country,
                 Age = user.Age,
                 Phone = user.Phone,
-                CurrentImagePath = user.Imagepath // ابعت مسار الصورة الحالية
+                CurrentImagePath = user.Imagepath
             };
 
             return View(viewModel);
         }
 
-        // POST: /Account/Edit
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProfileEditViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model); // لو الفورم فيه أخطاء، ارجع تاني
-            }
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var user = await _context.TblUsers.FindAsync(userId);
+                if (user == null) return NotFound();
 
-            // هات اليوزر من الداتابيز عشان نعدل عليه
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var user = await _context.TblUsers.FindAsync(userId);
-
-            if (user == null) return NotFound();
-
-            // --- 1. جزء معالجة الصورة ---
-            if (model.NewImage != null && model.NewImage.Length > 0)
-            {
-                // 1.1: امسح الصورة القديمة (لو موجودة ومش هي الصورة الافتراضية)
-                if (!string.IsNullOrEmpty(user.Imagepath) && user.Imagepath != "/images/default-avatar.png")
+                // ✅ أولاً: معالجة الصورة حتى لو البيانات ناقصة
+                if (model.NewImage != null && model.NewImage.Length > 0)
                 {
-                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, user.Imagepath.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
+                    // تحقق من حجم الصورة
+                    if (model.NewImage.Length > 5 * 1024 * 1024)
                     {
-                        System.IO.File.Delete(oldImagePath);
+                        TempData["ErrorMessage"] = "حجم الصورة يجب ألا يتجاوز 5 ميجا بايت.";
+                        return RedirectToAction("Edit");
                     }
+
+                    // إنشاء مجلد الصور
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "profiles");
+                    Directory.CreateDirectory(uploadsFolder);
+
+                    // استخراج الامتداد وتوليد اسم جديد
+                    string extension = Path.GetExtension(model.NewImage.FileName);
+                    string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                    string newFileName = $"{timestamp}{extension}";
+                    string filePath = Path.Combine(uploadsFolder, newFileName);
+
+                    // حفظ الصورة فعليًا
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.NewImage.CopyToAsync(fileStream);
+                    }
+
+                    // تحديث المسار
+                    user.Imagepath = "/images/profiles/" + newFileName;
                 }
 
-                // 1.2: احفظ الصورة الجديدة
-                // جهز المسار اللي هنحفظ فيه (مثلاً wwwroot/images/profiles)
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "profiles");
-                Directory.CreateDirectory(uploadsFolder); // اتأكد إن المجلد موجود
-
-                // اعمل اسم فريد للصورة عشان ميحصلش تكرار
-                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetExtension(model.NewImage.FileName);
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                // احفظ الصورة في المسار ده
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                // ✅ ثانياً: حفظ باقي البيانات لو صالحة
+                if (ModelState.IsValid)
                 {
-                    await model.NewImage.CopyToAsync(fileStream);
+                    user.Fullname = model.Fullname;
+                    user.Email = model.Email;
+                    user.Country = model.Country;
+                    user.Age = (byte?)model.Age;
+                    user.Phone = model.Phone;
+
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "تم حفظ التعديلات بنجاح!";
+                    return RedirectToAction("Edit");
                 }
 
-                // 1.3: حدث المسار في الداتابيز (لازم يبدأ بـ /)
-                user.Imagepath = "/images/profiles/" + uniqueFileName;
+                // حتى لو البيانات ناقصة، نحفظ فقط الصورة اللي اتغيرت
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "تم تحديث الصورة الشخصية بنجاح!";
+                return RedirectToAction("Edit");
             }
-
-            // --- 2. تحديث باقي البيانات ---
-            user.Fullname = model.Fullname;
-            user.Email = model.Email;
-            user.Country = model.Country;
-            user.Age = (byte?)model.Age;
-            user.Phone = model.Phone;
-
-            _context.Update(user);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Profile updated successfully!"; // رسالة نجاح
-            return RedirectToAction("Edit"); // ارجع لنفس الصفحة عشان يشوف التعديلات
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "حدث خطأ أثناء تحديث الملف الشخصي. برجاء المحاولة لاحقًا.";
+                return RedirectToAction("Edit");
+            }
         }
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Wishlist()
         {
-            // 1. هات الـ ID بتاع اليوزر
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login");
 
             var userId = int.Parse(userIdString);
-
-            // 2. هات بيانات اليوزر (عشان الـ Sidebar)
             var user = await _context.TblUsers.FindAsync(userId);
             if (user == null) return NotFound();
 
-            // 3. هات الـ Wishlist بتاعته (عشان المحتوى)
             var wishlistItems = await _context.TblWishLists
-                .Include(w => w.Hotels) // <-- افترضت إن اسمها Hotel
-                    .ThenInclude(h => h.TblHotelImages) // <-- عشان نجيب الصورة
-                .Where(w => w.UserId == userId) // <-- افترضت وجود UserId هنا
+                .Include(w => w.Hotels)
+                    .ThenInclude(h => h.TblHotelImages)
+                .Where(w => w.UserId == userId)
                 .OrderByDescending(w => w.AddedDate)
                 .ToListAsync();
 
-            // 4. جهز الـ ViewModel
             var viewModel = new WishlistPageViewModel
             {
-                // بيانات اليوزر للـ Sidebar
                 Fullname = user.Fullname,
                 Email = user.Email,
                 Country = user.Country,
@@ -379,13 +343,10 @@ namespace Travely.Controllers
                 Role = user.Role,
                 Phone = user.Phone,
                 Imagepath = user.Imagepath,
-
-                // بيانات الـ Wishlist للمحتوى
                 WishlistItems = wishlistItems
             };
 
-            // 5. ابعت الـ ViewModel للـ View الجديد
-            return View(viewModel); // هيدور على Views/Account/Wishlist.cshtml
+            return View(viewModel);
         }
-        // In your Startup.cs or Program.cs (depending on your ASP.NET Core version)
-    } }
+    }
+}
