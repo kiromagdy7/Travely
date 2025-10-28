@@ -202,6 +202,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Phone).HasMaxLength(50).HasColumnName("phone");
             entity.Property(e => e.Role).HasMaxLength(50).HasDefaultValue("customer").HasColumnName("role");
             entity.Property(e => e.Status).HasMaxLength(30).HasDefaultValue("active").HasColumnName("status");
+            entity.Property(e => e.HotelId).HasColumnName("hotel_id");
+            
+
         });
 
         modelBuilder.Entity<TblUserHotelBooking>(entity =>
