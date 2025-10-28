@@ -75,15 +75,15 @@ namespace Travely.Controllers
                     PasswordHash = hashedPassword,
                     CreatedAt = DateTime.UtcNow,
 
-                    // === التعديل هنا: ناخد الدور من الموديل ===
-                    Role = model.Role, // <-- هياخد customer أو staff
+                    
+                    Role = model.Role, 
                     Status = "active"
                 };
 
                 _context.Add(tblUser);
                 await _context.SaveChangesAsync();
 
-                // سجل دخوله علطول
+                
                 var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),

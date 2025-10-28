@@ -10,14 +10,13 @@
         <div class="user-profile">
             @if (!string.IsNullOrEmpty(Model.CurrentImagePath))
             {
-                <img src="@Model.CurrentImagePath" alt="Profile Picture" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px; display: block; object-fit: cover;">
+                <img src="@Model.CurrentImagePath" alt="Profile Picture" class="profile-avatar-image">
             }
             else
             {
                 <div class="user-avatar">@(Model.Fullname.Substring(0, 1))</div>
             }
-            <span class="user-name">@Model.Fullname</span>
-            <span class="user-email">@Model.Email</span>
+
         </div>
 
         <nav class="sidebar-nav">
@@ -81,8 +80,8 @@
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a asp-action="Profile" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="ColorBtn">Save Changes</button>
+                <a asp-action="Profile" class="BackBtnGray">Cancel</a>
             </div>
         </form>
     </main>

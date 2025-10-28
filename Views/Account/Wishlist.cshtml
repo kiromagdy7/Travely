@@ -19,14 +19,10 @@
                 <div class="user-avatar">@(Model.Fullname?.Length > 0 ? Model.Fullname.Substring(0, 1) : "U")</div>
             }
             <span class="user-name">@Model.Fullname</span>
-            <span class="user-email">@Model.Email</span>
-            <span class="user-country">@Model.Country</span>
-            <span class="user-status">@Model.Status</span>
-            <span class="user-age">@Model.Age</span>
-            <span class="user-role">@Model.Role</span>
-            <span class="user-phone">@Model.Phone</span>
         </div>
 
+     
+        
         <nav class="sidebar-nav">
             <ul>
                 <li><a asp-action="Profile" asp-controller="Account"><i class="fas fa-briefcase"></i> My Bookings</a></li>

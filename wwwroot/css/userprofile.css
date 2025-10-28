@@ -1,14 +1,16 @@
-﻿/* استخدام خطوط مشابهة للصورة */
+﻿@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Sans+NKo+Unjoined:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     background-color: #fdfdfd;
     margin: 0;
+    padding: 0;
     color: #333;
 }
 
-/* الخط الخاص بالعنوان الرئيسي (Your Past Adventures) */
 .main-content h1 {
-    font-family: 'Georgia', 'Times New Roman', Times, serif; /* خط serif مميز */
+    font-family: 'Open Sans', sans-serif;
     font-size: 2.5rem;
     color: #222;
     margin-top: 0;
@@ -16,26 +18,29 @@ body {
     font-weight: 500;
 }
 
-/* حاوية الصفحة الرئيسية لتقسيم الشاشة */
 .profile-page-container {
     display: flex;
     width: 100%;
-    min-height: 100vh;
-    max-width: 1400px; /* تحديد عرض أقصى للصفحة */
-    margin: 0 auto; /* توسيط الحاوية */
+    min-height: 75vh;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
     background-color: #ffffff;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
 }
 
-/* 1. تنسيق الشريط الجانبي */
 .sidebar {
-    width: 260px; /* عرض ثابت */
-    flex-shrink: 0; /* لمنع الانكماش */
-    background-color: #f8f9fa; /* لون خلفية الشريط */
-    padding: 30px 20px;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 30px 20px;
+    width: 260px;
+    flex-shrink: 0;
+    background-color: #ffffff;
     border-right: 1px solid #e9ecef;
+    box-sizing: border-box;
 }
 
 .user-profile {
@@ -45,10 +50,9 @@ body {
     border-bottom: 1px solid #e9ecef;
 }
 
-/* ستايل الأفاتار الافتراضي (الحروف) */
 .user-avatar {
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: 120px;
     background-color: #6c757d;
     color: #ffffff;
     border-radius: 50%;
@@ -60,18 +64,15 @@ body {
     margin: 0 auto 15px;
 }
 
-/* === ستايل الصورة الشخصية (الجديد) === */
 .profile-avatar-image {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%; /* يجعلها دائرية */
-    object-fit: cover; /* يضمن ملء الصورة بشكل صحيح */
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
     margin: 0 auto 15px;
     display: block;
-    border: 2px solid #e9ecef; /* حدود خفيفة */
+    border: 2px solid #e9ecef;
 }
-/* === نهاية الإضافة === */
-
 
 .user-profile span {
     display: block;
@@ -81,7 +82,7 @@ body {
 }
 
 .user-name {
-    font-size: 1.1rem !important; /* !important لضمان تطبيق الستايل */
+    font-size: 1.1rem !important;
     font-weight: 600;
     color: #343a40 !important;
     margin-bottom: 6px !important;
@@ -93,9 +94,9 @@ body {
 }
 
 
-/* تنسيق قائمة الـ Nav */
 .sidebar-nav ul {
     list-style: none;
+    flex-wrap: wrap;
     padding: 0;
     margin: 0;
 }
@@ -127,11 +128,10 @@ body {
 
     .sidebar-nav li a.active {
         background-color: #e6f3ff;
-        color: #007bff;
+        color: #2f5d50;
         font-weight: 600;
     }
 
-/* رابط تسجيل الخروج */
 .logout-link {
     margin-top: auto;
 }
@@ -156,14 +156,12 @@ body {
         }
 
 
-/* 2. تنسيق المحتوى الرئيسي */
 .main-content {
     flex-grow: 1;
     padding: 40px 50px;
     background-color: #ffffff;
 }
 
-/* كارت الحجز */
 .booking-card {
     display: flex;
     background-color: #ffffff;
@@ -218,7 +216,7 @@ body {
         object-fit: cover;
     }
 
-/* تنسيق الأزرار */
+
 .btn {
     display: inline-block;
     padding: 10px 25px;
@@ -244,7 +242,8 @@ body {
 
 .btn-book {
     background-color: #e6f3ff;
-    color: #007bff;
+    color: #2f5d50;
+    ;
     font-size: 1rem;
     padding: 12px 30px;
 }
@@ -253,8 +252,6 @@ body {
         background-color: #cce4ff;
     }
 
-
-/* حالة عدم وجود حجوزات (Empty State) */
 .empty-state-card {
     background-color: #f8f9fa;
     border-radius: 16px;
@@ -266,7 +263,7 @@ body {
 
 .empty-icon {
     font-size: 2.5rem;
-    color: #007bff;
+    color: #2f5d50;
     background-color: #e6f3ff;
     width: 70px;
     height: 70px;
@@ -281,4 +278,149 @@ body {
     font-size: 1.1rem;
     margin-bottom: 25px;
     color: #495057;
+}
+
+/* Media Queries */
+
+/* Large Desktop (1200px and up) */
+@media (min-width: 1200px) {
+    .profile-page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0;
+    }
+}
+
+/* Desktop and Tablet Landscape (992px to 1199px) */
+@media (max-width: 1199px) {
+    .booking-image {
+        width: 280px;
+    }
+
+    .main-content {
+        padding: 30px 35px;
+    }
+}
+
+/* Tablet Portrait (768px to 991px) */
+@media (max-width: 991px) {
+    .profile-page-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 20px;
+    }
+
+    .user-profile {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+        .sidebar-nav ul {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sidebar-nav li a {
+            white-space: nowrap;
+        }
+
+    .logout-link {
+        margin-top: 20px;
+    }
+
+    .main-content {
+        padding: 25px;
+    }
+
+        .main-content h1 {
+            font-size: 2rem;
+        }
+}
+
+/* Mobile Large (576px to 767px) */
+@media (max-width: 767px) {
+    .booking-card {
+        flex-direction: column;
+    }
+
+    .booking-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .booking-details {
+        padding: 20px;
+    }
+
+        .booking-details h2 {
+            font-size: 1.4rem;
+        }
+
+    .price {
+        font-size: 1.2rem;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .empty-state-card {
+        padding: 40px 20px;
+    }
+
+    .empty-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+}
+
+/* Mobile Small (375px to 575px) */
+@media (max-width: 575px) {
+    .user-profile {
+        margin-bottom: 20px;
+    }
+
+    .profile-avatar-image,
+    .user-avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .main-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .sidebar-nav li a {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .booking-details h2 {
+        font-size: 1.3rem;
+    }
+
+    .location-date {
+        font-size: 0.85rem;
+    }
+
+    .empty-state-card p {
+        font-size: 1rem;
+    }
 }
