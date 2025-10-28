@@ -18,7 +18,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-    .register-form span {
+    .register-form-icon {
         display: flex;
         font-size: 45px;
         font-weight: 700;

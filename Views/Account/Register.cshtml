@@ -5,38 +5,38 @@
 }
 
 <form class="register-form" asp-action="Register" method="post">
-    <span class="material-symbols-outlined">person_add</span>
+    <span class="material-symbols-outlined register-form-icon">person_add</span>
     <h2>Create a new account.</h2>
-    <div asp-validation-summary="ModelOnly"></div>
+    <div asp-validation-summary="ModelOnly" style="color:red;"></div>
 
     <div>
         <label asp-for="Fullname"></label>
         <input class="fullname-input" asp-for="Fullname" placeholder="Enter your fullname" />
-        <span asp-validation-for="Fullname"></span>
+        <span asp-validation-for="Fullname" style="color:red;"></span>
     </div>
 
     <div>
         <label asp-for="Email"></label>
         <input class="email-input" asp-for="Email" autocomplete="username" placeholder="Enter your email" />
-        <span asp-validation-for="Email"></span>
+        <span asp-validation-for="Email" style="color:red;"></span>
     </div>
 
     <div>
         <label asp-for="Phone"></label>
         <input class="phone-input" asp-for="Phone" autocomplete="username" placeholder="Enter your phone" />
-        <span asp-validation-for="Phone"></span>
+        <span asp-validation-for="Phone" style="color:red;"></span>
     </div> 
 
     <div>
         <label asp-for="Password"></label>
         <input class="password-input" asp-for="Password" type="password" autocomplete="new-password" placeholder="Enter your password" />
-        <span asp-validation-for="Password"></span>
+        <span asp-validation-for="Password" style="color:red;"></span>
     </div>
 
     <div>
         <label asp-for="ConfirmPassword"></label>
-        <span asp-validation-for="ConfirmPassword"></span>
         <input class="password-input" asp-for="ConfirmPassword" type="password" autocomplete="new-password" placeholder="Confirm your password" />
+        <span asp-validation-for="ConfirmPassword" style="color:red;"></span>
     </div>
 
     <button class="register-submit-button" id="registerSubmit" type="submit">Register</button>
