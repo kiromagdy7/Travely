@@ -5,11 +5,12 @@ using Travely.Models;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization; // تأكد إن ده موجود
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Travely.Controllers
 {
-    // === التعديل هنا: اسمح للأدمن والاستاف ===
+
     [Authorize(Roles = "admin, staff")]
     public class RoomsController : Controller
     {
@@ -20,16 +21,38 @@ namespace Travely.Controllers
             _context = context;
         }
 
-        // GET: Rooms
-        // === التعديل هنا: اسمح للكل ===
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.TblRooms.Include(r => r.Hotel).ToListAsync());
+            // Get the current user's role
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            
+            // If user is admin, show all rooms
+            if (userRole == "admin")
+            {
+                return View(await _context.TblRooms.Include(r => r.Hotel).ToListAsync());
+            }
+            
+            // If user is staff, get their hotel ID
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var staffUser = await _context.TblUsers
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+                
+            if (staffUser?.HotelId == null)
+            {
+                // If staff has no assigned hotel, show empty list
+                return View(new List<TblRoom>());
+            }
+
+            // Show only rooms for staff's hotel
+            var hotelRooms = await _context.TblRooms
+                .Include(r => r.Hotel)
+                .Where(r => r.HotelId == staffUser.HotelId)
+                .ToListAsync();
+                
+            return View(hotelRooms);
         }
 
-        // GET: Rooms/Details/5
-        // === التعديل هنا: اسمح للكل ===
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -41,15 +64,12 @@ namespace Travely.Controllers
             return View(tblRoom);
         }
 
-        // GET: Rooms/Create (مقفولة للأدمن والاستاف)
         public IActionResult Create()
         {
-            // Corrected SelectList: Use "HotelId" and "Name" which are likely the correct properties
             ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name");
             return View();
         }
 
-        // POST: Rooms/Create (مقفولة للأدمن والاستاف)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("HotelId,RoomNumber,RoomType,BedsCount,Price,MaxGuests,Description,BreakfastIncluded,PetsAllowed,Available")] TblRoom tblRoom)
@@ -65,20 +85,35 @@ namespace Travely.Controllers
             return View(tblRoom);
         }
 
-        // GET: Rooms/Edit/5 (مقفولة للأدمن والاستاف)
+        private async Task<bool> CanManageRoom(int hotelId)
+        {
+            if (User.IsInRole("admin")) return true;
+            
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var staffUser = await _context.TblUsers
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+                
+            return staffUser?.HotelId == hotelId;
+        }
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
+            
             var tblRoom = await _context.TblRooms.FindAsync(id);
-            if (tblRoom == null)
+            if (tblRoom == null) return NotFound();
+            
+            // Check if staff can manage this room
+            if (!await CanManageRoom(tblRoom.HotelId))
             {
-                return NotFound();
+                return Forbid();
             }
+            
+            // If admin or staff of this hotel
             ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
-        // POST: Rooms/Edit/5 (مقفولة للأدمن والاستاف)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("RoomId,HotelId,RoomNumber,RoomType,BedsCount,Price,MaxGuests,Description,BreakfastIncluded,PetsAllowed,Available,CreatedAt")] TblRoom tblRoom)
@@ -88,21 +123,31 @@ namespace Travely.Controllers
             {
                 try
                 {
+                    var existingRoom = await _context.TblRooms.AsNoTracking()
+                        .FirstOrDefaultAsync(r => r.RoomId == id);
+
+                    if (existingRoom == null)
+                        return NotFound();
+
+                    // Ensure HotelId isn't changed
+                    tblRoom.HotelId = existingRoom.HotelId;
+
                     _context.Update(tblRoom);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TblRoomExists(tblRoom.RoomId)) return NotFound();
-                    else throw;
+                    if (!TblRoomExists(tblRoom.RoomId))
+                        return NotFound();
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
-        // GET: Rooms/Delete/5 (مقفولة للأدمن والاستاف)
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -113,7 +158,6 @@ namespace Travely.Controllers
             return View(tblRoom);
         }
 
-        // POST: Rooms/Delete/5 (مقفولة للأدمن والاستاف)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -127,7 +171,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Rooms/UpdateAvailability/5 (مقفولة للأدمن والاستاف)
         public async Task<IActionResult> UpdateAvailability(int id, bool isAvailable)
         {
             var room = await _context.TblRooms.FindAsync(id);
@@ -137,7 +180,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Rooms/UpdatePrice/5 (مقفولة للأدمن والاستاف)
         [HttpPost]
         public async Task<IActionResult> UpdatePrice(int id, decimal newPrice)
         {
@@ -149,8 +191,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Rooms/GetAvailableRooms
-        // === التعديل هنا: اسمح للكل ===
         [AllowAnonymous]
         public async Task<IActionResult> GetAvailableRooms(string? roomType = null)
         {

@@ -241,7 +241,6 @@ namespace Travely.Controllers
             return RedirectToAction("Index", "Home"); // Redirect to home after logout
         }
 
-
         // --- Access Denied ---
         [HttpGet]
         [AllowAnonymous] // Allow anyone to see this page

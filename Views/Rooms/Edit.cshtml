@@ -4,26 +4,23 @@
     ViewData["Title"] = "Edit Room";
 }
 
-<h1>Edit Room</h1>
+<h1 class="mt-4 m-lg-4 KiroFont1">Edit Room</h1>
 
-<div class="row">
+<div class="row m-lg-4">
     <div class="col-md-8">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="RoomId" />
-            <input type="hidden" asp-for="CreatedAt" /> <div class="form-group">
-                <label asp-for="HotelId" class="control-label">Hotel</label>
-                <select asp-for="HotelId" class="form-control" asp-items="ViewBag.HotelId"></select>
-                <span asp-validation-for="HotelId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="HotelId" />  @* Add this line *@
 
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="RoomNumber" class="control-label"></label>
                 <input asp-for="RoomNumber" class="form-control" />
                 <span asp-validation-for="RoomNumber" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="RoomType" class="control-label"></label>
                 <select asp-for="RoomType" class="form-control">
                     <option value="Single">Single</option>
@@ -33,49 +30,51 @@
                 <span asp-validation-for="RoomType" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="MaxGuests" class="control-label"></label>
-                <input asp-for="MaxGuests" class="form-control" />
-                <span asp-validation-for="MaxGuests" class="text-danger"></span>
-            </div>
-
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
-                </label>
+            <div class="form-group mb-3">
                 <label asp-for="BedsCount" class="control-label"></label>
                 <input asp-for="BedsCount" class="form-control" />
                 <span asp-validation-for="BedsCount" class="text-danger"></span>
             </div>
 
-            <div class="form-group form-check">
+            <div class="form-group mb-3">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="MaxGuests" class="control-label"></label>
+                <input asp-for="MaxGuests" class="form-control" />
+                <span asp-validation-for="MaxGuests" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check mb-3">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
+                </label>
+            </div>
+
+            <div class="form-group form-check mb-3">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="BreakfastIncluded" /> @Html.DisplayNameFor(model => model.BreakfastIncluded)
                 </label>
             </div>
 
-            <div class="form-group form-check">
+            <div class="form-group form-check mb-3">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="PetsAllowed" /> @Html.DisplayNameFor(model => model.PetsAllowed)
-                    <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
                 </label>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-            <div class="form-group mt-3">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            <div class="form-group mt-4">
+                <input type="submit" value="Save" class="ColorBtn" />
+                <a asp-action="Index" class="BackBtnGray">Back to List</a>
             </div>
         </form>
     </div>

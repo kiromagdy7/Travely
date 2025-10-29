@@ -29,3 +29,71 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Sans+NKo+Unjoined:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+.KiroFont1 {
+    font-family: 'Open Sans', sans-serif;
+    font-family: 'Kanit', sans-serif;
+}
+.KiroFont2 {
+    font-family: 'Kanit', sans-serif;
+}
+.dangerbtnkiro {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #c32a00;
+    ;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    transition: 0.3s ease-in-out;
+}
+.dangerbtnkiro:hover {
+    background-color: #a02000;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Override Bootstrap's focus styles globally */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus,
+.btn:focus,
+.btn-check:focus + .btn,
+.page-link:focus,
+.nav-link:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+input[type="month"]:focus,
+input[type="week"]:focus,
+input[type="color"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #2f5d50 !important;
+    outline: 0 !important;
+}
+
+.form-check-input:checked {
+    background-color: #2f5d50 !important;
+    border-color: #2f5d50 !important;
+}
+.form-select:focus {
+    border-color: #2f5d50 !important;
+}
+a:focus {
+    color: #2f5d50 !important;
+    text-decoration: none;
+}
+:focus-visible {
+    outline-color: #2f5d50 !important;
+}
