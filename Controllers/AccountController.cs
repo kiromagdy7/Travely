@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Travely.Data;
@@ -14,6 +18,7 @@ using Microsoft.AspNetCore.Hosting; // <-- Required for Images
 using System.IO;                   // <-- Required for Images
 using System;                      // <-- Required for DateTime & Guid
 using Microsoft.AspNetCore.Mvc.Rendering; // <-- Required for SelectListItem
+
 
 namespace Travely.Controllers
 {
@@ -182,6 +187,7 @@ namespace Travely.Controllers
 
                 // Verify password using BCrypt
                 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
+
 
                 if (isPasswordValid)
                 {
