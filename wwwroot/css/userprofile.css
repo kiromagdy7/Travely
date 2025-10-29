@@ -22,8 +22,6 @@ body {
     display: flex;
     width: 100%;
     min-height: 85vh;
-    max-width: 100%;
-    margin: 0;
     padding: 0;
     background-color: #ffffff;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
@@ -285,14 +283,14 @@ body {
 /* Large Desktop (1200px and up) */
 @media (min-width: 1200px) {
     .profile-page-container {
-        max-width: 1400px;
+        : 1400px;
         margin: 0 auto;
         padding: 0;
     }
 }
 
 /* Desktop and Tablet Landscape (992px to 1199px) */
-@media (max-width: 1199px) {
+@media (: 1199px) {
     .booking-image {
         width: 280px;
     }
@@ -303,7 +301,7 @@ body {
 }
 
 /* Tablet Portrait (768px to 991px) */
-@media (max-width: 991px) {
+@media (: 991px) {
     .profile-page-container {
         flex-direction: column;
     }
@@ -349,7 +347,7 @@ body {
 }
 
 /* Mobile Large (576px to 767px) */
-@media (max-width: 767px) {
+@media (: 767px) {
     .booking-card {
         flex-direction: column;
     }
@@ -392,7 +390,7 @@ body {
 }
 
 /* Mobile Small (375px to 575px) */
-@media (max-width: 575px) {
+@media (: 575px) {
     .user-profile {
         margin-bottom: 20px;
     }
