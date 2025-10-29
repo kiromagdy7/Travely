@@ -22,22 +22,19 @@ namespace Travely.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TblHotelAmenity", b =>
+            modelBuilder.Entity("LkpAmenityTblHotel", b =>
                 {
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int")
-                        .HasColumnName("hotel_id");
+                    b.Property<int>("AmenitiesAmenityId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AmenityId")
-                        .HasColumnType("int")
-                        .HasColumnName("amenity_id");
+                    b.Property<int>("HotelsHotelId")
+                        .HasColumnType("int");
 
-                    b.HasKey("HotelId", "AmenityId")
-                        .HasName("PK__tblHotel__8B6EFA74CCBE0F70");
+                    b.HasKey("AmenitiesAmenityId", "HotelsHotelId");
 
-                    b.HasIndex("AmenityId");
+                    b.HasIndex("HotelsHotelId");
 
-                    b.ToTable("tblHotelAmenities", (string)null);
+                    b.ToTable("LkpAmenityTblHotel");
                 });
 
             modelBuilder.Entity("Travely.Models.LkpAmenity", b =>
@@ -50,7 +47,6 @@ namespace Travely.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AmenityId"));
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
@@ -59,7 +55,8 @@ namespace Travely.Migrations
                         .HasName("PK__lkpAmeni__E908452D58205242");
 
                     b.HasIndex(new[] { "Name" }, "UQ__lkpAmeni__72E12F1B6FB36A1B")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("lkpAmenities", (string)null);
                 });
@@ -80,7 +77,6 @@ namespace Travely.Migrations
                         .HasColumnName("adults");
 
                     b.Property<string>("BookingReference")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("booking_reference");
@@ -110,7 +106,6 @@ namespace Travely.Migrations
                         .HasColumnName("room_id");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
@@ -133,7 +128,8 @@ namespace Travely.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex(new[] { "BookingReference" }, "UQ__tblBooki__BADA455927423170")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[booking_reference] IS NOT NULL");
 
                     b.ToTable("tblBookings", (string)null);
                 });
@@ -190,7 +186,6 @@ namespace Travely.Migrations
                         .HasColumnName("location");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)")
                         .HasColumnName("name");
@@ -208,7 +203,8 @@ namespace Travely.Migrations
                         .HasName("PK__tblHotel__45FE7E2639928AE5");
 
                     b.HasIndex(new[] { "Name" }, "UQ__tblHotel__72E12F1BED7C40EC")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("tblHotels", (string)null);
                 });
@@ -227,7 +223,6 @@ namespace Travely.Migrations
                         .HasColumnName("hotel_id");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)")
                         .HasColumnName("image_url");
@@ -264,13 +259,11 @@ namespace Travely.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("PaymentMethod")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("payment_method");
 
                     b.Property<string>("PaymentStatus")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
@@ -405,7 +398,6 @@ namespace Travely.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"));
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)")
                         .HasColumnName("image_url");
@@ -447,16 +439,18 @@ namespace Travely.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("email");
 
                     b.Property<string>("Fullname")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("fullname");
+
+                    b.Property<int?>("HotelId")
+                        .HasColumnType("int")
+                        .HasColumnName("hotel_id");
 
                     b.Property<string>("Imagepath")
                         .HasMaxLength(500)
@@ -464,7 +458,6 @@ namespace Travely.Migrations
                         .HasColumnName("imagepath");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("password_hash");
@@ -475,7 +468,6 @@ namespace Travely.Migrations
                         .HasColumnName("phone");
 
                     b.Property<string>("Role")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
@@ -483,7 +475,6 @@ namespace Travely.Migrations
                         .HasColumnName("role");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
@@ -493,8 +484,11 @@ namespace Travely.Migrations
                     b.HasKey("UserId")
                         .HasName("PK__tblUsers__B9BE370F4D5024FC");
 
+                    b.HasIndex("HotelId");
+
                     b.HasIndex(new[] { "Email" }, "UQ__tblUsers__AB6E616422F1317D")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[email] IS NOT NULL");
 
                     b.ToTable("tblUsers", (string)null);
                 });
@@ -519,7 +513,6 @@ namespace Travely.Migrations
                         .HasColumnName("hotel_id");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
@@ -573,21 +566,19 @@ namespace Travely.Migrations
                     b.ToTable("tblWishList", (string)null);
                 });
 
-            modelBuilder.Entity("TblHotelAmenity", b =>
+            modelBuilder.Entity("LkpAmenityTblHotel", b =>
                 {
                     b.HasOne("Travely.Models.LkpAmenity", null)
                         .WithMany()
-                        .HasForeignKey("AmenityId")
+                        .HasForeignKey("AmenitiesAmenityId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_HotelAmenity_Amenity");
+                        .IsRequired();
 
                     b.HasOne("Travely.Models.TblHotel", null)
                         .WithMany()
-                        .HasForeignKey("HotelId")
+                        .HasForeignKey("HotelsHotelId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_HotelAmenity_Hotel");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Travely.Models.TblBooking", b =>
@@ -676,6 +667,15 @@ namespace Travely.Migrations
                     b.Navigation("Room");
                 });
 
+            modelBuilder.Entity("Travely.Models.TblUser", b =>
+                {
+                    b.HasOne("Travely.Models.TblHotel", "Hotel")
+                        .WithMany()
+                        .HasForeignKey("HotelId");
+
+                    b.Navigation("Hotel");
+                });
+
             modelBuilder.Entity("Travely.Models.TblUserHotelBooking", b =>
                 {
                     b.HasOne("Travely.Models.TblHotel", "Hotel")
@@ -701,7 +701,8 @@ namespace Travely.Migrations
                         .WithMany()
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_WishList_Hotel");
 
                     b.HasOne("Travely.Models.TblUser", "User")
                         .WithMany("TblWishLists")
