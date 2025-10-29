@@ -5982,7 +5982,19 @@ section,
   align-items: center;
   gap: 10px;
 }
+.profile-pic-nav {
+    width: 35px; 
+    height: 35px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 1px solid #ddd;
+    margin-top: -5px; 
+}
 
+.nav-profile-link {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
 .hotel-location .map-container .hotel-marker i {
   font-size: 18px;
 }
