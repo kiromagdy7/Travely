@@ -107,7 +107,7 @@
                     <ul>
                         <li><a asp-area="" asp-controller="Home" asp-action="Index" class="@(Context.Request.Path.Value?.EndsWith("/Home") == true || Context.Request.Path.Value == "/" ? "active" : "")">Home</a></li>
                         <li><a asp-area="" asp-controller="About" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/About") == true ? "active" : "")">About</a></li>
-                        <li><a asp-area="" asp-controller="ContactUS" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/ContactUS") == true ? "active" : "")">Contact</a></li>
+                        <li><a asp-area="" asp-controller="ContactUS" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/ContactUS") == true ? "active" : "")">Contact Us</a></li>
                         <li><a asp-area="" asp-controller="Hotels" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Hotels") == true ? "active" : "")">Hotels</a></li>
 
                         @if (User.IsInRole("admin") || User.IsInRole("staff"))
@@ -170,8 +170,10 @@
                 <h4>Our Services</h4>
                 <a asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                 <a asp-area="" asp-controller="About" asp-action="Index">About</a>
+                <a asp-area="" asp-controller="ContactUS" asp-action="Index">Contact Us</a>
                 <a asp-area="" asp-controller="Home" asp-action="Terms">Terms of service</a>
                 <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy policy</a>
+
 
             </div>
             <div class="footer-column" style="align-items: center;">
