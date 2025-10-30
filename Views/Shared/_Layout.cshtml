@@ -32,22 +32,6 @@
     <link rel="stylesheet" href="~/css/userprofile.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Register.css" asp-append-version="true" />
     <style>
-        .topbar .container {
-            padding-left: 10px;
-            padding-right: 15px;
-            max-width: 100%;
-        }
-
-        .branding .container {
-            padding-left: 10px;
-            padding-right: 15px;
-            max-width: 100%;
-        }
-
-        .contact-info {
-            margin-left: 10px;
-        }
-
         .site-logo {
             margin-left: 10px;
             transition: transform 0.3s ease-in-out;
@@ -62,51 +46,20 @@
                 width: auto;
             }
 
-        .header .container {
-            padding: 10px;
-        }
-
-        #logoutForm a {
-            color: inherit;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-            #logoutForm a:hover {
-                color: color-mix(in srgb, var(--contrast-color), transparent 40%)
-            }
-
-        /* --- 🌟 كود الصورة المضاف 🌟 --- */
         .profile-pic-nav {
-            width: 35px; /* حجم الصورة */
-            height: 35px; /* لازم الطول والعرض يبقوا قد بعض */
-            border-radius: 50%; /* ده اللي بيخليها مدورة */
-            object-fit: cover; /* علشان الصورة تملى الدايرة من غير ما تتمط */
-            border: 1px solid #ddd; /* إطار خفيف (اختياري) */
-            margin-top: -5px; /* ممكن تظبطها عشان تبقى في نص البار بالظبط */
+            width: 35px; 
+            height: 35px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 1px solid #ddd; 
+            margin-top: -5px;
         }
 
         .nav-profile-link {
             padding-top: 10px !important;
             padding-bottom: 10px !important;
         }
-        /* --- نهاية كود الصورة --- */
 
-        /* --- 🌟 START: New Dropdown CSS (التعديل الجديد) 🌟 --- */
-        .profile-dropdown-toggle::after {
-            display: none; /* لإخفاء السهم الصغير */
-        }
-
-        .dropdown-item {
-            cursor: pointer; /* عشان الماوس يبقى 'hand' */
-        }
-
-            .dropdown-item .fas { /* تنسيق الأيقونات (اختياري) */
-                margin-right: 8px;
-                width: 16px; /* لظبط المسافات */
-                text-align: center;
-            }
-        /* --- 🌟 END: New Dropdown CSS 🌟 --- */
     </style>
 </head>
 <body>
@@ -161,10 +114,9 @@
 
                             var profilePicPath = (imagePathClaim != null && !string.IsNullOrEmpty(imagePathClaim.Value))
                             ? imagePathClaim.Value
-                            : "/images/default-avatar.png"; // تأكد إن الصورة دي موجودة في wwwroot/images
+                            : "/images/default-avatar.png"; 
 
-                            // 3. === 🌟 START: NEW DROPDOWN STRUCTURE (التعديل الجديد) 🌟 ===
-                            <li class="nav-item dropdown">
+                             <li class="nav-item dropdown">
 
                                 <a class="nav-link dropdown-toggle nav-profile-link profile-dropdown-toggle @(Context.Request.Path.Value?.Contains("/Account/Profile") == true || Context.Request.Path.Value?.Contains("/Account/Edit") == true || Context.Request.Path.Value?.Contains("/Account/Wishlist") == true ? "active" : "")"
                                    href="#"
@@ -198,7 +150,7 @@
 
                                 </ul>
                             </li>
-                        }
+                         }
                         else
                         {
                             

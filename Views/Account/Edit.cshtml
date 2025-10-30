@@ -11,11 +11,11 @@
         <div class="user-profile">
             @if (!string.IsNullOrEmpty(Model.CurrentImagePath))
             {
-                <img src="@Model.CurrentImagePath" alt="Profile Picture" class="profile-avatar-image">
+                <img src="@Url.Content(Model.CurrentImagePath)" alt="Profile Picture" class="profile-avatar-image">
             }
             else
             {
-                <div class="user-avatar">@(Model.Fullname.Substring(0, 1))</div>
+                <img src="@Url.Content("~/images/profiles/Unknown_person.jpg")" alt="Profile Picture" class="profile-avatar-image">
             }
         </div>
 
@@ -28,11 +28,17 @@
         </nav>
 
         <div class="logout-link">
-            <a asp-action="Logout" asp-controller="Account"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" id="sidebarLogoutForm">
+                @Html.AntiForgeryToken()
+                <a href="javascript:void(0);"
+                   onclick="document.getElementById('sidebarLogoutForm').submit();"
+                   class="sidebar-logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+            </form>
         </div>
-    </aside>
 
-    <main class="main-content">
+    </aside> <main class="main-content">
         <form asp-action="Edit" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
@@ -94,7 +100,7 @@
 
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
+@* ده الى بيخلى البلاد شكلها كده  *@
 <style>
     a {
         text-decoration: none;
@@ -132,22 +138,50 @@
     }
     /* --- نهاية التعديل --- */
 
+    /* --- 🌟 4. تعديل: تم إضافة CSS لظبط شكل لينك الخروج 🌟 --- */
+    .logout-link {
+        padding: 15px 25px;
+        display: block;
+        margin-top: 20px;
+        border-top: 1px solid #eee; /* خط فاصل خفيف */
+    }
+
+    .sidebar-logout-link {
+        color: #40524d; /* (اللون الأساسي بتاعك) */
+        text-decoration: none;
+        display: inline-block;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        font-family: inherit; /* عشان ياخد نفس خط الصفحة */
+        font-size: 1rem; /* (أو حجم الخط المناسب) */
+    }
+
+        .sidebar-logout-link:hover {
+            color: var(--accent-color, #2f5d50); /* (لون الـ hover بتاعك) */
+        }
+
+        .sidebar-logout-link i {
+            margin-right: 8px; /* مسافة جنب الأيقونة */
+        }
+    /* --- نهاية الإضافة --- */
+
+    /* كود لتظبيط شكل الصورة في الشريط الجانبي */
+    .profile-avatar-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border: 3px solid #eee;
+    }
+
+    .user-profile {
+        text-align: center;
+        padding: 20px;
+    }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('.country-select').select2({
-            width: 'resolve',
-            theme: 'bootstrap-5',
-            minimumResultsForSearch: 3,
-            placeholder: 'Select your country...',
-            allowClear: true,
-
-            /* خلي دي زي ما هي علشان تضمن إن القائمة تترسم بره أي سكرول */
-            dropdownParent: $('body')
-        });
-    });
-</script>
+<script src="

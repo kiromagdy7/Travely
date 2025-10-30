@@ -12,11 +12,11 @@
 
             @if (!string.IsNullOrEmpty(Model.Imagepath))
             {
-                <img src="@Model.Imagepath" alt="Profile Picture" class="profile-avatar-image">
+                <img src="@Url.Content(Model.Imagepath)" alt="Profile Picture" class="profile-avatar-image">
             }
             else
             {
-                <div class="user-avatar">@(Model.Fullname?.Length > 0 ? Model.Fullname.Substring(0, 1) : "U")</div>
+                <img src="@Url.Content("~/images/profiles/Unknown_person.jpg")" alt="Profile Picture" class="profile-avatar-image">
             }
 
             <span class="user-name">@Model.Fullname</span>
@@ -31,7 +31,14 @@
         </nav>
 
         <div class="logout-link">
-            <a asp-action="Logout" asp-controller="Account"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" id="sidebarLogoutForm">
+                @Html.AntiForgeryToken()
+                <a href="javascript:void(0);"
+                   onclick="document.getElementById('sidebarLogoutForm').submit();"
+                   class="sidebar-logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+            </form>
         </div>
     </aside>
 
@@ -53,7 +60,7 @@
                         <a href="/Bookings/Details/@booking.BookingId" class="btn btn-details">View Details</a>
                     </div>
                     <div class="booking-image">
-                        <img src="@booking.ImageUrl" alt="@booking.HotelName">
+                        <img src="@Url.Content(booking.ImageUrl)" alt="@booking.HotelName">
                     </div>
                 </div>
             }
@@ -70,3 +77,54 @@
         }
     </main>
 </div>
+
+@section Scripts {
+    <style>
+        /* كود لتظبيط شكل الصورة في الشريط الجانبي */
+        .profile-avatar-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid #eee;
+        }
+
+        .user-profile {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        /* كود ظبط لينك تسجيل الخروج */
+        .logout-link {
+            padding: 15px 25px;
+            display: block;
+            margin-top: 20px;
+            border-top: 1px solid #eee; /* خط فاصل خفيف */
+        }
+
+        .sidebar-logout-link {
+            color: #40524d; /* (اللون الأساسي بتاعك) */
+            text-decoration: none;
+            display: inline-block;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+            .sidebar-logout-link:hover {
+                color: var(--accent-color, #2f5d50); /* (لون الـ hover بتاعك) */
+            }
+
+            .sidebar-logout-link i {
+                margin-right: 8px; /* مسافة جنب الأيقونة */
+            }
+    </style>
+}
