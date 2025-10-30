@@ -35,9 +35,7 @@ namespace Travely.Services.Hotels
                 query = query.Include(h => h.TblRooms);
             }
 
-            var hotels = await query
-                .OrderBy(h => h.Name)
-                .ToListAsync();
+            var hotels = await query.OrderBy(h => h.Name).ToListAsync();
 
             return hotels.Select(MapToDto).ToList();
         }

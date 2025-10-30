@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,12 +12,10 @@ using System.Threading.Tasks;
 using Travely.Data;
 using Travely.Models;
 using Travely.ViewModels;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting; // <-- Required for Images
-using System.IO;                   // <-- Required for Images
-using System;                      // <-- Required for DateTime & Guid
-using Microsoft.AspNetCore.Mvc.Rendering; // <-- Required for SelectListItem
+using System;
+using Microsoft.AspNetCore.Mvc.Rendering; // For SelectListItem
 
+// --- 🌟 AMEENDEE: Removed redundant and unused 'using' statements ---
 
 namespace Travely.Controllers
 {
@@ -38,7 +35,7 @@ namespace Travely.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
-            if (User.Identity?.IsAuthenticated ?? false) // Use null-conditional operator
+            if (User.Identity?.IsAuthenticated ?? false)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -50,7 +47,7 @@ namespace Travely.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (User.Identity?.IsAuthenticated ?? false) // Use null-conditional operator
+            if (User.Identity?.IsAuthenticated ?? false)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -61,22 +58,30 @@ namespace Travely.Controllers
                 ModelState.AddModelError("Role", "Invalid role selection.");
             }
 
-            // Check if email exists separately before ModelState.IsValid
             if (!string.IsNullOrEmpty(model.Email) && await _context.TblUsers.AnyAsync(u => u.Email == model.Email))
             {
                 ModelState.AddModelError("Email", "This email is already registered.");
             }
 
-            // Check image size if uploaded
-            if (model.ProfileImage != null && model.ProfileImage.Length > 5 * 1024 * 1024) // 5MB limit
+            // --- 🌟 AMEENDEE: Updated Image Validation (Size & Extension) 🌟 ---
+            if (model.ProfileImage != null)
             {
-                ModelState.AddModelError("ProfileImage", "Image size cannot exceed 5MB.");
+                if (model.ProfileImage.Length > 5 * 1024 * 1024) // 5MB limit
+                {
+                    ModelState.AddModelError("ProfileImage", "Image size cannot exceed 5MB.");
+                }
+
+                string extension = Path.GetExtension(model.ProfileImage.FileName).ToLowerInvariant();
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("ProfileImage", "Only .jpg, .jpeg, .png, or .gif files are allowed.");
+                }
             }
             // --- End Validation ---
 
             if (ModelState.IsValid)
             {
-                // --- 🌟 التعديل هنا: تم تغيير المسار الديفولت 🌟 ---
                 string imagePath = "/images/profiles/Unknown_person.jpg"; // Default image path
 
                 // --- Save Image (if uploaded) ---
@@ -85,20 +90,21 @@ namespace Travely.Controllers
                     try
                     {
                         string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "profiles");
-                        Directory.CreateDirectory(uploadsFolder); // Ensures the directory exists
-                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetExtension(model.ProfileImage.FileName);
+                        Directory.CreateDirectory(uploadsFolder);
+                        // --- 🌟 AMEENDEE: Use validated extension ---
+                        string extension = Path.GetExtension(model.ProfileImage.FileName).ToLowerInvariant();
+                        string uniqueFileName = Guid.NewGuid().ToString() + extension;
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
                             await model.ProfileImage.CopyToAsync(fileStream);
                         }
-                        imagePath = "/images/profiles/" + uniqueFileName; // هنا بيتحط المسار الجديد لو اليوزر رفع صورة
+                        imagePath = "/images/profiles/" + uniqueFileName;
                     }
-                    catch // Catch specific exceptions if needed (e.g., IOException)
+                    catch
                     {
-                        // Log the error (ex) is recommended
                         ModelState.AddModelError("ProfileImage", "An error occurred while uploading the image.");
-                        return View(model); // Return with error
+                        return View(model);
                     }
                 }
                 // --- End Save Image ---
@@ -109,13 +115,12 @@ namespace Travely.Controllers
                 {
                     Fullname = model.Fullname,
                     Email = model.Email,
-                    Phone = model.Phone, // Ensure TblUser.Phone is string or handle conversion
+                    Phone = model.Phone,
                     PasswordHash = hashedPassword,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow, // Use UtcNow
                     Role = model.Role,
-                    Status = "active", // Default status
-                    Imagepath = imagePath // Save image path to database
-                                          // Initialize other non-nullable properties if any
+                    Status = "active",
+                    Imagepath = imagePath
                 };
 
                 _context.Add(tblUser);
@@ -133,35 +138,35 @@ namespace Travely.Controllers
 
                 // --- Sign In User and Add Claims ---
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
-            new Claim(ClaimTypes.Name, tblUser.Fullname),
-            new Claim(ClaimTypes.Email, tblUser.Email),
-            new Claim(ClaimTypes.Role, tblUser.Role),
-            new Claim("ImagePath", tblUser.Imagepath ?? "") // <-- Add ImagePath claim
-        };
+                {
+                    new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, tblUser.Fullname),
+                    new Claim(ClaimTypes.Email, tblUser.Email),
+                    new Claim(ClaimTypes.Role, tblUser.Role),
+                    new Claim("ImagePath", tblUser.Imagepath ?? "")
+                };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 // Make cookie persistent (user stays logged in after browser close)
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
+                var authProperties = new AuthenticationProperties { IsPersistent = true }; // Note: This is forced persistence
 
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
 
-                return RedirectToAction("Index", "Home"); // Redirect after successful registration
+                return RedirectToAction("Index", "Home");
             }
 
-            // If ModelState is invalid, return the view with errors
             return View(model);
         }
+
         // --- Login ---
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login()
         {
-            if (User.Identity?.IsAuthenticated ?? false) // Use null-conditional operator
+            if (User.Identity?.IsAuthenticated ?? false)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -175,7 +180,6 @@ namespace Travely.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Use AsNoTracking for read-only query
                 var user = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.Email == model.Email);
 
                 if (user == null || user.Status != "active")
@@ -184,20 +188,18 @@ namespace Travely.Controllers
                     return View(model);
                 }
 
-                // Verify password using BCrypt
                 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
 
 
                 if (isPasswordValid)
                 {
-                    // --- Add Claims on Login ---
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                         new Claim(ClaimTypes.Name, user.Fullname),
                         new Claim(ClaimTypes.Email, user.Email),
                         new Claim(ClaimTypes.Role, user.Role),
-                        new Claim("ImagePath", user.Imagepath ?? "") // <-- Add ImagePath claim
+                        new Claim("ImagePath", user.Imagepath ?? "")
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -205,10 +207,6 @@ namespace Travely.Controllers
                     var authProperties = new AuthenticationProperties
                     {
                         IsPersistent = model.RememberMe, // Use RememberMe from ViewModel
-                        // AllowRefresh = <bool>, // Refreshing the authentication session should be allowed.
-                        // ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10), // Set custom expiration
-                        // IssuedUtc = <DateTimeOffset>, // The time at which the authentication ticket was issued.
-                        // RedirectUri = <string> // The full path or absolute URI to be used as an http redirect response value.
                     };
 
                     await HttpContext.SignInAsync(
@@ -216,75 +214,68 @@ namespace Travely.Controllers
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties);
 
-                    // Optional: Redirect based on role after successful login
-                    // if (User.IsInRole("admin")) return RedirectToAction("Dashboard", "Admin");
-                    return RedirectToAction("Index", "Home"); // Redirect to home after login
+                    return RedirectToAction("Index", "Home");
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(model);
             }
 
-            // If ModelState is invalid
             return View(model);
         }
 
 
         // --- Logout ---
-        [HttpPost] // Use HttpPost for security
-        [ValidateAntiForgeryToken] // Protect against CSRF
-        [Authorize] // Ensure user is logged in to log out
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home"); // Redirect to home after logout
+            return RedirectToAction("Index", "Home");
         }
 
         // --- Access Denied ---
         [HttpGet]
-        [AllowAnonymous] // Allow anyone to see this page
+        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
-            return View(); // Returns the AccessDenied view
+            return View();
         }
 
 
         // --- Profile (My Bookings) ---
-        [Authorize] // Ensures only logged-in users can access
+        [Authorize]
         public async Task<IActionResult> Profile()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // Safely parse user ID
             if (!int.TryParse(userIdString, out var userId))
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return RedirectToAction("Login");
             }
 
-            // Use AsNoTracking as we are only reading data
             var user = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
             {
-                // Edge case: User claim exists but user deleted from DB
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return RedirectToAction("Login");
             }
 
+            // --- 🌟 AMEENDEE: Changed to UtcNow for consistency 🌟 ---
             var bookings = await _context.TblBookings
                 .AsNoTracking()
-                .Include(b => b.Room.Hotel.TblHotelImages) // Include related data efficiently
-                .Where(b => b.UserId == userId && b.CheckOut < DateOnly.FromDateTime(DateTime.Now)) // Filter past bookings
+                .Include(b => b.Room.Hotel.TblHotelImages)
+                .Where(b => b.UserId == userId && b.CheckOut < DateOnly.FromDateTime(DateTime.UtcNow)) // Filter past bookings
                 .OrderByDescending(b => b.CheckOut)
-                .Select(b => new BookingInfoViewModel // Project to ViewModel
+                .Select(b => new BookingInfoViewModel
                 {
                     BookingId = b.BookingId,
-                    HotelName = b.Room.Hotel.Name ?? "N/A", // Handle potential nulls
-                    Location = b.Room.Hotel.Address ?? "N/A", // Handle potential nulls
-                    // Convert DateOnly? to DateTime, handling potential nulls safely
+                    HotelName = b.Room.Hotel.Name ?? "N/A",
+                    Location = b.Room.Hotel.Address ?? "N/A",
                     StartDate = b.CheckIn.HasValue ? b.CheckIn.Value.ToDateTime(TimeOnly.MinValue) : default,
                     EndDate = b.CheckOut.HasValue ? b.CheckOut.Value.ToDateTime(TimeOnly.MinValue) : default,
-                    Price = b.TotalPrice, // Assuming TotalPrice is on TblBooking
-                    // Corrected LINQ for ImageUrl, handles nulls safely
+                    Price = b.TotalPrice,
                     ImageUrl = b.Room.Hotel.TblHotelImages.Select(img => img.ImageUrl).FirstOrDefault() ?? "/images/default-hotel.png"
                 })
                 .ToListAsync();
@@ -299,7 +290,6 @@ namespace Travely.Controllers
                 Role = user.Role,
                 Phone = user.Phone,
                 Imagepath = user.Imagepath,
-                // Ensure PastBookings is never null
                 PastBookings = bookings ?? new List<BookingInfoViewModel>()
             };
 
@@ -319,7 +309,6 @@ namespace Travely.Controllers
                 return RedirectToAction("Login");
             }
 
-            // Use AsNoTracking for reading
             var user = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
             {
@@ -327,18 +316,16 @@ namespace Travely.Controllers
                 return RedirectToAction("Login");
             }
 
-            // --- Populate Country List ---
             ViewBag.Countries = GetCountryList();
-            // --- End Populate Country List ---
 
             var viewModel = new ProfileEditViewModel
             {
-                Fullname = user.Fullname ?? "", // Provide default empty string
-                Email = user.Email ?? "",     // Provide default empty string
-                Country = user.Country,       // Keep null if it is null
-                Age = user.Age,               // Keep null if it is null
-                Phone = user.Phone,           // Keep null if it is null
-                CurrentImagePath = user.Imagepath // Keep null if it is null
+                Fullname = user.Fullname ?? "",
+                Email = user.Email ?? "",
+                Country = user.Country,
+                Age = user.Age,
+                Phone = user.Phone,
+                CurrentImagePath = user.Imagepath
             };
 
             return View(viewModel);
@@ -357,7 +344,6 @@ namespace Travely.Controllers
                 return RedirectToAction("Login");
             }
 
-            // Find and track the user entity for updates
             var user = await _context.TblUsers.FindAsync(userId);
             if (user == null)
             {
@@ -366,7 +352,8 @@ namespace Travely.Controllers
             }
 
             bool imageUpdated = false;
-            string newImagePath = user.Imagepath; // Keep track of the potentially new path
+            string newImagePath = user.Imagepath;
+            string extension = string.Empty; // Store extension here
 
             // --- 1. Process Image Upload ---
             if (model.NewImage != null && model.NewImage.Length > 0)
@@ -375,7 +362,18 @@ namespace Travely.Controllers
                 {
                     ModelState.AddModelError("NewImage", "Image size cannot exceed 5MB.");
                 }
-                else
+
+                // --- 🌟 AMEENDEE: Added Image Extension Validation 🌟 ---
+                extension = Path.GetExtension(model.NewImage.FileName).ToLowerInvariant();
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("NewImage", "Only .jpg, .jpeg, .png, or .gif files are allowed.");
+                }
+                // --- End Validation ---
+
+                // Only proceed if there are no image-related errors so far
+                if (!ModelState.ContainsKey("NewImage"))
                 {
                     try
                     {
@@ -384,11 +382,7 @@ namespace Travely.Controllers
                         // Save the new image
                         string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "profiles");
                         Directory.CreateDirectory(uploadsFolder);
-                        // Sanitize file name and create unique name
-                        string extension = Path.GetExtension(model.NewImage.FileName).ToLowerInvariant();
-                        // Add basic check for allowed extensions if needed
-                        // if (extension != ".jpg" && extension != ".png" && extension != ".jpeg" && extension != ".gif") { ... }
-                        string uniqueFileName = Guid.NewGuid().ToString() + extension;
+                        string uniqueFileName = Guid.NewGuid().ToString() + extension; // Use the validated extension
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
@@ -397,8 +391,9 @@ namespace Travely.Controllers
                         newImagePath = "/images/profiles/" + uniqueFileName; // Update the path variable
                         imageUpdated = true;
 
-                        // Delete the old image *after* successfully saving the new one
-                        if (!string.IsNullOrEmpty(oldImagePath) && oldImagePath != "/images/default-avatar.png")
+                        // --- 🌟 AMEENDEE: Corrected Default Image Check 🌟 ---
+                        string defaultImagePath = "/images/profiles/Unknown_person.jpg";
+                        if (!string.IsNullOrEmpty(oldImagePath) && oldImagePath != defaultImagePath)
                         {
                             var oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, oldImagePath.TrimStart('/'));
                             if (System.IO.File.Exists(oldFilePath))
@@ -419,7 +414,6 @@ namespace Travely.Controllers
 
 
             // --- 2. Validate and Update Other User Data ---
-            // Manual check for email uniqueness if it changed
             if (user.Email != model.Email && !string.IsNullOrEmpty(model.Email) &&
                 await _context.TblUsers.AnyAsync(u => u.Email == model.Email && u.UserId != userId))
             {
@@ -428,75 +422,63 @@ namespace Travely.Controllers
 
             if (ModelState.IsValid)
             {
-                // Assign values from ViewModel to the tracked user entity
                 user.Fullname = model.Fullname;
                 user.Email = model.Email;
                 user.Country = model.Country;
-                user.Age = (byte?)model.Age; // Cast assuming TblUser.Age is byte? Adjust if it's int?
+                user.Age = (byte?)model.Age;
                 user.Phone = model.Phone;
 
                 try
                 {
-                    // _context.Update(user); // No need to call Update explicitly if using FindAsync
                     await _context.SaveChangesAsync(); // Save all changes
 
                     // --- 3. Update Claims **AFTER** successful save ---
-                    // --- 3. Update Claims **AFTER** successful save ---
                     var currentPrincipal = (ClaimsPrincipal)User;
-                    // Get current authentication properties (like IsPersistent) before signing out
                     var currentAuthResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                    var existingProperties = currentAuthResult?.Properties ?? new AuthenticationProperties(); // Get existing or create new
+                    var existingProperties = currentAuthResult?.Properties ?? new AuthenticationProperties();
 
-                    // Get existing claims, excluding those to be updated
                     var claims = currentPrincipal.Claims.Where(c =>
                         c.Type != ClaimTypes.Name &&
-                        c.Type != ClaimTypes.Email && // Only if email is changeable
+                        c.Type != ClaimTypes.Email &&
                         c.Type != "ImagePath"
                     ).ToList();
 
-                    // Add updated claims using the saved user entity values
-                    claims.Add(new Claim(ClaimTypes.Name, user.Fullname ?? "")); // Handle potential null
-                    claims.Add(new Claim(ClaimTypes.Email, user.Email ?? ""));   // Handle potential null
-                    claims.Add(new Claim("ImagePath", user.Imagepath ?? ""));   // Use the saved path
+                    claims.Add(new Claim(ClaimTypes.Name, user.Fullname ?? ""));
+                    claims.Add(new Claim(ClaimTypes.Email, user.Email ?? ""));
+                    claims.Add(new Claim("ImagePath", user.Imagepath ?? ""));
 
-                    // Create new identity and principal
                     var newIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var newPrincipal = new ClaimsPrincipal(newIdentity);
 
-                    // Reconstruct AuthenticationProperties, preserving IsPersistent and potentially others
                     var newAuthProperties = new AuthenticationProperties
                     {
-                        IsPersistent = existingProperties.IsPersistent, // Preserve IsPersistent
-                                                                        // Copy other relevant properties if needed from existingProperties
+                        IsPersistent = existingProperties.IsPersistent,
                         IssuedUtc = existingProperties.IssuedUtc,
                         ExpiresUtc = existingProperties.ExpiresUtc,
                         RedirectUri = existingProperties.RedirectUri,
-                        // Add any other properties you might have set initially
                     };
 
-                    // Re-sign in the user with updated claims and preserved properties
-                    // Sign out is not strictly needed if calling SignInAsync directly with the principal and props
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, newPrincipal, newAuthProperties);
 
                     TempData["SuccessMessage"] = "Profile updated successfully!";
                     return RedirectToAction("Edit");
-                } // Redirect back to Edit page }
+                }
                 catch (DbUpdateConcurrencyException)
                 {
                     ModelState.AddModelError(string.Empty, "Concurrency error. The record was modified by another user. Please reload and try again.");
-                    TempData["ErrorMessage"] = "Concurrency error. Please reload and try again."; // User-friendly message
+                    TempData["ErrorMessage"] = "Concurrency error. Please reload and try again.";
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, "An unexpected error occurred while saving profile changes.");
-                    TempData["ErrorMessage"] = "Error saving profile. Please try again."; // User-friendly message
+                    TempData["ErrorMessage"] = "Error saving profile. Please try again.";
                     // Log ex for details
                 }
             }
-            // --- If ModelState is invalid OR save failed, repopulate ViewBag and return View ---
-            ViewBag.Countries = GetCountryList(); // Repopulate countries for the dropdown
-            model.CurrentImagePath = user.Imagepath; // Use the path from the (potentially updated but not saved) user entity
-            return View(model); // Return view with validation errors
+
+            ViewBag.Countries = GetCountryList();
+            model.CurrentImagePath = user.Imagepath;
+            return View(model);
         }
 
 
@@ -521,9 +503,8 @@ namespace Travely.Controllers
 
             var wishlistItems = await _context.TblWishLists
                 .AsNoTracking()
-                // Use the correct navigation property name from TblWishList to TblHotel
-                .Include(w => w.Hotels) // Assuming it's singular 'Hotel' based on previous context
-                    .ThenInclude(h => h.TblHotelImages) // Ensure TblHotel has TblHotelImages collection
+                .Include(w => w.Hotel)
+                    .ThenInclude(h => h.TblHotelImages)
                 .Where(w => w.UserId == userId)
                 .OrderByDescending(w => w.AddedDate)
                 .ToListAsync();
@@ -545,6 +526,7 @@ namespace Travely.Controllers
         }
 
         // --- Helper Method for Country List ---
+        // --- 🌟 AMEENDEE: Fixed syntax errors in the provided list 🌟 ---
         private List<SelectListItem> GetCountryList()
         {
             // Comprehensive list of countries
@@ -592,7 +574,8 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Congo, Democratic Republic of the", Text = "Congo, Democratic Republic of the" },
                 new SelectListItem { Value = "Congo, Republic of the", Text = "Congo, Republic of the" },
                 new SelectListItem { Value = "Costa Rica", Text = "Costa Rica" },
-                new SelectListItem { Value = "Cote d'Ivoire", Text = "Cote d'Ivoire" }, new SelectListItem { Value = "Dominican Republic", Text = "Dominican Republic" },
+                new SelectListItem { Value = "Cote d'Ivoire", Text = "Cote d'Ivoire" },
+                new SelectListItem { Value = "Dominican Republic", Text = "Dominican Republic" },
                 new SelectListItem { Value = "Ecuador", Text = "Ecuador" },
                 new SelectListItem { Value = "Egypt", Text = "Egypt" },
                 new SelectListItem { Value = "El Salvador", Text = "El Salvador" },
@@ -606,7 +589,7 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "France", Text = "France" },
                 new SelectListItem { Value = "Gabon", Text = "Gabon" },
                 new SelectListItem { Value = "Gambia", Text = "Gambia" },
-                new SelectListItem { Value = "Georgia", Text = "Georgia" },                
+                new SelectListItem { Value = "Georgia", Text = "Georgia" },
                 new SelectListItem { Value = "Guinea-Bissau", Text = "Guinea-Bissau" },
                 new SelectListItem { Value = "Guyana", Text = "Guyana" },
                 new SelectListItem { Value = "Haiti", Text = "Haiti" },
@@ -615,7 +598,7 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Iceland", Text = "Iceland" },
                 new SelectListItem { Value = "India", Text = "India" },
                 new SelectListItem { Value = "Indonesia", Text = "Indonesia" },
-                new SelectListItem { Value = "Iran", Text = "Iran" },                
+                new SelectListItem { Value = "Iran", Text = "Iran" },
                 new SelectListItem { Value = "Kenya", Text = "Kenya" },
                 new SelectListItem { Value = "Kiribati", Text = "Kiribati" },
                 new SelectListItem { Value = "Kyrgyzstan", Text = "Kyrgyzstan" },
@@ -640,12 +623,12 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Romania", Text = "Romania" },
                 new SelectListItem { Value = "Russia", Text = "Russia" },
                 new SelectListItem { Value = "Rwanda", Text = "Rwanda" },
-               new SelectListItem { Value = "Seychelles", Text = "Seychelles" },
+                new SelectListItem { Value = "Seychelles", Text = "Seychelles" },
                 new SelectListItem { Value = "Sierra Leone", Text = "Sierra Leone" },
                 new SelectListItem { Value = "Taiwan", Text = "Taiwan" },
                 new SelectListItem { Value = "Tajikistan", Text = "Tajikistan" },
                 new SelectListItem { Value = "Tanzania", Text = "Tanzania" },
-             new SelectListItem { Value = "United States", Text = "United States" },
+                new SelectListItem { Value = "United States", Text = "United States" },
                 new SelectListItem { Value = "Uruguay", Text = "Uruguay" },
                 new SelectListItem { Value = "Uzbekistan", Text = "Uzbekistan" },
                 new SelectListItem { Value = "Vanuatu", Text = "Vanuatu" },
@@ -655,11 +638,8 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Yemen", Text = "Yemen" },
                 new SelectListItem { Value = "Zambia", Text = "Zambia" },
                 new SelectListItem { Value = "Zimbabwe", Text = "Zimbabwe" }
-                // Add more countries as needed
             };
-            // Sort alphabetically but keep "-- Select Country --" first
             return countries.OrderBy(c => c.Value == "" ? 0 : 1).ThenBy(c => c.Text).ToList();
         }
-        // --- End Helper Method ---
     }
 }
