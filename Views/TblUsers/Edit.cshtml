@@ -43,9 +43,13 @@
 
             <div class="form-group">
                 <label asp-for="Age" class="control-label"></label>
-                <input asp-for="Age" type="number" class="form-control" />
+                <input asp-for="Age" type="number" class="form-control" id="ageInput" />
                 <span asp-validation-for="Age" class="text-danger"></span>
+                <div id="ageWarning" class="text-warning" style="display: none;">
+                    Age must be between 18 and 120 years
+                </div>
             </div>
+            
 
             <div class="form-group">
                 <label asp-for="Country" class="control-label"></label>
@@ -84,4 +88,24 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    
+    <script>
+        document.getElementById('ageInput').addEventListener('input', function() {
+            const age = parseInt(this.value);
+            const warningDiv = document.getElementById('ageWarning');
+            
+            if (isNaN(age)) {
+                warningDiv.style.display = 'none';
+                this.style.borderColor = '';
+            }
+            else if (age < 18 || age > 120) {
+                warningDiv.style.display = 'block';
+                warningDiv.textContent = age < 18 ? 'You must be at least 18 years old' : 'Age cannot be more than 120 years';
+                this.style.borderColor = '#ffc107'; // yellow warning border
+            } else {
+                warningDiv.style.display = 'none';
+                this.style.borderColor = '';
+            }
+        });
+    </script>
 }

@@ -48,4 +48,22 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $("#account").validate({
+                rules: {
+                    Email: {
+                        required: true,
+                        email: true,
+                        pattern: /^[^@@\s]+@@[^@@\s]+\.[^@@\s]+$/
+                    }
+                },
+                messages: {
+                    Email: {
+                        pattern: "Please enter a valid email address"
+                    }
+                }
+            });
+        });
+    </script>
 }

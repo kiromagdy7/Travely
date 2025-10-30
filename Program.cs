@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Travely.Data;
@@ -33,9 +33,16 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-// Configure error handling for all environments
-app.UseExceptionHandler("/Home/Error");
-app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+// Configure error handling based on environment
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+}
 
 // Configure HTTPS redirection and static file serving
 app.UseHttpsRedirection();

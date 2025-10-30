@@ -19,7 +19,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<LkpAmenity> LkpAmenities { get; set; }
     public virtual DbSet<TblBooking> TblBookings { get; set; }
-    public virtual DbSet<TblHotel> TblHotels { get; set; } // Corrected name
+    public virtual DbSet<TblHotel> TblHotels { get; set; }
     public virtual DbSet<TblHotelImage> TblHotelImages { get; set; }
     public virtual DbSet<TblPayment> TblPayments { get; set; }
     public virtual DbSet<TblReview> TblReviews { get; set; }
@@ -35,6 +35,8 @@ public partial class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<LkpAmenity>(entity =>
         {
             entity.HasKey(e => e.AmenityId).HasName("PK__lkpAmeni__E908452D58205242");
@@ -242,17 +244,18 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.HotelId).HasColumnName("hotel_id");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            // Relationship with User (should exist)
-            entity.HasOne(d => d.User).WithMany(p => p.TblWishLists)
+            // Relationship with User
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.TblWishLists)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade) // Changed to Cascade: if user deleted, delete their wishlist items
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_WishList_User");
 
-            // Added relationship with Hotel
-            entity.HasOne(d => d.Hotels)
-                .WithMany() // Assuming TblHotel doesn't have a navigation property back to WishList
+            // Relationship with Hotel
+            entity.HasOne(d => d.Hotel)
+                .WithMany()
                 .HasForeignKey(d => d.HotelId)
-                .OnDelete(DeleteBehavior.Cascade) // Changed to Cascade: if hotel deleted, remove it from wishlists
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_WishList_Hotel");
         });
         // === END: Added/Updated WishList Configuration ===
