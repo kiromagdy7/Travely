@@ -13,9 +13,7 @@ using Travely.Data;
 using Travely.Models;
 using Travely.ViewModels;
 using System;
-using Microsoft.AspNetCore.Mvc.Rendering; // For SelectListItem
-
-// --- 🌟 AMEENDEE: Removed redundant and unused 'using' statements ---
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Travely.Controllers
 {
@@ -52,7 +50,6 @@ namespace Travely.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // --- Validation Checks ---
             if (model.Role != "customer" && model.Role != "staff")
             {
                 ModelState.AddModelError("Role", "Invalid role selection.");
@@ -63,7 +60,6 @@ namespace Travely.Controllers
                 ModelState.AddModelError("Email", "This email is already registered.");
             }
 
-            // --- 🌟 AMEENDEE: Updated Image Validation (Size & Extension) 🌟 ---
             if (model.ProfileImage != null)
             {
                 if (model.ProfileImage.Length > 5 * 1024 * 1024) // 5MB limit
@@ -78,20 +74,18 @@ namespace Travely.Controllers
                     ModelState.AddModelError("ProfileImage", "Only .jpg, .jpeg, .png, or .gif files are allowed.");
                 }
             }
-            // --- End Validation ---
 
             if (ModelState.IsValid)
             {
-                string imagePath = "/images/profiles/Unknown_person.jpg"; // Default image path
+                string imagePath = "/images/profiles/Unknown_person.jpg";
 
-                // --- Save Image (if uploaded) ---
                 if (model.ProfileImage != null && model.ProfileImage.Length > 0)
                 {
                     try
                     {
                         string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "profiles");
                         Directory.CreateDirectory(uploadsFolder);
-                        // --- 🌟 AMEENDEE: Use validated extension ---
+
                         string extension = Path.GetExtension(model.ProfileImage.FileName).ToLowerInvariant();
                         string uniqueFileName = Guid.NewGuid().ToString() + extension;
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -107,8 +101,7 @@ namespace Travely.Controllers
                         return View(model);
                     }
                 }
-                // --- End Save Image ---
-
+             
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
                 var tblUser = new TblUser
@@ -117,7 +110,7 @@ namespace Travely.Controllers
                     Email = model.Email,
                     Phone = model.Phone,
                     PasswordHash = hashedPassword,
-                    CreatedAt = DateTime.UtcNow, // Use UtcNow
+                    CreatedAt = DateTime.UtcNow, 
                     Role = model.Role,
                     Status = "active",
                     Imagepath = imagePath
@@ -130,13 +123,13 @@ namespace Travely.Controllers
                 }
                 catch (DbUpdateException dbEx)
                 {
-                    // Log dbEx
+                    
                     ModelState.AddModelError(string.Empty, "An error occurred while saving the user.");
                     return View(model);
                 }
 
 
-                // --- Sign In User and Add Claims ---
+              
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
@@ -147,8 +140,8 @@ namespace Travely.Controllers
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                // Make cookie persistent (user stays logged in after browser close)
-                var authProperties = new AuthenticationProperties { IsPersistent = true }; // Note: This is forced persistence
+             
+                var authProperties = new AuthenticationProperties { IsPersistent = true };
 
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
