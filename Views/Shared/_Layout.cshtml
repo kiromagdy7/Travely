@@ -92,6 +92,21 @@
         }
         /* --- نهاية كود الصورة --- */
 
+        /* --- 🌟 START: New Dropdown CSS (التعديل الجديد) 🌟 --- */
+        .profile-dropdown-toggle::after {
+            display: none; /* لإخفاء السهم الصغير */
+        }
+
+        .dropdown-item {
+            cursor: pointer; /* عشان الماوس يبقى 'hand' */
+        }
+
+            .dropdown-item .fas { /* تنسيق الأيقونات (اختياري) */
+                margin-right: 8px;
+                width: 16px; /* لظبط المسافات */
+                text-align: center;
+            }
+        /* --- 🌟 END: New Dropdown CSS 🌟 --- */
     </style>
 </head>
 <body>
@@ -150,24 +165,40 @@
                             ? imagePathClaim.Value
                             : "/images/default-avatar.png"; // تأكد إن الصورة دي موجودة في wwwroot/images
 
-                            // 3. بنعرض الصورة كـ لينك للبروفايل
-                            <li>
-                                <a asp-area="" asp-controller="Account" asp-action="Profile" class="nav-profile-link @(Context.Request.Path.Value?.Contains("/Account/Profile") == true || Context.Request.Path.Value?.Contains("/Account/Edit") == true || Context.Request.Path.Value?.Contains("/Account/Wishlist") == true ? "active" : "")" title="My Profile">
+                            // 3. === 🌟 START: NEW DROPDOWN STRUCTURE (التعديل الجديد) 🌟 ===
+                            <li class="nav-item dropdown">
+
+                                <a class="nav-link dropdown-toggle nav-profile-link profile-dropdown-toggle @(Context.Request.Path.Value?.Contains("/Account/Profile") == true || Context.Request.Path.Value?.Contains("/Account/Edit") == true || Context.Request.Path.Value?.Contains("/Account/Wishlist") == true ? "active" : "")"
+                                   href="#"
+                                   id="navbarProfileLink"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false"
+                                   title="My Profile">
+
                                     <img src="@profilePicPath" alt="Profile" class="profile-pic-nav" />
                                 </a>
-                            </li>
 
-                            // 4. زر الخروج
-                            <li>
-                                <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" style="display:inline;">
-                                    @Html.AntiForgeryToken()
-                                    <a href="javascript:void(0);"
-                                       onclick="document.getElementById('logoutForm').submit();"
-                                       style="color: inherit; text-decoration: none;"
-                                       class="@(Context.Request.Path.Value?.Contains("/Account/Logout") == true ? "active" : "")">
-                                        Logout
-                                    </a>
-                                </form>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarProfileLink">
+
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">
+                                            <i class="fas fa-user-circle"></i> My Profile
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <a href="javascript:void(0);"
+                                               onclick="event.preventDefault(); document.getElementById('logoutForm').submit();"
+                                               class="dropdown-item">
+                                                <i class="fas fa-sign-out-alt"></i> Logout
+                                            </a>
+                                        </form>
+                                    </li>
+
+                                </ul>
                             </li>
                         }
                         else
@@ -240,5 +271,36 @@
     <script src="~/lib/imagesloaded/imagesloaded.pkgd.min.js"></script>
     <script src="~/lib/isotope-layout/isotope.pkgd.min.js"></script>
     <script src="~/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Target the parent <li> of the profile dropdown
+            var profileDropdownLi = $('#navbarProfileLink').closest('.nav-item.dropdown');
+            var bsDropdownInstance = null;
+
+            profileDropdownLi.on('mouseenter', function() {
+                // Get the Bootstrap Dropdown instance
+                var dropdownToggleEl = this.querySelector('[data-bs-toggle="dropdown"]');
+                if (!bsDropdownInstance) {
+                    bsDropdownInstance = bootstrap.Dropdown.getOrCreateInstance(dropdownToggleEl);
+                }
+
+                // Show the dropdown
+                bsDropdownInstance.show();
+            });
+
+            profileDropdownLi.on('mouseleave', function() {
+                // Hide the dropdown
+                if (bsDropdownInstance) {
+                    bsDropdownInstance.hide();
+                }
+            });
+
+            // Prevent the default click behavior of the link (navigating to #)
+            $('#navbarProfileLink').on('click', function(e) {
+                e.preventDefault();
+            });
+        });
+    </script>
 </body>
 </html>

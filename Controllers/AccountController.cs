@@ -76,7 +76,8 @@ namespace Travely.Controllers
 
             if (ModelState.IsValid)
             {
-                string imagePath = "/images/default-avatar.png"; // Default image path
+                // --- 🌟 التعديل هنا: تم تغيير المسار الديفولت 🌟 ---
+                string imagePath = "/images/profiles/Unknown_person.jpg"; // Default image path
 
                 // --- Save Image (if uploaded) ---
                 if (model.ProfileImage != null && model.ProfileImage.Length > 0)
@@ -91,7 +92,7 @@ namespace Travely.Controllers
                         {
                             await model.ProfileImage.CopyToAsync(fileStream);
                         }
-                        imagePath = "/images/profiles/" + uniqueFileName;
+                        imagePath = "/images/profiles/" + uniqueFileName; // هنا بيتحط المسار الجديد لو اليوزر رفع صورة
                     }
                     catch // Catch specific exceptions if needed (e.g., IOException)
                     {
@@ -114,7 +115,7 @@ namespace Travely.Controllers
                     Role = model.Role,
                     Status = "active", // Default status
                     Imagepath = imagePath // Save image path to database
-                    // Initialize other non-nullable properties if any
+                                          // Initialize other non-nullable properties if any
                 };
 
                 _context.Add(tblUser);
@@ -132,13 +133,13 @@ namespace Travely.Controllers
 
                 // --- Sign In User and Add Claims ---
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
-                    new Claim(ClaimTypes.Name, tblUser.Fullname),
-                    new Claim(ClaimTypes.Email, tblUser.Email),
-                    new Claim(ClaimTypes.Role, tblUser.Role),
-                    new Claim("ImagePath", tblUser.Imagepath ?? "") // <-- Add ImagePath claim
-                };
+        {
+            new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
+            new Claim(ClaimTypes.Name, tblUser.Fullname),
+            new Claim(ClaimTypes.Email, tblUser.Email),
+            new Claim(ClaimTypes.Role, tblUser.Role),
+            new Claim("ImagePath", tblUser.Imagepath ?? "") // <-- Add ImagePath claim
+        };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 // Make cookie persistent (user stays logged in after browser close)
@@ -155,8 +156,6 @@ namespace Travely.Controllers
             // If ModelState is invalid, return the view with errors
             return View(model);
         }
-
-
         // --- Login ---
         [HttpGet]
         [AllowAnonymous]

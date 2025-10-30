@@ -35,7 +35,6 @@ namespace Travely.ViewModels
         // --- Profile Picture Property ---
         [Display(Name = "Profile Picture")]
         // Add validation attributes if needed (e.g., file size, type)
-        public IFormFile? ProfileImage { get; set; } // Property to receive the uploaded image (optional)
-        // --- End Profile Picture ---
+        public IFormFile? ProfileImage { get; set; } 
     }
 }
