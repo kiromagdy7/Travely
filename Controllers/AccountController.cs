@@ -76,7 +76,8 @@ namespace Travely.Controllers
 
             if (ModelState.IsValid)
             {
-                string imagePath = "/images/default-avatar.png"; // Default image path
+                // --- 🌟 التعديل هنا: تم تغيير المسار الديفولت 🌟 ---
+                string imagePath = "/images/profiles/Unknown_person.jpg"; // Default image path
 
                 // --- Save Image (if uploaded) ---
                 if (model.ProfileImage != null && model.ProfileImage.Length > 0)
@@ -91,7 +92,7 @@ namespace Travely.Controllers
                         {
                             await model.ProfileImage.CopyToAsync(fileStream);
                         }
-                        imagePath = "/images/profiles/" + uniqueFileName;
+                        imagePath = "/images/profiles/" + uniqueFileName; // هنا بيتحط المسار الجديد لو اليوزر رفع صورة
                     }
                     catch // Catch specific exceptions if needed (e.g., IOException)
                     {
@@ -114,7 +115,7 @@ namespace Travely.Controllers
                     Role = model.Role,
                     Status = "active", // Default status
                     Imagepath = imagePath // Save image path to database
-                    // Initialize other non-nullable properties if any
+                                          // Initialize other non-nullable properties if any
                 };
 
                 _context.Add(tblUser);
@@ -132,13 +133,13 @@ namespace Travely.Controllers
 
                 // --- Sign In User and Add Claims ---
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
-                    new Claim(ClaimTypes.Name, tblUser.Fullname),
-                    new Claim(ClaimTypes.Email, tblUser.Email),
-                    new Claim(ClaimTypes.Role, tblUser.Role),
-                    new Claim("ImagePath", tblUser.Imagepath ?? "") // <-- Add ImagePath claim
-                };
+        {
+            new Claim(ClaimTypes.NameIdentifier, tblUser.UserId.ToString()),
+            new Claim(ClaimTypes.Name, tblUser.Fullname),
+            new Claim(ClaimTypes.Email, tblUser.Email),
+            new Claim(ClaimTypes.Role, tblUser.Role),
+            new Claim("ImagePath", tblUser.Imagepath ?? "") // <-- Add ImagePath claim
+        };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 // Make cookie persistent (user stays logged in after browser close)
@@ -155,8 +156,6 @@ namespace Travely.Controllers
             // If ModelState is invalid, return the view with errors
             return View(model);
         }
-
-
         // --- Login ---
         [HttpGet]
         [AllowAnonymous]
@@ -593,15 +592,7 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Congo, Democratic Republic of the", Text = "Congo, Democratic Republic of the" },
                 new SelectListItem { Value = "Congo, Republic of the", Text = "Congo, Republic of the" },
                 new SelectListItem { Value = "Costa Rica", Text = "Costa Rica" },
-                new SelectListItem { Value = "Cote d'Ivoire", Text = "Cote d'Ivoire" },
-                new SelectListItem { Value = "Croatia", Text = "Croatia" },
-                new SelectListItem { Value = "Cuba", Text = "Cuba" },
-                new SelectListItem { Value = "Cyprus", Text = "Cyprus" },
-                new SelectListItem { Value = "Czech Republic", Text = "Czech Republic" },
-                new SelectListItem { Value = "Denmark", Text = "Denmark" },
-                new SelectListItem { Value = "Djibouti", Text = "Djibouti" },
-                new SelectListItem { Value = "Dominica", Text = "Dominica" },
-                new SelectListItem { Value = "Dominican Republic", Text = "Dominican Republic" },
+                new SelectListItem { Value = "Cote d'Ivoire", Text = "Cote d'Ivoire" }, new SelectListItem { Value = "Dominican Republic", Text = "Dominican Republic" },
                 new SelectListItem { Value = "Ecuador", Text = "Ecuador" },
                 new SelectListItem { Value = "Egypt", Text = "Egypt" },
                 new SelectListItem { Value = "El Salvador", Text = "El Salvador" },
@@ -615,13 +606,7 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "France", Text = "France" },
                 new SelectListItem { Value = "Gabon", Text = "Gabon" },
                 new SelectListItem { Value = "Gambia", Text = "Gambia" },
-                new SelectListItem { Value = "Georgia", Text = "Georgia" },
-                new SelectListItem { Value = "Germany", Text = "Germany" },
-                new SelectListItem { Value = "Ghana", Text = "Ghana" },
-                new SelectListItem { Value = "Greece", Text = "Greece" },
-                new SelectListItem { Value = "Grenada", Text = "Grenada" },
-                new SelectListItem { Value = "Guatemala", Text = "Guatemala" },
-                new SelectListItem { Value = "Guinea", Text = "Guinea" },
+                new SelectListItem { Value = "Georgia", Text = "Georgia" },                
                 new SelectListItem { Value = "Guinea-Bissau", Text = "Guinea-Bissau" },
                 new SelectListItem { Value = "Guyana", Text = "Guyana" },
                 new SelectListItem { Value = "Haiti", Text = "Haiti" },
@@ -630,34 +615,13 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Iceland", Text = "Iceland" },
                 new SelectListItem { Value = "India", Text = "India" },
                 new SelectListItem { Value = "Indonesia", Text = "Indonesia" },
-                new SelectListItem { Value = "Iran", Text = "Iran" },
-                new SelectListItem { Value = "Iraq", Text = "Iraq" },
-                new SelectListItem { Value = "Ireland", Text = "Ireland" },
-                new SelectListItem { Value = "Israel", Text = "Israel" },
-                new SelectListItem { Value = "Italy", Text = "Italy" },
-                new SelectListItem { Value = "Jamaica", Text = "Jamaica" },
-                new SelectListItem { Value = "Japan", Text = "Japan" },
-                new SelectListItem { Value = "Jordan", Text = "Jordan" },
-                new SelectListItem { Value = "Kazakhstan", Text = "Kazakhstan" },
+                new SelectListItem { Value = "Iran", Text = "Iran" },                
                 new SelectListItem { Value = "Kenya", Text = "Kenya" },
                 new SelectListItem { Value = "Kiribati", Text = "Kiribati" },
-                new SelectListItem { Value = "Korea, North", Text = "Korea, North" },
-                new SelectListItem { Value = "Korea, South", Text = "Korea, South" },
-                new SelectListItem { Value = "Kosovo", Text = "Kosovo" },
-                new SelectListItem { Value = "Kuwait", Text = "Kuwait" },
                 new SelectListItem { Value = "Kyrgyzstan", Text = "Kyrgyzstan" },
                 new SelectListItem { Value = "Laos", Text = "Laos" },
                 new SelectListItem { Value = "Latvia", Text = "Latvia" },
                 new SelectListItem { Value = "Lebanon", Text = "Lebanon" },
-                new SelectListItem { Value = "Lesotho", Text = "Lesotho" },
-                new SelectListItem { Value = "Liberia", Text = "Liberia" },
-                new SelectListItem { Value = "Libya", Text = "Libya" },
-                new SelectListItem { Value = "Liechtenstein", Text = "Liechtenstein" },
-                new SelectListItem { Value = "Lithuania", Text = "Lithuania" },
-                new SelectListItem { Value = "Luxembourg", Text = "Luxembourg" },
-                new SelectListItem { Value = "Madagascar", Text = "Madagascar" },
-                new SelectListItem { Value = "Malawi", Text = "Malawi" },
-                new SelectListItem { Value = "Malaysia", Text = "Malaysia" },
                 new SelectListItem { Value = "Maldives", Text = "Maldives" },
                 new SelectListItem { Value = "Mali", Text = "Mali" },
                 new SelectListItem { Value = "Malta", Text = "Malta" },
@@ -665,22 +629,6 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Mauritania", Text = "Mauritania" },
                 new SelectListItem { Value = "Mauritius", Text = "Mauritius" },
                 new SelectListItem { Value = "Mexico", Text = "Mexico" },
-                new SelectListItem { Value = "Micronesia", Text = "Micronesia" },
-                new SelectListItem { Value = "Moldova", Text = "Moldova" },
-                new SelectListItem { Value = "Monaco", Text = "Monaco" },
-                new SelectListItem { Value = "Mongolia", Text = "Mongolia" },
-                new SelectListItem { Value = "Montenegro", Text = "Montenegro" },
-                new SelectListItem { Value = "Morocco", Text = "Morocco" },
-                new SelectListItem { Value = "Mozambique", Text = "Mozambique" },
-                new SelectListItem { Value = "Myanmar (Burma)", Text = "Myanmar (Burma)" },
-                new SelectListItem { Value = "Namibia", Text = "Namibia" },
-                new SelectListItem { Value = "Nauru", Text = "Nauru" },
-                new SelectListItem { Value = "Nepal", Text = "Nepal" },
-                new SelectListItem { Value = "Netherlands", Text = "Netherlands" },
-                new SelectListItem { Value = "New Zealand", Text = "New Zealand" },
-                new SelectListItem { Value = "Nicaragua", Text = "Nicaragua" },
-                new SelectListItem { Value = "Niger", Text = "Niger" },
-                new SelectListItem { Value = "Nigeria", Text = "Nigeria" },
                 new SelectListItem { Value = "North Macedonia", Text = "North Macedonia" },
                 new SelectListItem { Value = "Norway", Text = "Norway" },
                 new SelectListItem { Value = "Oman", Text = "Oman" },
@@ -688,58 +636,16 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Palau", Text = "Palau" },
                 new SelectListItem { Value = "Palestine State", Text = "Palestine State" },
                 new SelectListItem { Value = "Panama", Text = "Panama" },
-                new SelectListItem { Value = "Papua New Guinea", Text = "Papua New Guinea" },
-                new SelectListItem { Value = "Paraguay", Text = "Paraguay" },
-                new SelectListItem { Value = "Peru", Text = "Peru" },
-                new SelectListItem { Value = "Philippines", Text = "Philippines" },
-                new SelectListItem { Value = "Poland", Text = "Poland" },
-                new SelectListItem { Value = "Portugal", Text = "Portugal" },
                 new SelectListItem { Value = "Qatar", Text = "Qatar" },
                 new SelectListItem { Value = "Romania", Text = "Romania" },
                 new SelectListItem { Value = "Russia", Text = "Russia" },
                 new SelectListItem { Value = "Rwanda", Text = "Rwanda" },
-                new SelectListItem { Value = "Saint Kitts and Nevis", Text = "Saint Kitts and Nevis" },
-                new SelectListItem { Value = "Saint Lucia", Text = "Saint Lucia" },
-                new SelectListItem { Value = "Saint Vincent and the Grenadines", Text = "Saint Vincent and the Grenadines" },
-                new SelectListItem { Value = "Samoa", Text = "Samoa" },
-                new SelectListItem { Value = "San Marino", Text = "San Marino" },
-                new SelectListItem { Value = "Sao Tome and Principe", Text = "Sao Tome and Principe" },
-                new SelectListItem { Value = "Saudi Arabia", Text = "Saudi Arabia" },
-                new SelectListItem { Value = "Senegal", Text = "Senegal" },
-                new SelectListItem { Value = "Serbia", Text = "Serbia" },
-                new SelectListItem { Value = "Seychelles", Text = "Seychelles" },
+               new SelectListItem { Value = "Seychelles", Text = "Seychelles" },
                 new SelectListItem { Value = "Sierra Leone", Text = "Sierra Leone" },
-                new SelectListItem { Value = "Singapore", Text = "Singapore" },
-                new SelectListItem { Value = "Slovakia", Text = "Slovakia" },
-                new SelectListItem { Value = "Slovenia", Text = "Slovenia" },
-                new SelectListItem { Value = "Solomon Islands", Text = "Solomon Islands" },
-                new SelectListItem { Value = "Somalia", Text = "Somalia" },
-                new SelectListItem { Value = "South Africa", Text = "South Africa" },
-                new SelectListItem { Value = "South Sudan", Text = "South Sudan" },
-                new SelectListItem { Value = "Spain", Text = "Spain" },
-                new SelectListItem { Value = "Sri Lanka", Text = "Sri Lanka" },
-                new SelectListItem { Value = "Sudan", Text = "Sudan" },
-                new SelectListItem { Value = "Suriname", Text = "Suriname" },
-                new SelectListItem { Value = "Sweden", Text = "Sweden" },
-                new SelectListItem { Value = "Switzerland", Text = "Switzerland" },
-                new SelectListItem { Value = "Syria", Text = "Syria" },
                 new SelectListItem { Value = "Taiwan", Text = "Taiwan" },
                 new SelectListItem { Value = "Tajikistan", Text = "Tajikistan" },
                 new SelectListItem { Value = "Tanzania", Text = "Tanzania" },
-                new SelectListItem { Value = "Thailand", Text = "Thailand" },
-                new SelectListItem { Value = "Timor-Leste", Text = "Timor-Leste" },
-                new SelectListItem { Value = "Togo", Text = "Togo" },
-                new SelectListItem { Value = "Tonga", Text = "Tonga" },
-                new SelectListItem { Value = "Trinidad and Tobago", Text = "Trinidad and Tobago" },
-                new SelectListItem { Value = "Tunisia", Text = "Tunisia" },
-                new SelectListItem { Value = "Turkey", Text = "Turkey" },
-                new SelectListItem { Value = "Turkmenistan", Text = "Turkmenistan" },
-                new SelectListItem { Value = "Tuvalu", Text = "Tuvalu" },
-                new SelectListItem { Value = "Uganda", Text = "Uganda" },
-                new SelectListItem { Value = "Ukraine", Text = "Ukraine" },
-                new SelectListItem { Value = "United Arab Emirates", Text = "United Arab Emirates" },
-                new SelectListItem { Value = "United Kingdom", Text = "United Kingdom" },
-                new SelectListItem { Value = "United States", Text = "United States" },
+             new SelectListItem { Value = "United States", Text = "United States" },
                 new SelectListItem { Value = "Uruguay", Text = "Uruguay" },
                 new SelectListItem { Value = "Uzbekistan", Text = "Uzbekistan" },
                 new SelectListItem { Value = "Vanuatu", Text = "Vanuatu" },
