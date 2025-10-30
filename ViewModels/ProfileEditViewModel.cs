@@ -19,8 +19,9 @@ namespace Travely.ViewModels
         public string Email { get; set; } = string.Empty;
 
         [StringLength(100, ErrorMessage = "Country name cannot exceed 100 characters")]
-        public string Country { get; set; } = string.Empty;
+        public string? Country { get; set; }
 
+        [Display(Name = "Age")]
         [Range(18, 120, ErrorMessage = "Age must be between 18 and 120")]
         public int? Age { get; set; }
 
