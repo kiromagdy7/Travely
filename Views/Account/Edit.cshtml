@@ -1,4 +1,5 @@
 ﻿@model Travely.ViewModels.ProfileEditViewModel
+
 @{
     ViewData["Title"] = "Edit Profile";
     Layout = "_Layout";
@@ -16,7 +17,6 @@
             {
                 <div class="user-avatar">@(Model.Fullname.Substring(0, 1))</div>
             }
-
         </div>
 
         <nav class="sidebar-nav">
@@ -33,16 +33,16 @@
     </aside>
 
     <main class="main-content">
-
         <form asp-action="Edit" method="post" enctype="multipart/form-data">
-
             @Html.AntiForgeryToken()
 
             @if (TempData["SuccessMessage"] != null)
             {
                 <div class="alert alert-success">@TempData["SuccessMessage"]</div>
             }
+
             @Html.ValidationMessageFor(m => m.NewImage, "", new { @class = "alert alert-fail text-danger" })
+
             <div class="form-group mb-2 mt-0">
                 <label asp-for="Fullname" class="control-label"></label>
                 <input asp-for="Fullname" class="form-control" />
@@ -59,11 +59,10 @@
                 <label asp-for="Country" class="control-label"></label>
 
                 <select asp-for="Country"
-                        class="form-select **selectpicker**"
+                        class="country-select"
                         asp-items="@ViewBag.Countries"
-                        data-live-search="true" **data-width="100%" ** title="اختر بلدك...">
+                        data-placeholder="Select your country...">
                 </select>
-
                 <span asp-validation-for="Country" class="text-danger"></span>
             </div>
 
@@ -91,13 +90,64 @@
             </div>
         </form>
     </main>
-
-    <script>
-        $(document).ready(function() {
-            $('.selectpicker').selectpicker();
-        });
-    </script>
 </div>
 
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+<style>
+    a {
+        text-decoration: none;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: .5rem;
+    }
+
+    .select2-container .select2-selection--single {
+        height: 36px !important;
+        padding: 4px 8px !important;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    .select2-selection__arrow {
+        top: 5px !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection {
+        border-color: #ced4da;
+    }
+
+    .select2-container--bootstrap-5 .select2-results__options {
+        max-height: 250px !important;
+        overflow-y: auto !important;
+    }
+
+    /* --- التعديل الجديد: إجبار القائمة على الفتح لأسفل دائمًا --- */
+    .select2-dropdown.select2-dropdown--above {
+        top: 100% !important; /* اجبر الـ top إنه يكون تحت العنصر */
+        bottom: auto !important; /* الغي أي محاولة لوضعه فوق */
+    }
+    /* --- نهاية التعديل --- */
+
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.country-select').select2({
+            width: 'resolve',
+            theme: 'bootstrap-5',
+            minimumResultsForSearch: 3,
+            placeholder: 'Select your country...',
+            allowClear: true,
+
+            /* خلي دي زي ما هي علشان تضمن إن القائمة تترسم بره أي سكرول */
+            dropdownParent: $('body')
+        });
+    });
+</script>

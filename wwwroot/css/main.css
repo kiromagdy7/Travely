@@ -5982,19 +5982,42 @@ section,
   align-items: center;
   gap: 10px;
 }
+/*--------------------------------------------------------------
+# Profile Dropdown (التعديل الجديد)
+--------------------------------------------------------------*/
 .profile-pic-nav {
-    width: 35px; 
-    height: 35px; 
-    border-radius: 50%; 
-    object-fit: cover; 
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
     border: 1px solid #ddd;
-    margin-top: -5px; 
+    margin-top: -5px; /* ممكن تعدل الرقم ده عشان تظبط مكان الصورة بالظبط */
 }
-
+.profile-dropdown-toggle:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
 .nav-profile-link {
     padding-top: 10px !important;
     padding-bottom: 10px !important;
 }
+
+/* لإخفاء السهم الصغير اللي بيضيفه البوتستراب جنب الصورة */
+.profile-dropdown-toggle::after {
+    display: none;
+}
+
+/* لتنسيق لينكات "Profile" و "Logout" جوه القائمة */
+.dropdown-item {
+    cursor: pointer;
+}
+
+    /* لتنسيق الأيقونات (فاس) اللي جوه القائمة */
+    .dropdown-item .fas {
+        margin-right: 8px;
+        width: 16px;
+        text-align: center;
+    }
 .hotel-location .map-container .hotel-marker i {
   font-size: 18px;
 }
