@@ -522,7 +522,7 @@ namespace Travely.Controllers
             var wishlistItems = await _context.TblWishLists
                 .AsNoTracking()
                 // Use the correct navigation property name from TblWishList to TblHotel
-                .Include(w => w.Hotels) // Assuming it's singular 'Hotel' based on previous context
+                .Include(w => w.Hotel) // Assuming it's singular 'Hotel' based on previous context
                     .ThenInclude(h => h.TblHotelImages) // Ensure TblHotel has TblHotelImages collection
                 .Where(w => w.UserId == userId)
                 .OrderByDescending(w => w.AddedDate)

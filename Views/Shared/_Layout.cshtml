@@ -110,7 +110,6 @@
 
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            // 1. بنجيب مسار الصورة من الـ Clai
                             var imagePathClaim = User.FindFirst("ImagePath");
 
                             var profilePicPath = (imagePathClaim != null && !string.IsNullOrEmpty(imagePathClaim.Value))
@@ -154,7 +153,7 @@
                          }
                         else
                         {
-                            // 5. لو مش مسجل دخول
+                            
                             <li><a asp-area="" asp-controller="Account" asp-action="Login" class="@(Context.Request.Path.Value?.Contains("/Account/Login") == true ? "active" : "")">Login</a></li>
                         }
                     </ul>
