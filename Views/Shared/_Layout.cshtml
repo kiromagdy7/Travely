@@ -157,10 +157,8 @@
 
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            // 1. بنجيب مسار الصورة من الـ Claim
                             var imagePathClaim = User.FindFirst("ImagePath");
 
-                            // 2. بنحدد المسار، ولو الـ Claim فاضية بنحط الصورة الديفولت
                             var profilePicPath = (imagePathClaim != null && !string.IsNullOrEmpty(imagePathClaim.Value))
                             ? imagePathClaim.Value
                             : "/images/default-avatar.png"; // تأكد إن الصورة دي موجودة في wwwroot/images
@@ -203,7 +201,7 @@
                         }
                         else
                         {
-                            // 5. لو مش مسجل دخول
+                            
                             <li><a asp-area="" asp-controller="Account" asp-action="Login" class="@(Context.Request.Path.Value?.Contains("/Account/Login") == true ? "active" : "")">Login</a></li>
                         }
                     </ul>

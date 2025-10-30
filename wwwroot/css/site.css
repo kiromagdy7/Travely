@@ -97,3 +97,8 @@ a:focus {
 :focus-visible {
     outline-color: #2f5d50 !important;
 }
+* {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #2f5d50;
+}
