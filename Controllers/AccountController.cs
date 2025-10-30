@@ -638,11 +638,8 @@ namespace Travely.Controllers
                 new SelectListItem { Value = "Yemen", Text = "Yemen" },
                 new SelectListItem { Value = "Zambia", Text = "Zambia" },
                 new SelectListItem { Value = "Zimbabwe", Text = "Zimbabwe" }
-                // Add more countries as needed
             };
-            // Sort alphabetically but keep "-- Select Country --" first
             return countries.OrderBy(c => c.Value == "" ? 0 : 1).ThenBy(c => c.Text).ToList();
         }
-        // --- End Helper Method ---
     }
 }
