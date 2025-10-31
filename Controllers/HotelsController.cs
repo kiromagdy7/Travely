@@ -103,7 +103,7 @@ namespace Travely.Controllers
                 Commission = hotel.Commission
             };
 
-            return View(vm);
+            return View(hotel);
         }
 
         // POST: Hotels/Edit/5

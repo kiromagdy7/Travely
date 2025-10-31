@@ -450,10 +450,10 @@
                             <div class="container mb-3 mt-3">
                                 <a class="ColorBtn" style="width:100%;" asp-action="Details" asp-route-id="@h.HotelId">Details</a>
 
-                                @if (User.IsInRole("admin"))
+                             @if (User.IsInRole("admin"))
                                 {
-                                    <a class="WarningBtnRed" style="width:40%" asp-action="Delete" asp-route-id="@h.HotelId">Delete</a>
-                                    <a class="BackBtnGray"   style="width:55%" asp-action="Edit"   asp-route-id="@h.HotelId">Edit</a>
+                                <a class="WarningBtnRed" style="width:40%" asp-action="Delete" asp-route-id="@h.HotelId">Delete</a>
+                                <a class="BackBtnGray" style="width:56%" asp-action="Edit" asp-route-id="@h.HotelId">Edit</a>
                                 }
                             </div>
                         </div>
