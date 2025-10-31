@@ -4,10 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h3 class="KiroFont1 mb-3 m-lg-3" style="font-size:35px;">Details</h3>
 
-<div>
-    <h4>TblHotel</h4>
+<div class="m-lg-3">
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -84,7 +83,7 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.HotelId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="m-lg-3">
+    <a asp-action="Edit" asp-route-id="@Model?.HotelId" class="ColorBtn">Edit</a> |
+    <a asp-action="Index" class="BackBtnGray">Back to List</a>
 </div>

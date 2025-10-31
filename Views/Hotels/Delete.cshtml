@@ -4,13 +4,10 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
+<h3 class="KiroFont1 mb-3 m-lg-3" style="font-size:35px;">Are you sure you want to delete this?</h3>
 <div>
-    <h4>TblHotel</h4>
     <hr />
-    <dl class="row">
+    <dl class="row m-lg-3">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
@@ -85,9 +82,9 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="Delete" class="m-lg-3">
         <input type="hidden" asp-for="HotelId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Delete" class="WarningBtnRed" /> |
+        <a asp-action="Index" class="BackBtnGray">Back to List</a>
     </form>
 </div>

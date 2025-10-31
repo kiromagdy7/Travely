@@ -49,15 +49,20 @@
 
     .hotels-header {
         display: flex;
-        align-items: baseline;
-        justify-content: space-between;
+        align-items: center;
+        justify-content: center;
         gap: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 5rem;
     }
 
     .hotels-title {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
         color: var(--heading-color);
-        font-weight: 800;
+        font-weight: 700;
+        font-size:45px;
         letter-spacing: -0.02em;
         margin: 0;
     }
@@ -257,13 +262,20 @@
     }
 </style>
 
+@if (User.IsInRole("admin"))
+{
+    <div class="container mb-3 mt-3">
+        <a class="ColorBtn" asp-area="" asp-controller="Hotels" asp-action="Create">Create New Hotel</a>
+    </div>
+}
+
 <section class="hotels-wrap container">
     <header class="hotels-header">
         <div>
             <h2 class="hotels-title h3 mb-1">Explore Hotels</h2>
             <p class="hotels-subtitle">Browse curated stays and find your next trip</p>
         </div>
-        <div class="hotels-count">@total @(total == 1 ? "hotel" : "hotels")</div>
+        @* <div class="hotels-count">@total @(total == 1 ? "hotel" : "hotels")</div> *@
     </header>
 
     @if (!hotels.Any())
@@ -328,7 +340,7 @@
                 var email = h.ContactInfo;
                 var checkIn = h.CheckInTime?.ToString("HH:mm");
                 var checkOut = h.CheckOutTime?.ToString("HH:mm");
-                var cancellation = h.CancellationPolicy;
+                @* var cancellation = h.CancellationPolicy; *@
                 var delay = (index % 8) * delayStep; index++;
                 <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="@delay">
                     <article class="card hotel-card h-100">
@@ -423,7 +435,7 @@
                                 }
                             </div>
 
-                            @if (!string.IsNullOrWhiteSpace(cancellation))
+                            @* @if (!string.IsNullOrWhiteSpace(cancellation))
                             {
                                 <div class="policy">
                                     <div class="meta">
@@ -434,7 +446,16 @@
                                     </div>
                                     <div>@cancellation</div>
                                 </div>
-                            }
+                            } *@
+                            <div class="container mb-3 mt-3">
+                                <a class="ColorBtn" style="width:100%;" asp-action="Details" asp-route-id="@h.HotelId">Details</a>
+
+                                @if (User.IsInRole("admin"))
+                                {
+                                    <a class="WarningBtnRed" style="width:40%" asp-action="Delete" asp-route-id="@h.HotelId">Delete</a>
+                                    <a class="BackBtnGray"   style="width:55%" asp-action="Edit"   asp-route-id="@h.HotelId">Edit</a>
+                                }
+                            </div>
                         </div>
                     </article>
                 </div>
