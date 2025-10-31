@@ -29,24 +29,15 @@ namespace Travely.Controllers
         public async Task<IActionResult> Index()
         {
             // Lightweight list without rooms to keep it fast
-            var hotels = await _hotelService.GetAllAsync(includeRooms: false);
-            return View(hotels.Select(h => new TblHotel
-            {
-                HotelId = h.HotelId,
-                Name = h.Name,
-                Location = h.Location,
-                Address = h.Address,
-                Stars = h.Stars,
-                Phone = h.Phone,
-                ContactInfo = h.ContactInfo,
-                CheckInTime = h.CheckInTime,
-                CheckOutTime = h.CheckOutTime,
-                CancellationPolicy = h.CancellationPolicy,
-                Fees = h.Fees,
-                Commission = h.Commission,
-                CreatedAt = h.CreatedAt
-            }).ToList());
+
+            var hotels = await _context.TblHotels
+                                     .Include(h => h.TblHotelImages)
+                                     .ToListAsync();
+
+           
+            return View(hotels);
         }
+
 
         // GET: Hotels/Details/5
         [AllowAnonymous]
@@ -54,9 +45,10 @@ namespace Travely.Controllers
         {
             if (id is null) return NotFound();
 
+            
             var hotel = await _context.TblHotels
                 .Include(h => h.TblHotelImages)
-                .Include(h => h.TblRooms)
+                // .Include(h => h.TblRooms) 
                 .FirstOrDefaultAsync(h => h.HotelId == id.Value);
 
             if (hotel == null) return NotFound();

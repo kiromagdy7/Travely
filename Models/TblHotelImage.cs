@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Travely.Models;
 
@@ -11,6 +12,7 @@ public partial class TblHotelImage
 
     public int HotelId { get; set; }
 
+    [Column("image_url")]
     public string ImageUrl { get; set; }
 
     public virtual TblHotel Hotel { get; set; }

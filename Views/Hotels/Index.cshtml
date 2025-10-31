@@ -1,100 +1,480 @@
 ﻿@model IEnumerable<Travely.Models.TblHotel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Hotels";
+    var hotels = Model?.ToList() ?? new List<Travely.Models.TblHotel>();
+    var total = hotels.Count;
+
+    string placeholderSvg = @"<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 900 600'>
+      <defs>
+        <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+          <stop offset='0%' stop-color='%23eef2f7'/>
+          <stop offset='100%' stop-color='%23f8fafc'/>
+        </linearGradient>
+      </defs>
+      <rect width='900' height='600' fill='url(%23g)'/>
+      <g fill='none' stroke='%23cbd5e1' stroke-width='4'>
+        <rect x='150' y='130' width='600' height='340' rx='18' />
+        <path d='M150 290h600'/>
+        <path d='M300 130v340'/>
+      </g>
+      <g fill='%2394a3b8'>
+        <circle cx='280' cy='260' r='12'/>
+        <rect x='320' y='246' width='300' height='28' rx='6'/>
+        <rect x='320' y='206' width='260' height='20' rx='6'/>
+      </g>
+    </svg>";
+    var placeholderDataUrl = "data:image/svg+xml;utf8," + Uri.EscapeDataString(placeholderSvg);
+    var delayStep = 60;
+    var index = 0;
 }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stars)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactInfo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CheckInTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CheckOutTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CancellationPolicy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fees)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Commission)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stars)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactInfo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CheckInTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CheckOutTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CancellationPolicy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fees)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Commission)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                <a asp-action="Create" asp-route-id="@item.HotelId">Create</a> |
-                <a asp-action="Edit" asp-route-id="@item.HotelId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.HotelId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.HotelId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<style>
+    :root {
+        --accent-color: var(--accent-color, #0d6efd);
+        --heading-color: var(--heading-color, #111827);
+        --surface-color: var(--surface-color, #ffffff);
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --shadow: 0 12px 30px rgba(0,0,0,.06);
+        --star-filled: #f59e0b;
+        --star-empty: #d1d5db;
+        --radius: 14px;
+    }
+
+    .hotels-wrap {
+        padding-top: 1.25rem;
+        padding-bottom: 2rem;
+    }
+
+    .hotels-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .hotels-title {
+        color: var(--heading-color);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .hotels-subtitle {
+        color: var(--muted);
+        margin: .25rem 0 0 0;
+    }
+
+    .hotels-count {
+        color: var(--muted);
+        font-size: .95rem;
+        white-space: nowrap;
+    }
+
+    .hotels-grid {
+        --gap: 0.75rem;
+    }
+
+    @@media (min-width: 768px) {
+        .hotels-grid {
+            --gap: 0.95rem;
+        }
+    }
+
+    .hotels-grid.row {
+        margin-right: calc(var(--gap) * -0.5);
+        margin-left: calc(var(--gap) * -0.5);
+    }
+
+    .hotels-grid > [class*="col-"] {
+        padding-right: calc(var(--gap) * 0.5);
+        padding-left: calc(var(--gap) * 0.5);
+        margin-bottom: var(--gap);
+    }
+
+    .hotel-card {
+        background: var(--surface-color);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+    }
+
+        .hotel-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: rgba(0,0,0,.06);
+        }
+
+    .hotel-media {
+        position: relative;
+        width: 100%;
+        height: 190px;
+        overflow: hidden;
+        background: linear-gradient(180deg, rgba(0,0,0,.035), rgba(0,0,0,0));
+    }
+
+    @@media (min-width: 768px) {
+        .hotel-media {
+            height: 230px;
+        }
+    }
+
+    @@media (min-width: 1200px) {
+        .hotel-media {
+            height: 250px;
+        }
+    }
+
+    .hotel-media img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+        object-position: center center;
+        background: #f3f4f6;
+        transition: transform .35s ease;
+    }
+
+    .hotel-card:hover .hotel-media img {
+        transform: scale(1.02);
+    }
+
+    .rating-badge {
+        position: absolute;
+        top: .5rem;
+        left: .5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        background: rgba(255,255,255,.92);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        color: var(--heading-color);
+        border-radius: 999px;
+        padding: .24rem .5rem;
+        font-size: .75rem;
+        border: 1px solid rgba(0,0,0,.06);
+    }
+
+        .rating-badge .star {
+            width: 14px;
+            height: 14px;
+            fill: var(--star-filled);
+        }
+
+    .hotel-body {
+        padding: 0.7rem 0.7rem 0.8rem;
+    }
+
+    .hotel-name {
+        margin: 0 0 .16rem 0;
+        color: var(--heading-color);
+        font-weight: 700;
+        font-size: .95rem;
+        line-height: 1.2;
+    }
+
+    .stars {
+        display: inline-flex;
+        gap: 2px;
+        align-items: center;
+        margin-bottom: .24rem;
+    }
+
+        .stars .star {
+            width: 15px;
+            height: 15px;
+            fill: var(--star-empty);
+        }
+
+            .stars .star.filled {
+                fill: var(--star-filled);
+            }
+
+    .meta {
+        display: flex;
+        align-items: flex-start;
+        gap: .4rem;
+        color: var(--muted);
+        font-size: .86rem;
+        line-height: 1.3;
+    }
+
+        .meta + .meta {
+            margin-top: .22rem;
+        }
+
+    .meta-icon {
+        width: 18px;
+        height: 18px;
+        color: var(--accent-color);
+        flex: 0 0 18px;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .28rem;
+        border: 1px solid var(--border);
+        color: var(--heading-color);
+        padding: .26rem .45rem;
+        border-radius: 999px;
+        font-size: .75rem;
+        background: #fff;
+    }
+
+        .pill .mini {
+            width: 14px;
+            height: 14px;
+        }
+
+    .policy {
+        margin-top: .45rem;
+        border-top: 1px dashed var(--border);
+        padding-top: .45rem;
+        color: var(--muted);
+        font-size: .84rem;
+        line-height: 1.35;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+        .policy .meta-icon {
+            margin-top: 1px;
+        }
+
+    .empty {
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 2rem;
+        text-align: center;
+        color: var(--muted);
+        background: var(--surface-color);
+    }
+</style>
+
+<section class="hotels-wrap container">
+    <header class="hotels-header">
+        <div>
+            <h2 class="hotels-title h3 mb-1">Explore Hotels</h2>
+            <p class="hotels-subtitle">Browse curated stays and find your next trip</p>
+        </div>
+        <div class="hotels-count">@total @(total == 1 ? "hotel" : "hotels")</div>
+    </header>
+
+    @if (!hotels.Any())
+    {
+        <div class="empty" data-aos="fade-up">
+            <div class="mb-2">
+                <svg width="32" height="32" viewBox="0 0 24 24" class="meta-icon" aria-hidden="true">
+                    <path fill="currentColor" d="M4 7a2 2 0 0 1 2-2h1V3h2v2h6V3h2v2a2 2 0 0 1 2 2v11h-2v-1H6v1H4V7Zm2 0v7h12V7H6Zm0 9h12v2H6v-2Z" />
+                </svg>
+            </div>
+            No hotels available right now.
+        </div>
+    }
+    else
+    {
+        <div class="row hotels-grid">
+            @{
+                index = 0;
+            }
+            @foreach (var h in hotels)
+            {
+                // Resolve main image URL robustly with sanitization
+                var rawUrl = h.TblHotelImages?.FirstOrDefault()?.ImageUrl;
+                string resolvedUrl = string.Empty;
+
+                if (!string.IsNullOrWhiteSpace(rawUrl))
+                {
+                    // Normalize slashes and strip accidental wwwroot prefix
+                    var trimmed = rawUrl.Trim().Replace("\\", "/");
+                    if (trimmed.StartsWith("wwwroot/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        trimmed = trimmed.Substring("wwwroot/".Length);
+                    }
+
+                    // Absolute HTTP/HTTPS URL
+                    if (Uri.TryCreate(trimmed, UriKind.Absolute, out var abs) &&
+                    (abs.Scheme == Uri.UriSchemeHttp || abs.Scheme == Uri.UriSchemeHttps))
+                    {
+                        resolvedUrl = abs.ToString();
+                    }
+                    else
+                    {
+                        // App-relative or site-relative paths
+                        if (trimmed.StartsWith("~/") || trimmed.StartsWith("/"))
+                        {
+                            resolvedUrl = Url.Content(trimmed);
+                        }
+                        else
+                        {
+                            // Handle bare relative paths like "images/hotel.jpg"
+                            resolvedUrl = Url.Content("~/" + trimmed);
+                        }
+                    }
+                }
+
+                var imgSrc = string.IsNullOrWhiteSpace(resolvedUrl) ? placeholderDataUrl : resolvedUrl;
+
+                var stars = Math.Clamp((int)(h.Stars ?? 0), 0, 5);
+                var location = h.Location;
+                var address = h.Address;
+                var phone = h.Phone;
+                var email = h.ContactInfo;
+                var checkIn = h.CheckInTime?.ToString("HH:mm");
+                var checkOut = h.CheckOutTime?.ToString("HH:mm");
+                var cancellation = h.CancellationPolicy;
+                var delay = (index % 8) * delayStep; index++;
+                <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="@delay">
+                    <article class="card hotel-card h-100">
+                        <div class="hotel-media">
+                            <img src="@imgSrc"
+                                 alt="@(string.IsNullOrWhiteSpace(h.Name) ? "Hotel image" : h.Name)"
+                                 loading="lazy"
+                                 decoding="async"
+                                 referrerpolicy="no-referrer"
+                                 data-fallback="@placeholderDataUrl"
+                                 onerror="this.onerror=null; if (this.dataset && this.dataset.fallback) this.src=this.dataset.fallback;" />
+
+                            @if (stars > 0)
+                            {
+                                <div class="rating-badge" title="Rating">
+                                    <svg class="star" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z" />
+                                    </svg>
+                                    <span class="small fw-semibold">@stars/5</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="hotel-body">
+                            <h3 class="hotel-name">@(!string.IsNullOrWhiteSpace(h.Name) ? h.Name : "Unnamed Hotel")</h3>
+
+                            <div class="stars" aria-label="Star rating">
+                                @for (var i = 0; i < 5; i++)
+                                {
+                                    var filled = i < stars ? "filled" : "";
+                                    <svg class="star @filled" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z" />
+                                    </svg>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(location))
+                            {
+                                <div class="meta">
+                                    <svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path fill="currentColor" d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7Zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5Z" />
+                                    </svg>
+                                    <span>@location</span>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(address))
+                            {
+                                <div class="meta">
+                                    <svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path fill="currentColor" d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" />
+                                    </svg>
+                                    <span>@address</span>
+                                </div>
+                            }
+
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                @if (!string.IsNullOrWhiteSpace(email))
+                                {
+                                    <span class="pill" title="Email">
+                                        <svg class="mini" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path fill="currentColor" d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v.2l-10 6L2 6.2V6Zm0 2.8V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8.8l-10 6-10-6Z" />
+                                        </svg>
+                                        <span>@email</span>
+                                    </span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(phone))
+                                {
+                                    <span class="pill" title="Phone">
+                                        <svg class="mini" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path fill="currentColor" d="M6.62 10.79a15.46 15.46 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.1.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C11.85 22 2 12.15 2 1a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.28.2 2.48.57 3.58a1 1 0 0 1-.24 1.01l-2.2 2.2Z" />
+                                        </svg>
+                                        <span>@phone</span>
+                                    </span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(checkIn))
+                                {
+                                    <span class="pill" title="Check-in">
+                                        <svg class="mini" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path fill="currentColor" d="M7 2h10a2 2 0 0 1 2 2v3H5V4a2 2 0 0 1 2-2Zm12 7H5v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9Zm-6 3h2v4h-2v-4Z" />
+                                        </svg>
+                                        <span>In: @checkIn</span>
+                                    </span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(checkOut))
+                                {
+                                    <span class="pill" title="Check-out">
+                                        <svg class="mini" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path fill="currentColor" d="M7 2h10a2 2 0 0 1 2 2v3H5V4a2 2 0 0 1 2-2Zm12 7H5v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9Zm-6 3h2v4h-2v-4Z" />
+                                        </svg>
+                                        <span>Out: @checkOut</span>
+                                    </span>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(cancellation))
+                            {
+                                <div class="policy">
+                                    <div class="meta">
+                                        <svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path fill="currentColor" d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm-1 5h2v6h-2V7Zm0 8h2v2h-2v-2Z" />
+                                        </svg>
+                                        <strong>Cancellation policy</strong>
+                                    </div>
+                                    <div>@cancellation</div>
+                                </div>
+                            }
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.AOS && typeof window.AOS.init === 'function') {
+        window.AOS.init({ once: true, duration: 600, easing: 'ease-out-cubic', offset: 40 });
+      }
+
+      // Ensure a fallback is applied if no src is present
+      document.querySelectorAll('img[data-fallback]').forEach(function (img) {
+        if (!img.getAttribute('src')) {
+          img.setAttribute('src', img.getAttribute('data-fallback'));
+        }
+      });
+
+      // Robust error handling for broken or blocked images (CSP-safe, no inline needed)
+      var images = document.querySelectorAll('img[data-fallback]');
+      images.forEach(function (img) {
+        var fallback = img.getAttribute('data-fallback');
+        function applyFallback() {
+          if (fallback && img.getAttribute('src') !== fallback) {
+            img.setAttribute('src', fallback);
+          }
+        }
+        // Use JS error handler to avoid CSP issues with inline onerror
+        img.addEventListener('error', function handleError() {
+          img.removeEventListener('error', handleError);
+          applyFallback();
+        });
+
+        // If the image already finished loading but failed (naturalWidth === 0), swap to fallback
+        if (img.complete && img.naturalWidth === 0) {
+          applyFallback();
+        }
+      });
+    });
+</script>
