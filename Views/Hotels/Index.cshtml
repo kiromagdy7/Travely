@@ -76,13 +76,11 @@
     .hotels-grid {
         --gap: 0.75rem;
     }
+
     @@media (min-width: 768px) {
-        .hotels-grid
-
-    {
-        --gap: 0.95rem;
-    }
-
+        .hotels-grid {
+            --gap: 0.95rem;
+        }
     }
 
     .hotels-grid.row {
@@ -117,21 +115,17 @@
         overflow: hidden;
         background: linear-gradient(180deg, rgba(0,0,0,.035), rgba(0,0,0,0));
     }
+
     @@media (min-width: 768px) {
-        .hotel-media
-
-    {
-        height: 230px;
+        .hotel-media {
+            height: 230px;
+        }
     }
 
-    }
     @@media (min-width: 1200px) {
-        .hotel-media
-
-    {
-        height: 250px;
-    }
-
+        .hotel-media {
+            height: 250px;
+        }
     }
 
     .hotel-media img {
@@ -139,7 +133,7 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        object-fit: cover; 
         object-position: center center;
         background: #f3f4f6;
         transition: transform .35s ease;
@@ -291,13 +285,18 @@
             }
             @foreach (var h in hotels)
             {
-                // Resolve main image URL robustly
+                // Resolve main image URL robustly with sanitization
                 var rawUrl = h.TblHotelImages?.FirstOrDefault()?.ImageUrl;
                 string resolvedUrl = string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(rawUrl))
                 {
-                    var trimmed = rawUrl.Trim();
+                    // Normalize slashes and strip accidental wwwroot prefix
+                    var trimmed = rawUrl.Trim().Replace("\\", "/");
+                    if (trimmed.StartsWith("wwwroot/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        trimmed = trimmed.Substring("wwwroot/".Length);
+                    }
 
                     // Absolute HTTP/HTTPS URL
                     if (Uri.TryCreate(trimmed, UriKind.Absolute, out var abs) &&
@@ -326,6 +325,7 @@
                 var location = h.Location;
                 var address = h.Address;
                 var phone = h.Phone;
+                var email = h.ContactInfo;
                 var checkIn = h.CheckInTime?.ToString("HH:mm");
                 var checkOut = h.CheckOutTime?.ToString("HH:mm");
                 var cancellation = h.CancellationPolicy;
@@ -337,10 +337,9 @@
                                  alt="@(string.IsNullOrWhiteSpace(h.Name) ? "Hotel image" : h.Name)"
                                  loading="lazy"
                                  decoding="async"
-                                 referrerpolicy="no-referrer" 
+                                 referrerpolicy="no-referrer"
                                  data-fallback="@placeholderDataUrl"
-                                 style="width:100%;height:100%;object-fit:contain;object-position:center;background:#f3f4f6;"
-                                 onerror="this.onerror=null; this.src=this.dataset.fallback;" />
+                                 onerror="this.onerror=null; if (this.dataset && this.dataset.fallback) this.src=this.dataset.fallback;" />
 
                             @if (stars > 0)
                             {
@@ -379,13 +378,22 @@
                             {
                                 <div class="meta">
                                     <svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path fill="currentColor" d="M12 3a9 9 0 0 0-9 9v7a2 2 0 0 0 2 2h4v-6H7v-3a5 5 0 1 1 10 0v3h-2v6h4a2 2 0 0 0 2-2v-7a9 9 0 0 0-9-9Z" />
+                                        <path fill="currentColor" d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" />
                                     </svg>
                                     <span>@address</span>
                                 </div>
                             }
 
                             <div class="d-flex flex-wrap gap-2 mt-2">
+                                @if (!string.IsNullOrWhiteSpace(email))
+                                {
+                                    <span class="pill" title="Email">
+                                        <svg class="mini" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path fill="currentColor" d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v.2l-10 6L2 6.2V6Zm0 2.8V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8.8l-10 6-10-6Z" />
+                                        </svg>
+                                        <span>@email</span>
+                                    </span>
+                                }
                                 @if (!string.IsNullOrWhiteSpace(phone))
                                 {
                                     <span class="pill" title="Phone">
@@ -440,9 +448,32 @@
       if (window.AOS && typeof window.AOS.init === 'function') {
         window.AOS.init({ once: true, duration: 600, easing: 'ease-out-cubic', offset: 40 });
       }
+
+      // Ensure a fallback is applied if no src is present
       document.querySelectorAll('img[data-fallback]').forEach(function (img) {
         if (!img.getAttribute('src')) {
           img.setAttribute('src', img.getAttribute('data-fallback'));
+        }
+      });
+
+      // Robust error handling for broken or blocked images (CSP-safe, no inline needed)
+      var images = document.querySelectorAll('img[data-fallback]');
+      images.forEach(function (img) {
+        var fallback = img.getAttribute('data-fallback');
+        function applyFallback() {
+          if (fallback && img.getAttribute('src') !== fallback) {
+            img.setAttribute('src', fallback);
+          }
+        }
+        // Use JS error handler to avoid CSP issues with inline onerror
+        img.addEventListener('error', function handleError() {
+          img.removeEventListener('error', handleError);
+          applyFallback();
+        });
+
+        // If the image already finished loading but failed (naturalWidth === 0), swap to fallback
+        if (img.complete && img.naturalWidth === 0) {
+          applyFallback();
         }
       });
     });
