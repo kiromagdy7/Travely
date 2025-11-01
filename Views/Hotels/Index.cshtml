@@ -297,20 +297,18 @@
             }
             @foreach (var h in hotels)
             {
-                // Resolve main image URL robustly with sanitization
                 var rawUrl = h.TblHotelImages?.FirstOrDefault()?.ImageUrl;
                 string resolvedUrl = string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(rawUrl))
                 {
-                    // Normalize slashes and strip accidental wwwroot prefix
+
                     var trimmed = rawUrl.Trim().Replace("\\", "/");
                     if (trimmed.StartsWith("wwwroot/", StringComparison.OrdinalIgnoreCase))
                     {
                         trimmed = trimmed.Substring("wwwroot/".Length);
                     }
 
-                    // Absolute HTTP/HTTPS URL
                     if (Uri.TryCreate(trimmed, UriKind.Absolute, out var abs) &&
                     (abs.Scheme == Uri.UriSchemeHttp || abs.Scheme == Uri.UriSchemeHttps))
                     {
@@ -318,14 +316,12 @@
                     }
                     else
                     {
-                        // App-relative or site-relative paths
                         if (trimmed.StartsWith("~/") || trimmed.StartsWith("/"))
                         {
                             resolvedUrl = Url.Content(trimmed);
                         }
                         else
                         {
-                            // Handle bare relative paths like "images/hotel.jpg"
                             resolvedUrl = Url.Content("~/" + trimmed);
                         }
                     }
@@ -470,14 +466,12 @@
         window.AOS.init({ once: true, duration: 600, easing: 'ease-out-cubic', offset: 40 });
       }
 
-      // Ensure a fallback is applied if no src is present
       document.querySelectorAll('img[data-fallback]').forEach(function (img) {
         if (!img.getAttribute('src')) {
           img.setAttribute('src', img.getAttribute('data-fallback'));
         }
       });
 
-      // Robust error handling for broken or blocked images (CSP-safe, no inline needed)
       var images = document.querySelectorAll('img[data-fallback]');
       images.forEach(function (img) {
         var fallback = img.getAttribute('data-fallback');
@@ -486,13 +480,12 @@
             img.setAttribute('src', fallback);
           }
         }
-        // Use JS error handler to avoid CSP issues with inline onerror
+
         img.addEventListener('error', function handleError() {
           img.removeEventListener('error', handleError);
           applyFallback();
         });
 
-        // If the image already finished loading but failed (naturalWidth === 0), swap to fallback
         if (img.complete && img.naturalWidth === 0) {
           applyFallback();
         }

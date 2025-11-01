@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace Travely.Controllers
 {
-    // Allow anonymous to list and view hotel details, but protect mutations
     [Authorize(Roles = "admin, staff")]
     public class HotelsController : Controller
     {
@@ -24,45 +23,32 @@ namespace Travely.Controllers
             _context = context;
         }
 
-        // GET: Hotels
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            // Lightweight list without rooms to keep it fast
+            var hotels = await _context.TblHotels.Include(h => h.TblHotelImages).ToListAsync();
 
-            var hotels = await _context.TblHotels
-                                     .Include(h => h.TblHotelImages)
-                                     .ToListAsync();
-
-           
             return View(hotels);
         }
 
-
-        // GET: Hotels/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id is null) return NotFound();
 
             
-            var hotel = await _context.TblHotels
-                .Include(h => h.TblHotelImages)
-                // .Include(h => h.TblRooms) 
-                .FirstOrDefaultAsync(h => h.HotelId == id.Value);
+            var hotel = await _context.TblHotels.Include(h => h.TblHotelImages).FirstOrDefaultAsync(h => h.HotelId == id.Value);
 
             if (hotel == null) return NotFound();
 
             return View(hotel);
         }
 
-        // GET: Hotels/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Hotels/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] CreateHotelDto dto, [FromForm] IFormFile[]? images)
@@ -79,7 +65,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Hotels/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id is null) return NotFound();
@@ -106,7 +91,6 @@ namespace Travely.Controllers
             return View(hotel);
         }
 
-        // POST: Hotels/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [FromForm] UpdateHotelDto dto, [FromForm] IFormFile[]? images)
@@ -124,7 +108,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Hotels/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id is null) return NotFound();
@@ -135,7 +118,6 @@ namespace Travely.Controllers
             return View(hotel);
         }
 
-        // POST: Hotels/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -152,7 +134,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Hotels/RemoveImage/10
         [HttpPost]
         public async Task<IActionResult> RemoveImage(int imageId, int hotelId)
         {
@@ -163,7 +144,6 @@ namespace Travely.Controllers
             return RedirectToAction(nameof(Edit), new { id = hotelId });
         }
 
-        // GET: Hotels/Rooms/5
         [AllowAnonymous]
         public async Task<IActionResult> Rooms(int id)
         {

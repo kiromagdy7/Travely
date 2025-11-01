@@ -172,7 +172,8 @@ table.custom-table {
     transition: 0.3s ease-in-out;
 }
     .ColorBtn:hover {
-        background-color: color-mix(in srgb, #2f5d50, white 25%);
+        color:white;
+        background-color: color-mix(in srgb, #2f5d50, black 25%);
     }
 .BackBtnGray {
     background-color: #848484;
@@ -210,6 +211,6 @@ table.custom-table {
 }
 
     .WarningBtnRed:hover {
-        background-color: #da190b;
+        background-color: color-mix(in srgb, #da190b, black 25%);
         color: white;
     }
