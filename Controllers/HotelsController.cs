@@ -8,6 +8,10 @@ using Travely.Dtos.Hotels;
 using Travely.Models;
 using Travely.Services.Hotels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System.Collections.Generic;
+using System;
 
 namespace Travely.Controllers
 {
@@ -16,11 +20,13 @@ namespace Travely.Controllers
     {
         private readonly IHotelService _hotelService;
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public HotelsController(IHotelService hotelService, AppDbContext context)
+        public HotelsController(IHotelService hotelService, AppDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _hotelService = hotelService;
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [AllowAnonymous]
@@ -36,7 +42,7 @@ namespace Travely.Controllers
         {
             if (id is null) return NotFound();
 
-            
+
             var hotel = await _context.TblHotels.Include(h => h.TblHotelImages).FirstOrDefaultAsync(h => h.HotelId == id.Value);
 
             if (hotel == null) return NotFound();
@@ -91,18 +97,83 @@ namespace Travely.Controllers
             return View(hotel);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [FromForm] UpdateHotelDto dto, [FromForm] IFormFile[]? images)
+        public async Task<IActionResult> Edit(int id, [FromForm] UpdateHotelDto dto, [FromForm] List<IFormFile> ImageFiles)
         {
             if (id != dto.HotelId) return NotFound();
-            if (!ModelState.IsValid) return View(dto);
 
-            var (ok, message) = await _hotelService.UpdateAsync(dto, images);
+            if (!ModelState.IsValid)
+            {
+                var hotelForView = await _context.TblHotels.AsNoTracking().FirstOrDefaultAsync(h => h.HotelId == id);
+                return View(hotelForView);
+            }
+
+            if (ImageFiles != null && ImageFiles.Count > 0)
+            {
+
+                var file = ImageFiles.First();
+                long maxFileSize = 5 * 1024 * 1024; 
+
+                if (file.Length > maxFileSize)
+                {
+                    ModelState.AddModelError("ImageFiles", $"Error: File '{file.FileName}' is too large (Max: 5MB).");
+                    var hotelForView = await _context.TblHotels.AsNoTracking().FirstOrDefaultAsync(h => h.HotelId == id);
+                    return View(hotelForView);
+                }
+
+                string uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "images", "Hotels");
+                if (!Directory.Exists(uploadDir)) Directory.CreateDirectory(uploadDir);
+
+                string extension = Path.GetExtension(file.FileName);
+                string uniqueFileName = $"{dto.HotelId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}{extension}";
+                string newFilePath = Path.Combine(uploadDir, uniqueFileName); 
+                string newImageUrl = $"/images/Hotels/{uniqueFileName}"; 
+
+                var firstOldImage = await _context.TblHotelImages.FirstOrDefaultAsync(img => img.HotelId == dto.HotelId);
+
+                using (var fileStream = new FileStream(newFilePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+                if (firstOldImage != null)
+                {
+
+                    if (!string.IsNullOrEmpty(firstOldImage.ImageUrl))
+                    {
+
+                        string oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, firstOldImage.ImageUrl.TrimStart('/'));
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+
+                    firstOldImage.ImageUrl = newImageUrl;
+                    _context.TblHotelImages.Update(firstOldImage);
+                }
+                else
+                {
+
+                    var newImageRecord = new TblHotelImage
+                    {
+                        HotelId = dto.HotelId,
+                        ImageUrl = newImageUrl
+                    };
+                    await _context.TblHotelImages.AddAsync(newImageRecord);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            var (ok, message) = await _hotelService.UpdateAsync(dto, null);
             if (!ok)
             {
                 ModelState.AddModelError(string.Empty, message);
-                return View(dto);
+                var hotelForView = await _context.TblHotels.AsNoTracking().FirstOrDefaultAsync(h => h.HotelId == id);
+                return View(hotelForView);
             }
 
             return RedirectToAction(nameof(Index));
