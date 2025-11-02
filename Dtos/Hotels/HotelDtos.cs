@@ -24,7 +24,6 @@ namespace Travely.Dtos.Hotels
     public class HotelDto
     {
         public int HotelId { get; set; }
-
         public string Name { get; set; } = string.Empty;
         public byte? Stars { get; set; }
         public string? ContactInfo { get; set; }
@@ -37,6 +36,8 @@ namespace Travely.Dtos.Hotels
         public string? Fees { get; set; }
         public decimal? Commission { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string? Overview { get; set; }
+        public string? Description { get; set; }
 
         public List<HotelImageDto> Images { get; set; } = new();
         public List<HotelRoomDto> Rooms { get; set; } = new();
@@ -71,6 +72,8 @@ namespace Travely.Dtos.Hotels
 
         [Range(typeof(decimal), "0", "999.99")]
         public decimal? Commission { get; set; }
+        public string Overview { get; internal set; }
+        public string Description { get; internal set; }
     }
 
     public class UpdateHotelDto : CreateHotelDto

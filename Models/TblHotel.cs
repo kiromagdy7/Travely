@@ -26,6 +26,8 @@ public partial class TblHotel
     public TimeOnly? CheckOutTime { get; set; }
 
     public string CancellationPolicy { get; set; }
+    public string? Description { get; set; }
+    public string? Overview { get; set; }
 
     public string Fees { get; set; }
 

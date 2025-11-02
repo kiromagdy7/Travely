@@ -75,6 +75,8 @@ namespace Travely.Services.Hotels
                 ContactInfo = dto.ContactInfo,
                 CheckInTime = dto.CheckInTime,
                 CheckOutTime = dto.CheckOutTime,
+                Overview = dto.Overview,
+                Description = dto.Description,
                 CancellationPolicy = dto.CancellationPolicy,
                 Fees = dto.Fees,
                 Commission = dto.Commission ?? 0,

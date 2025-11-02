@@ -91,7 +91,9 @@ namespace Travely.Controllers
                 CheckOutTime = hotel.CheckOutTime,
                 CancellationPolicy = hotel.CancellationPolicy,
                 Fees = hotel.Fees,
-                Commission = hotel.Commission
+                Commission = hotel.Commission,
+                Overview = hotel.Overview,
+                Description = hotel.Description
             };
 
             return View(hotel);

@@ -3,102 +3,111 @@
 @{
     ViewData["Title"] = "Details";
 }
-<div class="m-lg-3">
+
+@* <div class="m-lg-3">
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Stars)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Stars)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ContactInfo)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ContactInfo)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Location)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Location)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Address)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Address)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Phone)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Phone)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CheckInTime)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CheckInTime)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CheckOutTime)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CheckOutTime)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CancellationPolicy)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CancellationPolicy)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Fees)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Fees)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Commission)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Commission)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedAt)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreatedAt)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Overview)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Overview)
         </dd>
     </dl>
 </div>
+
 <div class="m-lg-3">
     <a asp-action="Edit" asp-route-id="@Model?.HotelId" class="ColorBtn">Edit</a> |
     <a asp-action="Index" class="BackBtnGray">Back to List</a>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</div> *@
 
 
 <main class="main">
@@ -141,36 +150,20 @@
                             </div>
                         </div>
                         <h1 class="room-title">@Html.DisplayFor(model => model.Name)</h1>
-                        <p class="room-tagline">Experience luxury with breathtaking ocean views and premium amenities</p>
-                        <div class="room-capacity mb-4">
-                            <div class="capacity-item">
-                                <i class="bi bi-people"></i>
-                                <span>Up to 4 guests</span>
-                            </div>
-                            <div class="capacity-item">
-                                <i class="bi bi-grid"></i>
-                                <span>850 sq ft</span>
-                            </div>
-                            <div class="capacity-item">
-                                <i class="bi bi-bed"></i>
-                                <span>King bed + Sofa bed</span>
-                            </div>
-                        </div>
-                        <div class="room-price">
-                            <span class="price-amount">$395</span>
-                            <span class="price-period">per night</span>
-                        </div>
-                        <a href="booking.html" class="btn btn-book-now">Book Now</a>
+                        <p class="room-tagline fs-5 text-muted">@Html.DisplayFor(model => model.Description)</p>
+                        <a asp-controller="Rooms" asp-action="Index" asp-route-hotelId="@Model.HotelId" class="btn btn-book-now">Explore Rooms</a>
+                        @if (User.IsInRole("admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model?.HotelId" class="btn btn-book-now">Edit</a>
+                        }
                     </div>
                 </div>
             </div>
-            <!-- Room Description -->
             <div class="row mb-5">
                 <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
                     <div class="room-description">
-                        <h3 class="section-subtitle">Room Overview</h3>
-                        <p>Indulge in the ultimate luxury experience with our Deluxe Ocean View Suite. This spacious retreat features floor-to-ceiling windows showcasing panoramic ocean vistas, creating a serene atmosphere perfect for romantic getaways or family vacations. The elegantly appointed living space seamlessly blends modern comfort with coastal charm, featuring premium furnishings and thoughtful design elements.</p>
-                        <p>The suite includes a separate living area with comfortable seating, a work desk for business travelers, and a private balcony where you can enjoy your morning coffee while watching the sunrise over the ocean. The bedroom features a plush king-size bed with luxury linens, ensuring a restful night's sleep, while the sofa bed in the living area provides additional accommodation for up to two guests.</p>
+                        <h3 class="section-subtitle KiroFont2">Hotel Overview</h3>
+                        <p>@Html.DisplayFor(model => model.Overview)</p>
                     </div>
                 </div>
                 <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
@@ -181,58 +174,6 @@
                         <h4>Premium Experience</h4>
                         <p>"The most beautiful suite we've ever stayed in. The ocean view is absolutely breathtaking and the attention to detail is remarkable."</p>
                         <div class="quote-author">
-                            <span>- Sarah M., Verified Guest</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Amenities and Features -->
-            <div class="room-amenities mb-5" data-aos="fade-up" data-aos-delay="200">
-                <h3 class="section-subtitle mb-4">Room Amenities</h3>
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="amenity-category">
-                            <h5>Sleeping</h5>
-                            <ul>
-                                <li><i class="bi bi-check2"></i> King size bed</li>
-                                <li><i class="bi bi-check2"></i> Premium linens</li>
-                                <li><i class="bi bi-check2"></i> Memory foam pillows</li>
-                                <li><i class="bi bi-check2"></i> Blackout curtains</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="amenity-category">
-                            <h5>Technology</h5>
-                            <ul>
-                                <li><i class="bi bi-check2"></i> High-speed WiFi</li>
-                                <li><i class="bi bi-check2"></i> 55" Smart TV</li>
-                                <li><i class="bi bi-check2"></i> Bluetooth speakers</li>
-                                <li><i class="bi bi-check2"></i> USB charging ports</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="amenity-category">
-                            <h5>Comfort</h5>
-                            <ul>
-                                <li><i class="bi bi-check2"></i> Climate control</li>
-                                <li><i class="bi bi-check2"></i> Mini refrigerator</li>
-                                <li><i class="bi bi-check2"></i> Coffee machine</li>
-                                <li><i class="bi bi-check2"></i> Safe deposit box</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="amenity-category">
-                            <h5>Bathroom</h5>
-                            <ul>
-                                <li><i class="bi bi-check2"></i> Marble bathroom</li>
-                                <li><i class="bi bi-check2"></i> Rain shower</li>
-                                <li><i class="bi bi-check2"></i> Luxury toiletries</li>
-                                <li><i class="bi bi-check2"></i> Heated floors</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -256,15 +197,15 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <h6>Check-in / Check-out</h6>
-                                    <p>Check-in: 3:00 PM<br>Check-out: 11:00 AM</p>
+                                    <p>Check-in: @Html.DisplayFor(model => model.CheckInTime) <br>Check-out: @Html.DisplayFor(model => model.CheckOutTime) </p>
                                 </div>
                                 <div class="col-md-4">
                                     <h6>Cancellation</h6>
-                                    <p>Free cancellation up to 24 hours before arrival</p>
+                                    <p>@Html.DisplayFor(model => model.CancellationPolicy)</p>
                                 </div>
                                 <div class="col-md-4">
                                     <h6>Pets</h6>
-                                    <p>Pet-friendly with additional fee</p>
+                                    <p>Pet-friendly with some rooms</p>
                                 </div>
                             </div>
                         </div>
@@ -275,19 +216,7 @@
                                 <div class="col-md-6">
                                     <h6>Nearby Attractions</h6>
                                     <ul>
-                                        <li>Beach access - 2 minutes walk</li>
-                                        <li>Marina District - 0.5 miles</li>
-                                        <li>Historic Downtown - 1.2 miles</li>
-                                        <li>Shopping Center - 0.8 miles</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Transportation</h6>
-                                    <ul>
-                                        <li>Airport shuttle available</li>
-                                        <li>Valet parking - $25/night</li>
-                                        <li>Public transportation nearby</li>
-                                        <li>Car rental desk in lobby</li>
+                                        <li>@Html.DisplayFor(model => model.Address)</li>
                                     </ul>
                                 </div>
                             </div>
@@ -314,7 +243,6 @@
                 </div>
             </div>
 
-            <!-- Optional Add-ons -->
             <div class="room-addons mb-5" data-aos="fade-up" data-aos-delay="200">
                 <h3 class="section-subtitle mb-4">Enhance Your Stay</h3>
                 <div class="row">
@@ -325,7 +253,6 @@
                             </div>
                             <h5>Breakfast Package</h5>
                             <p>Start your day with our signature breakfast buffet featuring fresh local ingredients</p>
-                            <div class="addon-price">+$35 per person</div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
@@ -335,7 +262,6 @@
                             </div>
                             <h5>Spa Access</h5>
                             <p>Enjoy unlimited access to our luxury spa facilities during your stay</p>
-                            <div class="addon-price">+$75 per day</div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
@@ -344,27 +270,21 @@
                                 <i class="bi bi-airplane"></i>
                             </div>
                             <h5>Airport Transfer</h5>
-                            <p>Private luxury vehicle transfer to and from the airport</p>
-                            <div class="addon-price">+$95 round trip</div>
+                            <p>Private luxury vehicle transfer to and from the airport For your convenience</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Booking CTA -->
             <div class="booking-cta" data-aos="fade-up" data-aos-delay="200">
                 <div class="booking-card">
                     <div class="row align-items-center">
                         <div class="col-lg-8">
                             <h4>Ready to book your stay?</h4>
-                            <p>Experience luxury and comfort in our Deluxe Ocean View Suite. Book now and create unforgettable memories.</p>
+                            <p>Experience luxury and comfort in our <strong>@Html.DisplayFor(model => model.Name) </strong>. Book now and create unforgettable memories.</p>
                         </div>
                         <div class="col-lg-4 text-center text-lg-end">
-                            <div class="price-display">
-                                <span class="price">$395</span>
-                                <span class="period">per night</span>
-                            </div>
-                            <a href="booking.html" class="btn btn-primary btn-lg">Check Availability</a>
+                            <a asp-controller="Rooms" asp-action="Index" asp-route-hotelId="@Model.HotelId" class="btn btn-book-now">Check Rooms & Availability</a>
                         </div>
                     </div>
                 </div>
