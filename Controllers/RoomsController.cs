@@ -22,8 +22,15 @@ namespace Travely.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? hotelId)
         {
+            var roomsQuery = _context.TblRooms.Include(r => r.Hotel).AsQueryable();
+            if (hotelId.HasValue && hotelId.Value > 0)
+            {
+                roomsQuery = roomsQuery.Where(r => r.HotelId == hotelId.Value);
+
+                return View(await roomsQuery.ToListAsync());
+            }
             // Get the current user's role
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
             
@@ -41,7 +48,8 @@ namespace Travely.Controllers
             if (staffUser?.HotelId == null)
             {
                 // If staff has no assigned hotel, show empty list
-                return View(new List<TblRoom>());
+                //return View(new List<TblRoom>());
+                return View(await roomsQuery.ToListAsync());
             }
 
             // Show only rooms for staff's hotel

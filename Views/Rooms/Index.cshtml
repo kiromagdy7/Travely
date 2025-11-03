@@ -5,8 +5,10 @@
 }
 
 <main style="min-height:82vh;">
-
-<p><a asp-action="Create" class="ColorBtn mt-5">Create New Room</a></p>
+    @if (User.IsInRole("admin"))
+    {
+        <p><a asp-action="Create" class="ColorBtn mt-5">Create New Room</a></p>
+    }
 
 <table class="table">
     <thead>
@@ -20,7 +22,10 @@
             <th>@Html.DisplayNameFor(model => model.Hotel)</th>
             <th>@Html.DisplayNameFor(model => model.BreakfastIncluded)</th>
             <th>@Html.DisplayNameFor(model => model.PetsAllowed)</th>
-            <th>Actions</th>
+                @if (User.IsInRole("admin") || User.IsInRole("staff"))
+                {
+                    <th>Actions</th>
+                }
         </tr>
     </thead>
     <tbody>
@@ -50,6 +55,8 @@
                 </td>
                 <td>
                     <div class="action-buttons">
+                            @if (User.IsInRole("admin") || User.IsInRole("staff"))
+                            {
                         <a asp-action="Edit" asp-route-id="@item.RoomId" class="action-btn edit-btn" title="Edit">
                             <i class="bi bi-pencil"></i>
                         </a>
@@ -65,6 +72,7 @@
                            title="@(item.Available ? "Mark Occupied" : "Mark Available")">
                             <i class="bi @(item.Available ? "bi-toggle-on" : "bi-toggle-off")"></i>
                         </a>
+                        }
                     </div>
                 </td>
             </tr>

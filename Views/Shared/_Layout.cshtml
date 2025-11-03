@@ -33,12 +33,12 @@
     <link rel="stylesheet" href="~/css/Register.css" asp-append-version="true" />
     <style>
         .site-logo {
-            margin-left: 10px;
+            margin-left: 0px;
             transition: transform 0.3s ease-in-out;
         }
 
             .site-logo:hover {
-                transform: scale(1.2);
+                transform: scale(1.1);
             }
 
             .site-logo img {
@@ -84,16 +84,18 @@
         <div class="branding d-flex align-items-center">
 
             <div class="container position-relative d-flex align-items-center justify-content-between">
-                <a asp-controller="Home" asp-action="Index" class="logo d-flex align-items-center site-logo hover-effect">
+                <a asp-controller="Home" asp-action="Index" class=" d-flex align-items-center site-logo" style="width:100px; height:auto;">
                     <img src="~/img/logo.webp" alt="logo">
                 </a>
 
                 <nav id="navmenu" class="navmenu">
                     <ul>
                         <li><a asp-area="" asp-controller="Home" asp-action="Index" class="@(Context.Request.Path.Value?.EndsWith("/Home") == true || Context.Request.Path.Value == "/" ? "active" : "")">Home</a></li>
+                        <li><a asp-area="" asp-controller="Hotels" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Hotels") == true ? "active" : "")">Hotels</a></li>
+                        <li><a asp-area="" asp-controller="Rooms" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Rooms") == true ? "active" : "")">Rooms</a></li>
                         <li><a asp-area="" asp-controller="About" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/About") == true ? "active" : "")">About</a></li>
                         <li><a asp-area="" asp-controller="ContactUS" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/ContactUS") == true ? "active" : "")">Contact Us</a></li>
-                        <li><a asp-area="" asp-controller="Hotels" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Hotels") == true ? "active" : "")">Hotels</a></li>
+
 
                         @if (User.IsInRole("admin") || User.IsInRole("staff"))
                         {
