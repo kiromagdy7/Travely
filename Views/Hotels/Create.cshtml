@@ -9,7 +9,7 @@
 <hr class="m-lg-3" />
 <div class="row m-lg-3">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" id="createHotelForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -18,8 +18,8 @@
             </div>
             <div class="form-group">
                 <label asp-for="Stars" class="control-label"></label>
-                <input asp-for="Stars" class="form-control" />
-                <span asp-validation-for="Stars" class="text-danger"></span>
+                <input asp-for="Stars" class="form-control" type="number" />
+                <span class="text-danger" data-valmsg-for="Stars"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ContactInfo" class="control-label"></label>
@@ -38,17 +38,17 @@
             </div>
             <div class="form-group">
                 <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
+                <input asp-for="Phone" class="form-control" type="tel" />
+                <span class="text-danger" data-valmsg-for="Phone"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CheckInTime" class="control-label"></label>
-                <input asp-for="CheckInTime" class="form-control" />
+                <input asp-for="CheckInTime" class="form-control" type="time" />
                 <span asp-validation-for="CheckInTime" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CheckOutTime" class="control-label"></label>
-                <input asp-for="CheckOutTime" class="form-control" />
+                <input asp-for="CheckOutTime" class="form-control" type="time" />
                 <span asp-validation-for="CheckOutTime" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -56,64 +56,164 @@
                 <input asp-for="CancellationPolicy" class="form-control" />
                 <span asp-validation-for="CancellationPolicy" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Fees" class="control-label"></label>
-                <input asp-for="Fees" class="form-control" />
-                <span asp-validation-for="Fees" class="text-danger"></span>
+                <div class="input-group">
+                    <input asp-for="Fees" class="form-control" type="number" step="0.01" min="0" max="100" />
+                    <span class="input-group-text">%</span>
+                </div>
+                <span class="text-danger" data-valmsg-for="Fees"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Commission" class="control-label"></label>
-                <input asp-for="Commission" class="form-control" />
-                <span asp-validation-for="Commission" class="text-danger"></span>
+                <div class="input-group">
+                    <input asp-for="Commission" class="form-control" type="number" step="0.01" min="0" max="100" />
+                    <span class="input-group-text">%</span>
+                </div>
+                <span class="text-danger" data-valmsg-for="Commission"></span>
             </div>
+
             <div class="form-group mt-3">
                 <label class="control-label">Upload Hotel Images</label>
                 <input type="file" name="ImageFiles" id="imageUpload" multiple class="form-control" accept="image/*" />
                 <div id="fileError" class="text-danger mt-2"></div>
             </div>
             <div class="form-group mt-3">
-                <input type="submit" value="Create" class="ColorBtn" />
+                <input type="submit" value="Create" class="ColorBtn" id="submitBtn" />
                 <a asp-action="Index" style="color:white;" class="BackBtnGray">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
+            // --- Kiro: Your existing code for file upload ---
             const fileInput = document.getElementById('imageUpload');
             const errorDiv = document.getElementById('fileError');
             const submitBtn = document.getElementById('submitBtn');
             const maxFileSize = 5 * 1024 * 1024;
 
-            fileInput.addEventListener('change', function () {
-                errorDiv.innerHTML = '';
-                let hasError = false;
-                const files = this.files;
+            if (fileInput) {
+                fileInput.addEventListener('change', function () {
+                    errorDiv.innerHTML = '';
+                    let hasError = false;
+                    const files = this.files;
 
-                if (files.length > 0) {
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        if (file.size > maxFileSize) {
-                            let errorMsg = document.createElement('div');
-                            errorMsg.textContent = `Error: File '${file.name}' is too large (Max: 5MB).`;
-                            errorDiv.appendChild(errorMsg);
-                            hasError = true;
+                    if (files.length > 0) {
+                        for (let i = 0; i < files.length; i++) {
+                            const file = files[i];
+                            if (file.size > maxFileSize) {
+                                let errorMsg = document.createElement('div');
+                                errorMsg.textContent = `Error: File '${file.name}' is too large (Max: 5MB).`;
+                                errorDiv.appendChild(errorMsg);
+                                hasError = true;
+                            }
                         }
                     }
-                }
 
-                if (hasError) {
-                    errorDiv.insertAdjacentHTML('afterbegin', '<strong>Please remove large files by re-selecting your images.</strong><br/>');
-                    submitBtn.disabled = true;
-                } else {
-                    submitBtn.disabled = false;
-                }
-            });
+                    if (hasError) {
+                        errorDiv.insertAdjacentHTML('afterbegin', '<strong>Please remove large files by re-selecting your images.</strong><br/>');
+                        if(submitBtn) submitBtn.disabled = true;
+                    } else {
+                        if(submitBtn) submitBtn.disabled = false;
+                    }
+                });
+            }
+
+            // --- Kiro: Validation Code Starts Here ---
+
+            // 1. Phone Number Validation (Numbers Only)
+            const phoneInput = document.getElementById('Phone');
+            const phoneError = document.querySelector('[data-valmsg-for="Phone"]');
+
+            if(phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    const originalValue = this.value;
+                    const numericValue = originalValue.replace(/[^0-9]/g, '');
+
+                    if (originalValue !== numericValue) {
+                        phoneError.textContent = 'Please enter numbers only';
+                    } else {
+                        phoneError.textContent = '';
+                    }
+                    this.value = numericValue;
+                });
+            }
+
+            // 2. Stars Validation (Max 7)
+            const starsInput = document.getElementById('Stars');
+            const starsError = document.querySelector('[data-valmsg-for="Stars"]');
+
+            if(starsInput) {
+                starsInput.addEventListener('input', function() {
+                    let starsValue = parseInt(this.value, 10);
+
+                    if (isNaN(starsValue) || starsValue === 0) {
+                         if (this.value !== '') {
+                           starsError.textContent = 'Please enter a valid number';
+                         } else {
+                           starsError.textContent = '';
+                         }
+                        return;
+                    }
+
+                    if (starsValue > 7) {
+                        this.value = 7;
+                        starsError.textContent = 'The maximum number of stars is 7';
+                    } else if (starsValue < 1) {
+                         this.value = 1;
+                        starsError.textContent = 'The minimum number of stars is 1';
+                    } else {
+                        starsError.textContent = '';
+                    }
+                });
+            }
+
+            // --- Kiro: NEW - Function for Fees/Commission Validation ---
+            function validatePercentageInput(inputElement, errorElement) {
+                if (!inputElement) return;
+
+                inputElement.addEventListener('input', function() {
+                    let value = parseFloat(this.value);
+
+                    if (isNaN(value)) {
+                        if (this.value !== '') {
+                            errorElement.textContent = 'Please enter a valid number';
+                        } else {
+                            errorElement.textContent = ''; // Allow empty
+                        }
+                        return;
+                    }
+
+                    if (value > 100) {
+                        this.value = 100; // Auto-correct to 100
+                        errorElement.textContent = 'Maximum value is 100%';
+                    } else if (value < 0) {
+                        this.value = 0; // Auto-correct to 0
+                        errorElement.textContent = 'Minimum value is 0%';
+                    } else {
+                        errorElement.textContent = ''; // Clear error
+                    }
+                });
+            }
+
+            // 3. Apply validation to Fees
+            const feesInput = document.getElementById('Fees');
+            const feesError = document.querySelector('[data-valmsg-for="Fees"]');
+            validatePercentageInput(feesInput, feesError);
+
+            // 4. Apply validation to Commission
+            const commissionInput = document.getElementById('Commission');
+            const commissionError = document.querySelector('[data-valmsg-for="Commission"]');
+            validatePercentageInput(commissionInput, commissionError);
+
         });
     </script>
 }
