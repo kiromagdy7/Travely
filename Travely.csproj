@@ -20,6 +20,7 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="IMP Files [Kiro]\Data Base\" />
+    <Folder Include="wwwroot\images\rooms\" />
   </ItemGroup>
 
   <ItemGroup>

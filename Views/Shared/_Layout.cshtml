@@ -59,7 +59,16 @@
             padding-top: 10px !important;
             padding-bottom: 10px !important;
         }
-
+        .navmenu .dropdown .dropdown-menu {
+            display: none;
+            opacity: 0;
+            visibility: hidden;
+        }
+            .navmenu .dropdown .dropdown-menu.show {
+                display: block;
+                opacity: 1;
+                visibility: visible;
+            }
     </style>
 </head>
 <body>
@@ -156,7 +165,7 @@
                         else
                         {
                             
-                            <li><a asp-area="" asp-controller="Account" asp-action="Login" class="@(Context.Request.Path.Value?.Contains("/Account/Login") == true ? "active" : "")">Login</a></li>
+                            <li><a asp-area="" asp-controller="Account" asp-action="Login" class="@(Context.Request.Path.Value?.Contains("/Account/Login") == true ? "active" : "")">Login <i class="fas fa-sign-in-alt me-1"></i></a></li>
                         }
                     </ul>
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>

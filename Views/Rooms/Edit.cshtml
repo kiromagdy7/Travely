@@ -8,28 +8,17 @@
 
 <div class="row m-lg-4">
     <div class="col-md-8">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
             <input type="hidden" asp-for="RoomId" />
             <input type="hidden" asp-for="CreatedAt" />
-            <input type="hidden" asp-for="HotelId" />  @* Add this line *@
-
+            <input type="hidden" asp-for="HotelId" />
             <div class="form-group mb-3">
                 <label asp-for="RoomNumber" class="control-label"></label>
                 <input asp-for="RoomNumber" class="form-control" />
                 <span asp-validation-for="RoomNumber" class="text-danger"></span>
             </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="RoomType" class="control-label"></label>
-                <select asp-for="RoomType" class="form-control">
-                    <option value="Single">Single</option>
-                    <option value="Double">Double</option>
-                    <option value="Suite">Suite</option>
-                </select>
-                <span asp-validation-for="RoomType" class="text-danger"></span>
-            </div>
-
             <div class="form-group mb-3">
                 <label asp-for="BedsCount" class="control-label"></label>
                 <input asp-for="BedsCount" class="form-control" />
@@ -65,12 +54,52 @@
                     <input class="form-check-input" asp-for="PetsAllowed" /> @Html.DisplayNameFor(model => model.PetsAllowed)
                 </label>
             </div>
-
+            <div class="form-group mb-3">
+                <label asp-for="RoomType" class="control-label"></label>
+                <select asp-for="RoomType" class="form-control">
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                    <option value="Suite">Suite</option>
+                </select>
+                <span asp-validation-for="RoomType" class="text-danger"></span>
+            </div>
             <div class="form-group mb-3">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            <div class="form-group mb-3">
+                <h5 class="KiroFont1">Current Images</h5>
+                @if (Model.TblRoomImages != null && Model.TblRoomImages.Any())
+                {
+                    <div class="d-flex flex-wrap">
+                        @foreach (var image in Model.TblRoomImages)
+                        {
+                            <div class="m-2" style="position: relative; border: 1px solid #ddd; border-radius: 5px; padding: 5px;">
+                                <img src="@image.ImageUrl" style="width: 150px; height: 100px; object-fit: cover; border-radius: 5px;" />
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm rounded-circle btn-delete-image"
+                                        style="position: absolute; top: -10px; right: -10px;"
+                                        formaction="@Url.Action("RemoveRoomImage", "Rooms", new { imageId = image.ImageId, roomId = Model.RoomId })">
+                                    &times;
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>No images uploaded for this room.</p>
+                }
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label KiroFont1">Add More Images</label>
+                <input name="images" type="file" class="form-control" multiple />
+                <small class="form-text text-muted">You can select multiple images. Max size 5MB each.</small>
+            </div>
+
 
             <div class="form-group mt-4">
                 <input type="submit" value="Save" class="ColorBtn" />
@@ -84,4 +113,69 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.btn-delete-image').forEach(button => {
+
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const form = this.closest('form');
+                    const antiForgeryToken = form.querySelector('input[name="__RequestVerificationToken"]').value;
+                    const deleteUrl = this.getAttribute('formaction');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: 'color-mix(in srgb, #2f5d50, white 5%)',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+
+                        if (result.isConfirmed) {
+
+                            fetch(deleteUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'RequestVerificationToken': antiForgeryToken,
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        'The image has been deleted.',
+                                        'success'
+                                    ).then(() => {
+                                        location.reload(); 
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred while trying to delete.',
+                                        'error'
+                                    );
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire(
+                                    'Error!',
+                                    'Could not connect to the server.',
+                                    'error'
+                                );
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 }

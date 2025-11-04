@@ -40,7 +40,7 @@
                             <div class="hero-buttons">
                                 @* <a href="booking.html" class="btn btn-primary">Book Now</a> *@
 @*                                 <a href="rooms.html" class="btn btn-outline">View Rooms</a>
- *@                                <a asp-area="" asp-controller="Rooms" asp-action="Index" class="btn btn-primary">View Room</a>
+ *@                                <a asp-area="" asp-controller="Rooms" asp-action="Index" class="btn btn-primary">Explore our Rooms</a>
                             </div>
                         </div>
                     </div>
@@ -103,6 +103,7 @@
             </div>
 
         </section><!-- /Hotel Hero Section -->
+
         <!-- About Home Section -->
         <section id="about-home" class="about-home section light-background">
 
@@ -133,8 +134,10 @@
                             </div><!-- End Stats Row -->
 
                             <div class="about-actions">
-                                <a href="about.html" class="btn-primary">Our Story</a>
-                                <a href="rooms.html" class="btn-secondary">View Rooms</a>
+                            @*     <a href="about.html" class="btn-primary">Our Story</a> *@
+                                <a asp-area="" asp-controller="About" asp-action="Index" class="ColorBtn">Our Story</a>
+                                @* <a href="rooms.html" class="btn-secondary">View Rooms</a> *@
+                                <a asp-area="" asp-controller="Rooms" asp-action="Index" class="btn-secondary">View our Rooms</a>
                             </div>
                         </div>
                     </div><!-- End About Content -->
