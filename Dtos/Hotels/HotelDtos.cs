@@ -72,8 +72,8 @@ namespace Travely.Dtos.Hotels
 
         [Range(typeof(decimal), "0", "999.99")]
         public decimal? Commission { get; set; }
-        public string Overview { get; internal set; }
-        public string Description { get; internal set; }
+        public string? Overview { get; set; }
+        public string? Description { get; set; }
     }
 
     public class UpdateHotelDto : CreateHotelDto

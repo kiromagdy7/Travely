@@ -1,4 +1,4 @@
-﻿@model Travely.Models.TblHotel
+﻿@model Travely.Dtos.Hotels.CreateHotelDto
 
 @{
     ViewData["Title"] = "Create";
@@ -9,8 +9,8 @@
 <hr class="m-lg-3" />
 <div class="row m-lg-3">
     <div class="col-md-4">
-        <form asp-action="Create" id="createHotelForm">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Create" id="createHotelForm" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -56,7 +56,16 @@
                 <input asp-for="CancellationPolicy" class="form-control" />
                 <span asp-validation-for="CancellationPolicy" class="text-danger"></span>
             </div>
-
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Overview" class="control-label"></label>
+                <textarea asp-for="Overview" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Overview" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Fees" class="control-label"></label>
                 <div class="input-group">
@@ -127,25 +136,27 @@
                 });
             }
 
-            // --- Kiro: Validation Code Starts Here ---
+        const phoneInput = document.getElementById('Phone');
+                const phoneError = document.querySelector('[data-valmsg-for="Phone"]');
 
-            // 1. Phone Number Validation (Numbers Only)
-            const phoneInput = document.getElementById('Phone');
-            const phoneError = document.querySelector('[data-valmsg-for="Phone"]');
-
-            if(phoneInput) {
-                phoneInput.addEventListener('input', function() {
-                    const originalValue = this.value;
-                    const numericValue = originalValue.replace(/[^0-9]/g, '');
-
-                    if (originalValue !== numericValue) {
-                        phoneError.textContent = 'Please enter numbers only';
-                    } else {
-                        phoneError.textContent = '';
-                    }
-                    this.value = numericValue;
-                });
-            }
+                if(phoneInput) {
+                    phoneInput.addEventListener('input', function() {
+                        const originalValue = this.value;
+                        let numericValue = originalValue.replace(/[^0-9]/g, '');
+                        if (originalValue !== numericValue) {
+                            phoneError.textContent = 'Please enter numbers only';
+                        } else {
+                            if (numericValue.length <= 11) {
+                                 phoneError.textContent = '';
+                            }
+                        }
+                        if (numericValue.length > 11) {
+                            numericValue = numericValue.substring(0, 11);
+                            phoneError.textContent = 'Maximum 11 digits allowed';
+                        }
+                        this.value = numericValue;
+                    });
+                }
 
             // 2. Stars Validation (Max 7)
             const starsInput = document.getElementById('Stars');
@@ -164,9 +175,9 @@
                         return;
                     }
 
-                    if (starsValue > 7) {
-                        this.value = 7;
-                        starsError.textContent = 'The maximum number of stars is 7';
+                    if (starsValue > 5) {
+                        this.value = 5;
+                        starsError.textContent = 'The maximum number of stars is 5';
                     } else if (starsValue < 1) {
                          this.value = 1;
                         starsError.textContent = 'The minimum number of stars is 1';
@@ -176,44 +187,49 @@
                 });
             }
 
-            // --- Kiro: NEW - Function for Fees/Commission Validation ---
-            function validatePercentageInput(inputElement, errorElement) {
-                if (!inputElement) return;
+                function validatePercentageInput(inputElement, errorElement) {
+                    if (!inputElement) return;
 
-                inputElement.addEventListener('input', function() {
-                    let value = parseFloat(this.value);
+                    inputElement.addEventListener('input', function() {
+                        let originalValue = this.value;
 
-                    if (isNaN(value)) {
-                        if (this.value !== '') {
-                            errorElement.textContent = 'Please enter a valid number';
-                        } else {
-                            errorElement.textContent = ''; // Allow empty
+                        let cleanedValue = originalValue.replace(/[^0-9.]/g, '');
+
+                        let parts = cleanedValue.split('.');
+                        if (parts.length > 2) {
+
+                            cleanedValue = parts[0] + '.' + parts.slice(1).join('');
                         }
-                        return;
-                    }
 
-                    if (value > 100) {
-                        this.value = 100; // Auto-correct to 100
-                        errorElement.textContent = 'Maximum value is 100%';
-                    } else if (value < 0) {
-                        this.value = 0; // Auto-correct to 0
-                        errorElement.textContent = 'Minimum value is 0%';
-                    } else {
-                        errorElement.textContent = ''; // Clear error
-                    }
-                });
-            }
+                        if (originalValue !== cleanedValue && errorElement) {
+                            errorElement.textContent = 'Only numbers and one decimal point allowed';
+                        } else if (errorElement) {
+                            errorElement.textContent = '';
+                        }
 
-            // 3. Apply validation to Fees
-            const feesInput = document.getElementById('Fees');
-            const feesError = document.querySelector('[data-valmsg-for="Fees"]');
-            validatePercentageInput(feesInput, feesError);
+                        let value = parseFloat(cleanedValue);
 
-            // 4. Apply validation to Commission
-            const commissionInput = document.getElementById('Commission');
-            const commissionError = document.querySelector('[data-valmsg-for="Commission"]');
-            validatePercentageInput(commissionInput, commissionError);
+                        if (!isNaN(value)) {
+                            if (value > 100) {
+                                cleanedValue = '100';
+                                if (errorElement) errorElement.textContent = 'Maximum value is 100%';
+                            }
+                        } else {
+                            if (cleanedValue !== '.' && cleanedValue !== '' && errorElement) {
+                                errorElement.textContent = 'Please enter a valid number';
+                            }
+                        }
+                        this.value = cleanedValue;
+                    });
+                }
+                const feesInput = document.getElementById('Fees');
+                const feesError = document.querySelector('[data-valmsg-for="Fees"]');
+                validatePercentageInput(feesInput, feesError);
 
-        });
+                const commissionInput = document.getElementById('Commission');
+                const commissionError = document.querySelector('[data-valmsg-for="Commission"]');
+                validatePercentageInput(commissionInput, commissionError);
+
+            });
     </script>
 }

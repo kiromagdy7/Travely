@@ -57,11 +57,11 @@ namespace Travely.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm] CreateHotelDto dto, [FromForm] IFormFile[]? images)
+        public async Task<IActionResult> Create([FromForm] CreateHotelDto dto, [FromForm] IFormFile[]? ImageFiles)
         {
             if (!ModelState.IsValid) return View(dto);
 
-            var (ok, message, hotelId) = await _hotelService.CreateAsync(dto, images);
+            var (ok, message, hotelId) = await _hotelService.CreateAsync(dto, ImageFiles);
             if (!ok)
             {
                 ModelState.AddModelError(string.Empty, message);
