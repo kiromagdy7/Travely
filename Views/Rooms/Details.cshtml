@@ -1,83 +1,164 @@
 ﻿@model Travely.Models.TblRoom
 
 @{
-    ViewData["Title"] = "Details Room";
+    ViewData["Title"] = Model.RoomType;
+
+    string imageUrl = "/images/placeholder.png";
+    if (Model.TblRoomImages != null && Model.TblRoomImages.Any())
+    {
+        imageUrl = Model.TblRoomImages.First().ImageUrl;
+    }
 }
 
-<h1 class="mt-4 m-lg-4 KiroFont1">Room Details</h1>
+<main class="main">
 
-<div class="m-lg-4">
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Hotel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Hotel.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.RoomNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.RoomNumber)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.RoomType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.RoomType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BedsCount)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BedsCount)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxGuests)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MaxGuests)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Available)
-        </dt>
-        <dd class="col-sm-10">
-            <span class="badge @(Model.Available ? "bg-success" : "bg-danger")">
-                @(Model.Available ? "Available" : "Occupied")
-            </span>
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BreakfastIncluded)
-        </dt>
-        <dd class="col-sm-10">
-            <span class="badge @(Model.BreakfastIncluded ? "bg-success" : "bg-secondary")">
-                @(Model.BreakfastIncluded ? "Included" : "Not Included")
-            </span>
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PetsAllowed)
-        </dt>
-        <dd class="col-sm-10">
-            <span class="badge @(Model.PetsAllowed ? "bg-success" : "bg-secondary")">
-                @(Model.PetsAllowed ? "Allowed" : "Not Allowed")
-            </span>
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-</div>
-<div class="m-lg-3">
-    <a asp-action="Edit" asp-route-id="@Model.RoomId" class="ColorBtn">Edit</a>
-    <a asp-action="Index" class="BackBtnGray">Back to List</a>
-</div>
+    <section id="room-details" class="room-details section">
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-7" data-aos="fade-right" data-aos-delay="200">
+                    <div class="room-header-image">
+                        <img src=@imageUrl alt="@Model.RoomType" class="img-fluid rounded">
+                    </div>
+                </div>
+                <div class="col-lg-5" data-aos="fade-left" data-aos-delay="300">
+                    <div class="room-header-content">
+                        <h1 class="room-title">@Model.RoomType "@Model.RoomNumber"</h1>
+
+                        <p class="room-tagline"> lovely room at @Model.Hotel.Name</p>
+
+                        <div class="room-capacity mb-4">
+                            <div class="capacity-item">
+                                <i class="bi bi-people"></i>
+                                <span>Up to @Model.MaxGuests guests</span>
+                            </div>
+                            <div class="capacity-item">
+                                <i class="bi bi-bed"></i>
+                                <span>@Model.BedsCount Bed(s)</span>
+                            </div>
+                        </div>
+
+                        <div class="room-price">
+                            <span class="price-amount">$@Model.Price.ToString("F2")</span>
+                            <span class="price-period">per night</span>
+                        </div>
+
+                        @if (Model.Available == true)
+                        {
+                            <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@Model.RoomId" class="ColorBtn btn-lg">Book Now</a>
+                        }
+                        else
+                        {
+                            <a asp-area="" asp-controller="Rooms" asp-action="Index" class="ColorBtn btn-lg">Explore other Rooms</a>
+                            <p>This Room is Not Availabale Right Now</p>
+                        }
+                        @if (User.IsInRole("admin") || User.IsInRole("staff"))
+                        {
+                                <a asp-action="Edit" asp-route-id="@Model.RoomId" class="ColorBtn">Edit</a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-gallery mb-5" data-aos="fade-up" data-aos-delay="200">
+                <h3 class="section-subtitle mb-4">Room Gallery</h3>
+
+                <div class="gallery-grid">
+                    @if (Model.TblRoomImages != null && Model.TblRoomImages.Any())
+                    {
+                        <div class="gallery-main">
+                            <a href="@Model.TblRoomImages.First().ImageUrl" class="glightbox">
+                                <img src="@Model.TblRoomImages.First().ImageUrl" alt="@Model.RoomType" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="gallery-thumbnails">
+                            @foreach (var image in Model.TblRoomImages.Skip(1))
+                            {
+                                <a href="@image.ImageUrl" class="glightbox">
+                                    <img src="@image.ImageUrl" alt="Room thumbnail" class="img-fluid">
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="gallery-main">
+                            <img src="/images/placeholder.png" alt="No images available" class="img-fluid">
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+                    <div class="room-description">
+                        <h3 class="section-subtitle">Room Overview</h3>
+                        <p>@Html.Raw(Model.Description.Replace("\n", "<br>"))</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-tabs mb-5" data-aos="fade-up" data-aos-delay="200">
+                <ul class="nav nav-tabs" id="room-detailsRoomTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="room-details-policies-tab" data-bs-toggle="tab" data-bs-target="#room-details-policies" type="button" role="tab">Policies</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="room-detailsRoomTabsContent">
+                    <div class="tab-pane fade show active" id="room-details-policies" role="tabpanel">
+                        <div class="tab-content-wrapper">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Availability </h6>
+                                    <p>Status : <strong>@Model.Available</strong> </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Pets</h6>
+                                    <p class="badge @(Model.PetsAllowed ? "bg-success" : "bg-danger")">
+                                        @(Model.PetsAllowed ? "Pets Allowed" : "Pets Not Allowed")
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Breakfast</h6>
+                                    <p class="badge @(Model.BreakfastIncluded ? "bg-success" : "bg-secondary")">
+                                        @(Model.BreakfastIncluded ? "Included" : "Not Included")
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="booking-cta" data-aos="fade-up" data-aos-delay="200">
+                <div class="booking-card">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h4>Ready to book your stay?</h4>
+                            <p>Indulge in the perfect blend of luxury, comfort, and breathtaking views in our Deluxe Ocean View Suite. 
+                                Wake up to the sound of the waves, relax in elegant surroundings, and enjoy every moment of your stay. 
+                                Book now to experience an unforgettable escape filled with serenity, sophistication, and lasting memories. </p>
+                        </div>
+                        <div class="col-lg-4 text-center text-lg-end">
+                            <div class="price-display">
+                                <span class="price">@Model.Price</span>
+                                <span class="period">per night</span>
+                            </div>
+                            @if (Model.Available == true)
+                            {
+                                <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@Model.RoomId" class="btn btn-primary btn-lg">Book Now</a>
+                            }
+                            else
+                            {
+                                <a asp-area="" asp-controller="Rooms" asp-action="Index" class="btn btn-primary btn-lg">Explore other Rooms</a>
+                                <p>This Room is Not Availabale Right Now</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</main>

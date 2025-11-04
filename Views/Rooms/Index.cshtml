@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Rooms";
 }
-
+@* 
 <main style="min-height:82vh;">
     @if (User.IsInRole("admin"))
     {
@@ -20,6 +20,7 @@
             <th>@Html.DisplayNameFor(model => model.Available)</th>
             <th>@Html.DisplayNameFor(model => model.MaxGuests)</th>
             <th>@Html.DisplayNameFor(model => model.Hotel)</th>
+
             <th>@Html.DisplayNameFor(model => model.BreakfastIncluded)</th>
             <th>@Html.DisplayNameFor(model => model.PetsAllowed)</th>
                 @if (User.IsInRole("admin") || User.IsInRole("staff"))
@@ -80,75 +81,115 @@
     </tbody>
 </table>
 
+</main> *@
+
+<header class="hotels-header">
+    <div>
+        <h2 class="hotels-title h3 mb-1">Explore Rooms</h2>
+        <p class="hotels-subtitle">Browse cozy spaces and find your perfect stay</p>
+    </div>
+</header>
+<div style="display:flex; justify-content:center; align-items:center;">
+    @if (User.IsInRole("admin"))
+    {
+        <p><a asp-action="Create" class="ColorBtn mt-5">Create New Room</a></p>
+    }
+</div>
+
+<main class="main">
+
+    <section id="rooms-2" class="rooms-2 section">
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <div class="rooms-grid" data-aos="fade-up" data-aos-delay="300">
+                <div class="row g-4">
+
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-xl-4 col-lg-6">
+                            <div class="room-card">
+                                <div class="room-image">
+
+                                    @{
+                                        string imageUrl = "/images/placeholder.png";
+                                        if (item.TblRoomImages != null && item.TblRoomImages.Any())
+                                        {
+                                            imageUrl = item.TblRoomImages.First().ImageUrl;
+                                        }
+                                    }
+                                    <img src="@imageUrl" alt="@item.RoomType" class="img-fluid">
+                                    <div class="room-features">
+                                    </div>
+                                </div>
+                                <div class="room-content mb-0">
+                                    <div class="room-header">
+                                        <h3>@Html.DisplayFor(modelItem => item.RoomType)</h3>
+                                    </div>
+                                    <p class="room-description ">@Html.DisplayFor(modelItem => item.Description)</p>
+                                    <div class="room-amenities">
+                                        <span><i class="bi bi-people"></i> @Html.DisplayFor(modelItem => item.MaxGuests) </span>
+                                        <span><i class="bi bi-wifi"></i> Free WiFi</span>
+                                        <span><i class="bi bi-tv"></i> Smart TV</span>
+                                    </div>
+                                    <div class="room-footer">
+                                        <div class="room-price">
+                                            <span class="price-from">From</span>
+                                            <span class="price-amount">@Html.DisplayFor(modelItem => item.Price)</span>
+                                            <span class="price-period">/ night</span>
+                                        </div>
+                                        <a asp-action="Details" asp-route-id="@item.RoomId" class="ColorBtn" title="Details">View Details</a>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content:center; align-items:center; margin:0;">
+                                    @if (User.IsInRole("admin") || User.IsInRole("staff"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.RoomId" class="BackBtnGray" title="Edit">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@item.RoomId" class="WarningBtnRed" title="Delete">Delete</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
-<style>
-.action-buttons {
-    display: flex;
-    gap: 5px;
-    justify-content: flex-start;
-    align-items: center;
-}
+   <style>
+   .room-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 1; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
 
-.action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    border: none;
-    color: white;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
+    .hotels-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 5rem;
+        margin-top: 2rem
+    }
 
-.action-btn:hover {
-    transform: translateY(-1px);
-    color: white;
-}
+    .hotels-title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: var(--heading-color);
+        font-weight: 700;
+        font-size: 45px;
+        letter-spacing: -0.02em;
+        margin: 0;
+        margin-top:20px;
+        color: #393E46;
+    }
 
-.edit-btn {
-    background-color: #0d6efd;
-}
-
-.edit-btn:hover {
-    background-color: #0b5ed7;
-}
-
-.details-btn {
-    background-color: #0dcaf0;
-}
-
-.details-btn:hover {
-    background-color: #0bb5d7;
-}
-
-.delete-btn {
-    background-color: #dc3545;
-}
-
-.delete-btn:hover {
-    background-color: #bb2d3b;
-}
-
-.occupy-btn {
-    background-color: #ffc107;
-}
-
-.occupy-btn:hover {
-    background-color: #e0a800;
-}
-
-.available-btn {
-    background-color: #198754;
-}
-
-.available-btn:hover {
-    background-color: #157347;
-}
-
-.bi {
-    font-size: 14px;
-}
-</style>
+    .hotels-subtitle {
+        color: var(--muted);
+        margin: .25rem 0 0 0;
+        color: #393E46;
+    }
+    </style>

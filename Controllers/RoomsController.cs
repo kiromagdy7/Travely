@@ -27,45 +27,55 @@ namespace Travely.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        // ---------- [ بداية التعديل المطلوب ] ----------
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? hotelId)
         {
-            var roomsQuery = _context.TblRooms.Include(r => r.Hotel).AsQueryable();
+            // 1. إضافة Include للصور هنا في الاستعلام الأساسي
+            var roomsQuery = _context.TblRooms
+                .Include(r => r.Hotel)
+                .Include(r => r.TblRoomImages) // <--- الإضافة الأولى
+                .AsQueryable();
+
             if (hotelId.HasValue && hotelId.Value > 0)
             {
                 roomsQuery = roomsQuery.Where(r => r.HotelId == hotelId.Value);
-
+                // البيانات ستأتي مع الصور لأنها موجودة في roomsQuery
                 return View(await roomsQuery.ToListAsync());
             }
-            // Get the current user's role
+
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            // If user is admin, show all rooms
             if (userRole == "admin")
             {
-                return View(await _context.TblRooms.Include(r => r.Hotel).ToListAsync());
+                // 2. إضافة Include للصور هنا (مسار الأدمن)
+                return View(await _context.TblRooms
+                    .Include(r => r.Hotel)
+                    .Include(r => r.TblRoomImages) // <--- الإضافة الثانية
+                    .ToListAsync());
             }
 
-            // If user is staff, get their hotel ID
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
             var staffUser = await _context.TblUsers
                 .FirstOrDefaultAsync(u => u.Email == userEmail);
 
             if (staffUser?.HotelId == null)
             {
-                // If staff has no assigned hotel, show empty list
-                //return View(new List<TblRoom>());
+                // سيعود بالبيانات من roomsQuery (الذي يحتوي على الصور)
                 return View(await roomsQuery.ToListAsync());
             }
 
-            // Show only rooms for staff's hotel
+            // 3. إضافة Include للصور هنا (مسار الموظف)
             var hotelRooms = await _context.TblRooms
                 .Include(r => r.Hotel)
+                .Include(r => r.TblRoomImages) // <--- الإضافة الثالثة
                 .Where(r => r.HotelId == staffUser.HotelId)
                 .ToListAsync();
 
             return View(hotelRooms);
         }
+        // ---------- [ نهاية التعديل المطلوب ] ----------
+
 
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
@@ -73,7 +83,7 @@ namespace Travely.Controllers
             if (id == null) return NotFound();
             var tblRoom = await _context.TblRooms
                 .Include(r => r.Hotel)
-                .Include(r => r.TblRoomImages) // <-- هذا السطر موجود وهو صحيح
+                .Include(r => r.TblRoomImages) // (موجودة لديك)
                 .FirstOrDefaultAsync(m => m.RoomId == id);
             if (tblRoom == null) return NotFound();
             return View(tblRoom);
@@ -91,7 +101,6 @@ namespace Travely.Controllers
             [Bind("HotelId,RoomNumber,RoomType,BedsCount,Price,MaxGuests,Description,BreakfastIncluded,PetsAllowed,Available")] TblRoom tblRoom,
             List<IFormFile> images)
         {
-            // (كود التحقق من الحجم)
             long maxFileSize = 5 * 1024 * 1024; // 5 MB
             foreach (var file in images)
             {
@@ -105,11 +114,10 @@ namespace Travely.Controllers
             {
                 tblRoom.CreatedAt = DateTime.UtcNow;
                 _context.Add(tblRoom);
-                await _context.SaveChangesAsync(); // <-- الحفظ الأول
+                await _context.SaveChangesAsync();
 
                 if (images != null && images.Count > 0)
                 {
-                    // (كود حفظ الصور)
                     string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "rooms");
                     Directory.CreateDirectory(uploadFolder);
                     string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -132,7 +140,7 @@ namespace Travely.Controllers
                         };
                         _context.TblRoomImages.Add(roomImage);
                     }
-                    await _context.SaveChangesAsync(); // <-- الحفظ الثاني
+                    await _context.SaveChangesAsync();
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -152,38 +160,31 @@ namespace Travely.Controllers
             return staffUser?.HotelId == hotelId;
         }
 
-        // ---------- [ بداية التعديلات المطلوبة ] ----------
-
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            // <-- 1. تعديل: استخدام Include لجلب الصور الموجودة مع الغرفة
             var tblRoom = await _context.TblRooms
-                .Include(r => r.TblRoomImages)
+                .Include(r => r.TblRoomImages) // (موجودة لديك)
                 .FirstOrDefaultAsync(r => r.RoomId == id);
 
             if (tblRoom == null) return NotFound();
 
-            // Check if staff can manage this room
             if (!await CanManageRoom(tblRoom.HotelId))
             {
                 return Forbid();
             }
 
-            // If admin or staff of this hotel
             ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // <-- 2. تعديل: إضافة باراميتر "List<IFormFile> images"
         public async Task<IActionResult> Edit(int id, [Bind("RoomId,HotelId,RoomNumber,RoomType,BedsCount,Price,MaxGuests,Description,BreakfastIncluded,PetsAllowed,Available,CreatedAt")] TblRoom tblRoom, List<IFormFile> images)
         {
             if (id != tblRoom.RoomId) return NotFound();
 
-            // <-- 3. إضافة: التحقق من حجم الصور الجديدة (5 ميجا)
             long maxFileSize = 5 * 1024 * 1024; // 5 MB
             foreach (var file in images)
             {
@@ -203,10 +204,8 @@ namespace Travely.Controllers
                     if (existingRoom == null)
                         return NotFound();
 
-                    // Ensure HotelId isn't changed
                     tblRoom.HotelId = existingRoom.HotelId;
 
-                    // <-- 4. إضافة: منطق حفظ الصور الجديدة (نفس كود Create)
                     if (images != null && images.Count > 0)
                     {
                         string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "rooms");
@@ -229,12 +228,12 @@ namespace Travely.Controllers
                                 RoomId = tblRoom.RoomId,
                                 ImageUrl = "/images/rooms/" + uniqueFileName
                             };
-                            _context.TblRoomImages.Add(roomImage); // إضافة الصور الجديدة
+                            _context.TblRoomImages.Add(roomImage);
                         }
                     }
 
-                    _context.Update(tblRoom); // تحديث بيانات الغرفة
-                    await _context.SaveChangesAsync(); // حفظ التحديثات والصور الجديدة معاً
+                    _context.Update(tblRoom);
+                    await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
@@ -245,19 +244,16 @@ namespace Travely.Controllers
                 }
             }
 
-            // <-- 5. تعديل: إذا فشل الحفظ، أعد تحميل الصور الموجودة
             tblRoom.TblRoomImages = await _context.TblRoomImages
                                         .Where(i => i.RoomId == id).ToListAsync();
             ViewData["HotelId"] = new SelectList(_context.TblHotels, "HotelId", "Name", tblRoom.HotelId);
             return View(tblRoom);
         }
 
-        // <-- 6. إضافة: دالة جديدة لحذف الصور
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveRoomImage(int imageId, int roomId)
         {
-            // البحث عن سجل الصورة
             var image = await _context.TblRoomImages.FindAsync(imageId);
             if (image == null)
             {
@@ -265,7 +261,6 @@ namespace Travely.Controllers
                 return RedirectToAction(nameof(Edit), new { id = roomId });
             }
 
-            // التأكد من الصلاحية
             var room = await _context.TblRooms.FindAsync(roomId);
             if (room == null || !await CanManageRoom(room.HotelId))
             {
@@ -274,14 +269,12 @@ namespace Travely.Controllers
 
             try
             {
-                // 1. حذف الملف الفعلي من المجلد
                 string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.ImageUrl.TrimStart('/'));
                 if (System.IO.File.Exists(imagePath))
                 {
                     System.IO.File.Delete(imagePath);
                 }
 
-                // 2. حذف سجل الصورة من قاعدة البيانات
                 _context.TblRoomImages.Remove(image);
                 await _context.SaveChangesAsync();
 
@@ -292,12 +285,8 @@ namespace Travely.Controllers
                 TempData["ErrorMessage"] = "Error removing image: " + ex.Message;
             }
 
-            // 3. العودة لصفحة التعديل
             return RedirectToAction(nameof(Edit), new { id = roomId });
         }
-
-
-        // ---------- [ نهاية التعديلات المطلوبة ] ----------
 
         public async Task<IActionResult> Delete(int? id)
         {
@@ -313,14 +302,12 @@ namespace Travely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // <-- 7. تعديل: جلب الصور مع الغرفة لحذفها
             var tblRoom = await _context.TblRooms
-                .Include(r => r.TblRoomImages)
+                .Include(r => r.TblRoomImages) // (موجودة لديك)
                 .FirstOrDefaultAsync(r => r.RoomId == id);
 
             if (tblRoom != null)
             {
-                // 8. إضافة: حذف الملفات الفعلية للصور
                 foreach (var image in tblRoom.TblRoomImages)
                 {
                     try
@@ -333,11 +320,10 @@ namespace Travely.Controllers
                     }
                     catch (Exception)
                     {
-                        // (يمكنك تسجيل الخطأ هنا إذا فشل حذف ملف)
+                        // Log error if deleting file fails
                     }
                 }
 
-                // (سيقوم EF Core بحذف سجلات TblRoomImages المرتبطة عند حذف الغرفة بسبب العلاقة)
                 _context.TblRooms.Remove(tblRoom);
                 await _context.SaveChangesAsync();
             }
@@ -374,6 +360,8 @@ namespace Travely.Controllers
             }
             var availableRooms = await query
                 .Include(r => r.Hotel)
+
+                // .Include(r => r.TblRoomImages) 
                 .OrderBy(r => r.Price)
                 .ToListAsync();
             return View("Index", availableRooms);
