@@ -20,6 +20,10 @@
             }
 
             <span class="user-name">@Model.Fullname</span>
+            @if (User.IsInRole("admin") || User.IsInRole("staff"))
+            {
+                <span class="user-name" style="display:flex;">Your Role: "<span style="color:brown; font-size:18px;">@Model.Role</span>"</span>
+            }
         </div>
 
         <nav class="sidebar-nav">

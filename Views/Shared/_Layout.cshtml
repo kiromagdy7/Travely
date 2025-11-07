@@ -106,12 +106,12 @@
                         <li><a asp-area="" asp-controller="ContactUS" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/ContactUS") == true ? "active" : "")">Contact Us</a></li>
 
 
-                        @if (User.IsInRole("admin") || User.IsInRole("staff"))
+                        @* @if (User.IsInRole("admin") || User.IsInRole("staff"))
                         {
                             <li>
                                 <a asp-area="" asp-controller="Rooms" asp-action="Index" class="@(Context.Request.Path.Value?.Contains("/Rooms") == true ? "active" : "")">Manage Rooms</a>
                             </li>
-                        }
+                        } *@
                         @if (User.IsInRole("admin"))
                         {
                             <li>
