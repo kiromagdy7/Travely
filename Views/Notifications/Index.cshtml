@@ -1,0 +1,187 @@
+﻿@model IEnumerable<Travely.Models.TblNotification>
+
+<div class="profile-page-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            @{
+                var imagePathClaim = User.FindFirst("ImagePath");
+                var fullNameClaim = User.FindFirst("Fullname");
+                var roleClaim = User.FindFirst("Role");
+
+                var imagePath = (imagePathClaim != null && !string.IsNullOrEmpty(imagePathClaim.Value))
+                ? imagePathClaim.Value
+                : "~/images/profiles/Unknown_person.jpg";
+
+                var fullName = fullNameClaim != null ? fullNameClaim.Value : "User";
+                var role = roleClaim != null ? roleClaim.Value : "";
+            }
+
+            <img src="@Url.Content(imagePath)" alt="Profile Picture" class="profile-avatar-image" />
+            <span class="user-name">@fullName</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a asp-action="Profile" asp-controller="Account"><i class="fas fa-briefcase"></i> My Bookings</a></li>
+                <li><a asp-action="Edit" asp-controller="Account"><i class="fas fa-user"></i> Personal Info</a></li>
+                <li><a asp-action="Index" asp-controller="Notifications" class="active"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a asp-action="Wishlist" asp-controller="Account"><i class="fas fa-heart"></i> My Wishlist</a></li>
+            </ul>
+        </nav>
+
+        <div class="logout-link">
+            <form asp-controller="Account" asp-action="Logout" method="post" id="sidebarLogoutForm">
+                @Html.AntiForgeryToken()
+                <a href="javascript:void(0);" onclick="document.getElementById('sidebarLogoutForm').submit();" class="sidebar-logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="notifications-page">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>All Notifications</h1>
+                @if (User.IsInRole("admin") || User.IsInRole("staff"))
+                {
+                    <a asp-action="Create" asp-controller="Notifications" class="ColorBtn">
+                        <i class="fas fa-plus-circle me-2"></i> Create New Notification
+                    </a>
+                }
+            </div>
+
+            <div class="notifications-layout">
+                <!-- Right Column (Notification List) -->
+                <div class="notifications-list">
+                    @if (!Model.Any())
+                    {
+                        <div class="empty-state text-center text-muted py-5">
+                            <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                            <p>No notifications yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var n in Model)
+                        {
+                            <div class="notification-card @(n.IsRead ? "" : "unread")" onclick="showNotification('@n.Title', '@n.Message', '@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")')">
+                                <h6 class="notif-title">@n.Title</h6>
+                                <small class="text-muted">@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Left Column (Notification Details) -->
+                <div class="notification-details" id="notifDetails">
+                    <div class="empty-details text-center text-muted">
+                        <i class="far fa-bell fa-4x mb-3"></i>
+                        <p>Select a notification to view details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+    <style>
+        /* === Layout === */
+        .notifications-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        /* === Notification List === */
+        .notifications-list {
+            background: #fff;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            height: 420px;
+            overflow-y: auto;
+        }
+
+        .notification-card {
+            background: #f9fafb;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .notification-card:hover {
+                background-color: #eef6ff;
+                transform: translateY(-2px);
+            }
+
+            .notification-card.unread {
+                background-color: #edf5ff;
+                border-left: 4px solid #007bff;
+            }
+
+        .notif-title {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* === Details Panel === */
+        .notification-details {
+            background: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            min-height: 420px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow-y: auto;
+        }
+
+        .notif-details-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2f5d50;
+            margin-bottom: 15px;
+        }
+
+        .notif-details-message {
+            font-size: 1rem;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .notif-details-time {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        /* === Empty States === */
+        .empty-state, .empty-details {
+            padding: 60px 20px;
+        }
+
+        /* === Page Header === */
+        .page-title {
+            font-weight: 700;
+            color: #2f5d50;
+        }
+    </style>
+
+    <script>
+        function showNotification(title, message, time) {
+            const container = document.getElementById("notifDetails");
+            container.innerHTML = `
+                <h2 class="notif-details-title">${title}</h2>
+                <p class="notif-details-message">${message}</p>
+                <div class="notif-details-time"><i class="far fa-clock me-2"></i>${time}</div>
+            `;
+        }
+    </script>
+}

@@ -64,11 +64,117 @@
             opacity: 0;
             visibility: hidden;
         }
-            .navmenu .dropdown .dropdown-menu.show {
+        .navmenu .dropdown .dropdown-menu.show {
                 display: block;
                 opacity: 1;
                 visibility: visible;
+        }
+
+
+
+        .notif-container {
+            position: relative;
+            display: inline-block;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .material-symbols-outlined {
+            font-size: 22px;
+            cursor: pointer;
+            color: #b5b5b5;
+            justify-content: center;
+            align-items: center;
+            transition: color 0.3s;
+        }
+
+            .material-symbols-outlined:hover {
+                color: white;
             }
+
+        .notif-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 6px;
+        }
+
+        /* === Popup === */
+        .notif-popup {
+            position: absolute;
+            top: 35px;
+            right: 0;
+            width: 250px;
+            min-height: 150px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            overflow: hidden;
+            z-index: 1000;
+            display: none;
+        }
+
+            .notif-popup.visible {
+                display: flex;
+            }
+
+        .notif-list {
+            flex: 1; 
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .notif-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+            .notif-item.unread {
+                background-color: #f5f8ff;
+                font-weight: bold;
+            }
+
+            .notif-item:hover {
+                background-color: #f0f4ff;
+            }
+
+        /* === Footer === */
+        .notif-footer {
+            background: #f8f9fa;
+            padding: 0px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            flex-shrink: 0; 
+        }
+
+        .notif-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .notif-link:hover {
+                text-decoration: underline;
+            }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
     </style>
 </head>
 <body>
@@ -121,6 +227,24 @@
 
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
+
+                            @*------------------------------*@
+                            <div class="notif-container">
+                                <span id="notifIcon" class="material-symbols-outlined">chat</span>
+                                <span id="notifBadge" class="notif-badge" hidden>0</span>
+
+                                <div id="notifPopup" class="notif-popup">
+                                    <div id="notifList" class="notif-list">
+                                    </div>
+                                    <div class="notif-footer">
+                                        <a asp-controller="Notifications" asp-action="Index" class="notif-link" 
+                                        style="color:color-mix(in srgb, #2f5d50, white 5%); font-size:12px; text-align:center; justify-content:center;">Show all Notifications</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*------------------------------*@
+
                             var imagePathClaim = User.FindFirst("ImagePath");
 
                             var profilePicPath = (imagePathClaim != null && !string.IsNullOrEmpty(imagePathClaim.Value))
@@ -261,6 +385,66 @@
             $('#navbarProfileLink').on('click', function(e) {
                 e.preventDefault();
             });
+        });
+
+
+
+
+            document.addEventListener("DOMContentLoaded", function() {
+            const notifIcon = document.getElementById("notifIcon");
+            const notifPopup = document.getElementById("notifPopup");
+            const notifList = document.getElementById("notifList");
+            const notifBadge = document.getElementById("notifBadge");
+            const notifContainer = document.querySelector(".notif-container");
+            const userRole = document.querySelector('meta[name="user-role"]')?.content || "User";
+            const userId = document.querySelector('meta[name="user-id"]')?.content || 0;
+
+            // ✅ تحميل الإشعارات
+            async function loadNotifications() {
+                try {
+                    const res = await fetch(`/Notifications/List?role=${userRole}&userId=${userId}`);
+                    const html = await res.text();
+                    notifList.innerHTML = html;
+
+                    // حساب الغير مقروء
+                    const unreadCount = notifList.querySelectorAll(".unread").length;
+                    if (unreadCount > 0) {
+                        notifBadge.textContent = unreadCount;
+                        notifBadge.hidden = false;
+                    } else {
+                        notifBadge.hidden = true;
+                    }
+
+                    // عند الضغط على إشعار نعلّمه كمقروء
+                    notifList.querySelectorAll(".notif-item").forEach(item => {
+                        item.addEventListener("click", async () => {
+                            const id = item.getAttribute("data-id");
+                            await fetch(`/Notifications/MarkAsRead?id=${id}`, { method: "POST" });
+                            item.classList.remove("unread");
+                            loadNotifications(); // إعادة تحميل لتحديث الرقم
+                        });
+                    });
+
+                } catch (err) {
+                    notifList.innerHTML = "<div class='p-3 text-center text-muted'>Error loading notifications</div>";
+                }
+            }
+
+            // ✅ فتح وغلق الـ popup
+            notifIcon.addEventListener("click", () => {
+                const isVisible = notifPopup.classList.toggle("visible");
+                if (isVisible) loadNotifications();
+            });
+
+            // غلق الـ popup عند الضغط خارجها
+            document.addEventListener("click", e => {
+                if (!notifContainer.contains(e.target)) {
+                    notifPopup.classList.remove("visible");
+                }
+            });
+
+            // تحديث دوري كل 20 ثانية
+            setInterval(loadNotifications, 20000);
         });
     </script>
 </body>

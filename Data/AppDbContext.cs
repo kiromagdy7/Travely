@@ -28,6 +28,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<TblUser> TblUsers { get; set; }
     public virtual DbSet<TblUserHotelBooking> TblUserHotelBookings { get; set; }
     public virtual DbSet<TblWishList> TblWishLists { get; set; }
+    public DbSet<TblNotification> TblNotifications { get; set; }
 
     // Commented out OnConfiguring as connection string should be in appsettings.json
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

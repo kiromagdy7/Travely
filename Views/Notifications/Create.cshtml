@@ -1,0 +1,115 @@
+﻿@model Travely.Models.TblNotification
+
+@{
+    ViewData["Title"] = "Create Notification";
+}
+
+<div class="create-notification-container">
+    <h2 class="page-title text-center">Create New Notification</h2>
+    <p class="text-muted mb-4 text-center">Send a notification to specific roles or all users.</p>
+
+    <form asp-action="Create" method="post" class="notif-form shadow-sm rounded p-4 bg-white">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Title" class="form-label fw-semibold">Title</label>
+            <input asp-for="Title" class="form-control" placeholder="Enter notification title..." required />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Message" class="form-label fw-semibold">Message</label>
+            <textarea asp-for="Message" class="form-control" rows="4" placeholder="Type your message..." required></textarea>
+            <span asp-validation-for="Message" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-4">
+            <label asp-for="NotificationType" class="form-label fw-semibold">Send To</label>
+            <select asp-for="NotificationType" class="form-select" required>
+                <option value="">-- Select Recipients --</option>
+                @if(User.IsInRole("staff"))
+                    {
+                    <option value="User">Customers</option>
+                    }
+                @if(User.IsInRole("admin"))
+                    {
+                    <option value="All">All (Users & Staff)</option>
+                    <option value="Admin">Admins</option>
+                    <option value="Staff">Staff</option>
+                    <option value="User">Customers</option>
+                    }
+                
+                
+            </select>
+            <span asp-validation-for="NotificationType" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-start gap-3">
+            <button type="submit" class="ColorBtn">
+                <i class="fas fa-paper-plane me-2"></i> Send Notification
+            </button>
+            <a asp-action="Index" class="BackBtnGray">
+                <i class="fas fa-arrow-left me-2"></i> Back to List
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        .create-notification-container {
+            max-width: 700px;
+            margin: 20px auto;
+        }
+
+        .notif-form {
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+            .notif-form:hover {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            }
+
+        .page-title {
+            font-weight: 700;
+            color: color-mix(in srgb, #2f5d50, white 5%);
+            margin:0;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            max-height: 300px;
+        }
+
+        .btn-success {
+            background-color: #2f5d50;
+            border-color: #2f5d50;
+        }
+
+            .btn-success:hover {
+                background-color: #377c68;
+                border-color: #377c68;
+            }
+
+        .btn-secondary {
+            background-color: #ccc;
+            border-color: #ccc;
+        }
+
+            .btn-secondary:hover {
+                background-color: #b1b1b1;
+            }
+    </style>
+}
