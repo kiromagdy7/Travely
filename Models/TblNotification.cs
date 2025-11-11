@@ -22,7 +22,7 @@ namespace Travely.Models
         public string Message { get; set; }
 
         [Required]
-        [Column("notification_ty")]   
+        [Column("notification_type")]   
         public string NotificationType { get; set; }
 
         [Column("is_read")]
