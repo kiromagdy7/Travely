@@ -101,7 +101,6 @@
 
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-@* ده الى بيخلى البلاد شكلها كده  *@
 <style>
     a {
         text-decoration: none;
@@ -132,43 +131,36 @@
         overflow-y: auto !important;
     }
 
-    /* --- التعديل الجديد: إجبار القائمة على الفتح لأسفل دائمًا --- */
     .select2-dropdown.select2-dropdown--above {
-        top: 100% !important; /* اجبر الـ top إنه يكون تحت العنصر */
-        bottom: auto !important; /* الغي أي محاولة لوضعه فوق */
+        top: 100% !important;
+        bottom: auto !important;
     }
-    /* --- نهاية التعديل --- */
-
-    /* --- 🌟 4. تعديل: تم إضافة CSS لظبط شكل لينك الخروج 🌟 --- */
     .logout-link {
         padding: 15px 25px;
         display: block;
         margin-top: 20px;
-        border-top: 1px solid #eee; /* خط فاصل خفيف */
+        border-top: 1px solid #eee;
     }
 
     .sidebar-logout-link {
-        color: #40524d; /* (اللون الأساسي بتاعك) */
+        color: #40524d;
         text-decoration: none;
         display: inline-block;
         background: none;
         border: none;
         padding: 0;
         cursor: pointer;
-        font-family: inherit; /* عشان ياخد نفس خط الصفحة */
-        font-size: 1rem; /* (أو حجم الخط المناسب) */
+        font-family: inherit;
+        font-size: 1rem;
     }
 
         .sidebar-logout-link:hover {
-            color: var(--accent-color, #2f5d50); /* (لون الـ hover بتاعك) */
+            color: var(--accent-color, #2f5d50);
         }
 
         .sidebar-logout-link i {
-            margin-right: 8px; /* مسافة جنب الأيقونة */
+            margin-right: 8px;
         }
-    /* --- نهاية الإضافة --- */
-
-    /* كود لتظبيط شكل الصورة في الشريط الجانبي */
     .profile-avatar-image {
         width: 120px;
         height: 120px;
@@ -185,4 +177,3 @@
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="
