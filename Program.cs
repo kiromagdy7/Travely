@@ -4,14 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using Travely.Data;
 using Travely.Services.Hotels;
 using Travely.Services.Storage;
+using Travely.Services.Bookings; 
+using Travely.Services.Bookings;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddControllersWithViews();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IImageStorage, FileSystemImageStorage>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -25,13 +30,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 var app = builder.Build();
-
 app.UseExceptionHandler("/Home/Error");
 app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

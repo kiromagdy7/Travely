@@ -53,11 +53,11 @@ public partial class AppDbContext : DbContext
             entity.ToTable("tblBookings");
             entity.HasIndex(e => e.BookingReference, "UQ__tblBooki__BADA455927423170").IsUnique();
             entity.Property(e => e.BookingId).HasColumnName("booking_id");
-            entity.Property(e => e.Adults).HasDefaultValue((byte)1).HasColumnName("adults");
+            entity.Property(e => e.Adults).HasDefaultValue((int)1).HasColumnName("adults");
             entity.Property(e => e.BookingReference).HasMaxLength(100).HasColumnName("booking_reference");
             entity.Property(e => e.CheckIn).HasColumnName("check_in");
             entity.Property(e => e.CheckOut).HasColumnName("check_out");
-            entity.Property(e => e.Children).HasDefaultValue((byte)0).HasColumnName("children");
+            entity.Property(e => e.Children).HasDefaultValue((int)0).HasColumnName("children");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())").HasColumnName("created_at");
             entity.Property(e => e.RoomId).HasColumnName("room_id");
             entity.Property(e => e.Status).HasMaxLength(50).HasDefaultValue("pending").HasColumnName("status");

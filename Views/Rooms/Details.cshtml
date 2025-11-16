@@ -53,7 +53,7 @@
 
                         @if (Model.Available == true)
                         {
-                            <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@Model.RoomId" class="ColorBtn btn-lg">Book Now</a>
+                            <a asp-controller="TblBookings" asp-action="Confirm" asp-route-roomId="@Model.RoomId" class="ColorBtn btn-lg">Book Now</a>
                         }
                         else
                         {
@@ -162,7 +162,7 @@
                             </div>
                             @if (Model.Available == true)
                             {
-                                <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@Model.RoomId" class="btn btn-primary btn-lg">Book Now</a>
+                                <a asp-controller="TblBookings" asp-action="Confirm" asp-route-roomId="@Model.RoomId" class="ColorBtn btn-lg">Book Now</a>
                             }
                             else
                             {

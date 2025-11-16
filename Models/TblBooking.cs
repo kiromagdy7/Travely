@@ -23,9 +23,9 @@ public partial class TblBooking
 
     public string BookingReference { get; set; }
 
-    public byte Adults { get; set; }
+    public int Adults { get; set; }
 
-    public byte? Children { get; set; }
+    public int? Children { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

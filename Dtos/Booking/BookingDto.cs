@@ -12,7 +12,7 @@ namespace Travely.Dtos.Bookings
         public string Status { get; set; } = string.Empty;
         public decimal TotalPrice { get; set; }
         public string BookingReference { get; set; } = string.Empty;
-        public byte Adults { get; set; }
-        public byte? Children { get; set; }
+        public int Adults { get; set; }
+        public int? Children { get; set; }
     }
 }
