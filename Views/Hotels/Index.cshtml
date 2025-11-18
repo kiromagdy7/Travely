@@ -3,28 +3,10 @@
 @{
     ViewData["Title"] = "Hotels";
     var hotels = Model?.ToList() ?? new List<Travely.Models.TblHotel>();
-    var total = hotels.Count;
 
-    string placeholderSvg = @"<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 900 600'>
-      <defs>
-        <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
-          <stop offset='0%' stop-color='%23eef2f7'/>
-          <stop offset='100%' stop-color='%23f8fafc'/>
-        </linearGradient>
-      </defs>
-      <rect width='900' height='600' fill='url(%23g)'/>
-      <g fill='none' stroke='%23cbd5e1' stroke-width='4'>
-        <rect x='150' y='130' width='600' height='340' rx='18' />
-        <path d='M150 290h600'/>
-        <path d='M300 130v340'/>
-      </g>
-      <g fill='%2394a3b8'>
-        <circle cx='280' cy='260' r='12'/>
-        <rect x='320' y='246' width='300' height='28' rx='6'/>
-        <rect x='320' y='206' width='260' height='20' rx='6'/>
-      </g>
-    </svg>";
-    var placeholderDataUrl = "data:image/svg+xml;utf8," + Uri.EscapeDataString(placeholderSvg);
+    // مسار الصورة البديلة
+    var fallbackImage = Url.Content("~/images/hotels/unknown_hotel.jpg");
+
     var delayStep = 60;
     var index = 0;
 }
@@ -53,17 +35,17 @@
         justify-content: center;
         gap: 1rem;
         margin-bottom: 5rem;
-        margin-top:2rem
+        margin-top: 2rem
     }
 
     .hotels-title {
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        text-align:center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
         color: var(--heading-color);
         font-weight: 700;
-        font-size:45px;
+        font-size: 45px;
         letter-spacing: -0.02em;
         margin: 0;
     }
@@ -73,20 +55,17 @@
         margin: .25rem 0 0 0;
     }
 
-    .hotels-count {
-        color: var(--muted);
-        font-size: .95rem;
-        white-space: nowrap;
-    }
-
     .hotels-grid {
         --gap: 0.75rem;
     }
 
     @@media (min-width: 768px) {
-        .hotels-grid {
-            --gap: 0.95rem;
-        }
+        .hotels-grid
+
+    {
+        --gap: 0.95rem;
+    }
+
     }
 
     .hotels-grid.row {
@@ -123,15 +102,21 @@
     }
 
     @@media (min-width: 768px) {
-        .hotel-media {
-            height: 230px;
-        }
+        .hotel-media
+
+    {
+        height: 230px;
+    }
+
     }
 
     @@media (min-width: 1200px) {
-        .hotel-media {
-            height: 250px;
-        }
+        .hotel-media
+
+    {
+        height: 250px;
+    }
+
     }
 
     .hotel-media img {
@@ -276,7 +261,6 @@
             <h2 class="hotels-title h3 mb-1">Explore Hotels</h2>
             <p class="hotels-subtitle">Browse curated stays and find your next trip</p>
         </div>
-        @* <div class="hotels-count">@total @(total == 1 ? "hotel" : "hotels")</div> *@
     </header>
 
     @if (!hotels.Any())
@@ -299,19 +283,23 @@
             @foreach (var h in hotels)
             {
                 var rawUrl = h.TblHotelImages?.FirstOrDefault()?.ImageUrl;
+
                 var imgSrc = !string.IsNullOrWhiteSpace(rawUrl)
                 ? Url.Content(rawUrl)
-                : placeholderDataUrl;
+                : fallbackImage;
 
-                var stars = Math.Clamp((int)(h.Stars ?? 0), 0, 5);
+                var stars = (int)(h.Stars ?? 0);
+                if (stars > 5) stars = 5;
+                if (stars < 0) stars = 0;
+
                 var location = h.Location;
                 var address = h.Address;
                 var phone = h.Phone;
                 var email = h.ContactInfo;
                 var checkIn = h.CheckInTime?.ToString("HH:mm");
                 var checkOut = h.CheckOutTime?.ToString("HH:mm");
-                @* var cancellation = h.CancellationPolicy; *@
                 var delay = (index % 8) * delayStep; index++;
+
                 <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="@delay">
                     <article class="card hotel-card h-100">
                         <div class="hotel-media">
@@ -320,7 +308,7 @@
                                  loading="lazy"
                                  decoding="async"
                                  referrerpolicy="no-referrer"
-                                 data-fallback="@placeholderDataUrl"
+                                 data-fallback="@fallbackImage"
                                  onerror="this.onerror=null; if (this.dataset && this.dataset.fallback) this.src=this.dataset.fallback;" />
 
                             @if (stars > 0)
@@ -405,18 +393,6 @@
                                 }
                             </div>
 
-                            @* @if (!string.IsNullOrWhiteSpace(cancellation))
-                            {
-                                <div class="policy">
-                                    <div class="meta">
-                                        <svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                            <path fill="currentColor" d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm-1 5h2v6h-2V7Zm0 8h2v2h-2v-2Z" />
-                                        </svg>
-                                        <strong>Cancellation policy</strong>
-                                    </div>
-                                    <div>@cancellation</div>
-                                </div>
-                            } *@
                             <div class="container mb-3 mt-3">
                                 <a class="ColorBtn" style="width:100%;" asp-action="Details" asp-route-id="@h.HotelId">Explore</a>
 
