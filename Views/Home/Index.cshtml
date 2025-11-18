@@ -91,7 +91,7 @@
                         @foreach (var room in Model.FeaturedRooms)
                         {
                             // Kiro: Get the first image for the room, or a default
-                            string imageUrl = "~/img/hotel/room-1.webp"; // Default
+                            string imageUrl = "~/images/rooms/unknown_room.jpg"; // Default
                             if (room.TblRoomImages != null && room.TblRoomImages.Any())
                             {
                                 // Kiro: FIXED - Use the path directly from DB
@@ -151,7 +151,7 @@
                         @foreach (var hotel in Model.FeaturedHotels)
                         {
                             // Kiro: Get the first image for the hotel, or a default
-                            string imageUrl = "~/img/hotel/showcase-3.webp"; // Default
+                            string imageUrl = "~/images/hotels/unknown_hotel.jpg"; // Default
                             if (hotel.TblHotelImages != null && hotel.TblHotelImages.Any())
                             {
                                 // Kiro: FIXED - Use the path directly from DB

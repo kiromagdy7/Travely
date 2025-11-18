@@ -3,7 +3,6 @@
     ViewData["Title"] = "About";
 }
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,9 +14,7 @@
     <main class="main">
 
         <section id="about" class="about section">
-
             <div class="container" data-aos="fade-up" data-aos-delay="100">
-
                 <div class="row align-items-center">
                     <div class="col-lg-5">
                         <div class="image-stack">
@@ -42,13 +39,10 @@
                             <div class="badge">
                                 <span>Est. 1923</span>
                             </div>
-
                             <h2>Where Timeless Elegance Meets Modern Luxury</h2>
-
                             <p class="lead">
                                 Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.
                             </p>
-
                             <p>
                                 Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                             </p>
@@ -140,27 +134,45 @@
                     </div>
                 </div>
             </div>
+        </section>
 
-        </section><section id="rooms-showcase" class="rooms-showcase section">
+        <section id="rooms-showcase" class="rooms-showcase section">
 
             <div class="container section-title" data-aos="fade-up">
                 <span class="description-title">Rooms</span>
                 <h2>Our Accommodations</h2>
                 <p>A glimpse into our luxurious rooms and suites</p>
-            </div><div class="container" data-aos="fade-up" data-aos-delay="100">
+            </div>
+
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="row gy-5">
+                    @{
+                        // 1. Get the "Hero" room (First room)
+                        var heroRoom = Model != null ? Model.FirstOrDefault() : null;
+                        // 2. Get the "Side" rooms (Next 3 rooms)
+                        var sideRooms = Model != null ? Model.Skip(1).Take(3).ToList() : null;
+                    }
+
+                    @if (heroRoom != null)
+                    {
+                        string heroImage = "/images/unknown_room.png";
+                        if (heroRoom.TblRoomImages != null && heroRoom.TblRoomImages.Any())
+                        {
+                            heroImage = heroRoom.TblRoomImages.First().ImageUrl;
+                        }
+
                     <div class="col-xl-8" data-aos="zoom-in" data-aos-delay="200">
                         <div class="hero-room-showcase">
                             <div class="showcase-image-container">
-                                <img src="~/img/hotel/room-14.webp" alt="Grand Presidential Suite" class="img-fluid">
+                                <img src="@Url.Content(heroImage)" alt="@heroRoom.RoomType" class="img-fluid">
                                 <div class="room-category-badge">
-                                    <span>Presidential</span>
+                                    <span>Featured</span>
                                 </div>
                             </div>
                             <div class="showcase-content">
                                 <div class="room-title-section">
-                                    <h2>Grand Presidential Suite</h2>
+                                    <h2>@heroRoom.RoomType</h2>
                                     <div class="room-rating">
                                         <div class="stars">
                                             <i class="bi bi-star-fill"></i>
@@ -172,103 +184,77 @@
                                         <span class="rating-text">5.0 Excellence</span>
                                     </div>
                                 </div>
-                                <p class="room-description">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-                                <div class="booking-section">
-                                    <div class="price-display">
-                                        <span class="currency">$</span>
-                                        <span class="amount">649</span>
-                                        <span class="period">per night</span>
+                                <p class="room-description">
+                                    @(heroRoom.Description != null && heroRoom.Description.Length > 200
+                                                                        ? heroRoom.Description.Substring(0, 200) + "..."
+                                                                        : heroRoom.Description)
+                                </p>
+
+                                    <div class="amenities-grid mb-4 d-flex gap-3">
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-people me-1"></i> @heroRoom.MaxGuests Guests</span>
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-bed me-1"></i> @heroRoom.BedsCount Beds</span>
+                                    @if (heroRoom.BreakfastIncluded)
+                                        {
+                                            <span class="badge bg-light text-dark border"><i class="bi bi-cup-hot me-1"></i> Breakfast</span>
+                                        }
                                     </div>
-                                    <a asp-controller="Rooms" asp-action="Index" class="primary-booking-btn">View All Rooms</a>
+
+                                    <div class="booking-section">
+                                        <div class="price-display">
+                                            <span class="currency">$</span>
+                                            <span class="amount">@heroRoom.Price.ToString("F0")</span>
+                                            <span class="period">per night</span>
+                                        </div>
+                                        <a asp-controller="Rooms" asp-action="Details" asp-route-id="@heroRoom.RoomId" class="primary-booking-btn">View Details</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div><div class="col-xl-4">
+                    }
+
+                    <div class="col-xl-4">
                         <div class="room-list-container">
-                            <div class="standard-room-card" data-aos="slide-left" data-aos-delay="250">
-                                <div class="card-image">
-                                    <img src="~/img/hotel/room-6.webp" alt="Executive Room" class="img-fluid">
-                                </div>
-                                <div class="card-content">
-                                    <h4>Executive Business Room</h4>
-                                    <div class="booking-row">
-                                        <div class="price">$329<small>/night</small></div>
-                                        <a asp-controller="Rooms" asp-action="Index" class="book-link">Book</a>
+
+                            @if (sideRooms != null && sideRooms.Any())
+                            {
+                                @foreach (var room in sideRooms)
+                                {
+                                    string sideImage = "/images/rooms/unknown_room.jpg";
+                                    if (room.TblRoomImages != null && room.TblRoomImages.Any())
+                                    {
+                                        sideImage = room.TblRoomImages.First().ImageUrl;
+                                    }
+
+                                <div class="standard-room-card" data-aos="slide-left" data-aos-delay="250">
+                                    <div class="card-image">
+                                        <img src="@Url.Content(sideImage)" alt="@room.RoomType" class="img-fluid">
                                     </div>
-                                </div>
-                            </div><div class="standard-room-card" data-aos="slide-left" data-aos-delay="300">
-                                <div class="card-image">
-                                    <img src="~/img/hotel/room-19.webp" alt="Garden View" class="img-fluid">
-                                </div>
-                                <div class="card-content">
-                                    <h4>Garden View Deluxe</h4>
+                                    <div class="card-content">
+                                        <h4>@room.RoomType</h4>
+                                        <p class="small text-muted mb-2">
+                                            @(room.Description != null && room.Description.Length > 60
+                                                                                    ? room.Description.Substring(0, 60) + "..."
+                                                                                    : room.Description)
+                                    </p>
                                     <div class="booking-row">
-                                        <div class="price">$269<small>/night</small></div>
-                                        <a asp-controller="Rooms" asp-action="Index" class="book-link">Book</a>
-                                    </div>
-                                </div>
-                            </div><div class="standard-room-card" data-aos="slide-left" data-aos-delay="350">
-                                <div class="card-image">
-                                    <img src="~/img/hotel/room-12.webp" alt="Family Suite" class="img-fluid">
-                                </div>
-                                <div class="card-content">
-                                    <h4>Family Comfort Suite</h4>
-                                    <div class="booking-row">
-                                        <div class="price">$419<small>/night</small></div>
-                                        <a asp-controller="Rooms" asp-action="Index" class="book-link">Book</a>
+                                        <div class="price">$@room.Price.ToString("F0")<small>/night</small></div>
+                                        <a asp-controller="Rooms" asp-action="Details" asp-route-id="@room.RoomId" class="book-link">Details</a>
                                     </div>
                                 </div>
                             </div>
+                                                        }
+                            }
+                            else
+                            {
+                                <p>More rooms coming soon...</p>
+                            }
+
                         </div>
                     </div>
 
                 </div>
 
-                <div class="row mt-6">
-
-                    @if (Model != null && Model.Any())
-                    {
-                        @foreach (var room in Model)
-                        {
-                            // Kiro: Get the first image for the room, or a default
-                            string imageUrl = "~/img/hotel/room-1.webp"; // Default
-                            if (room.TblRoomImages != null && room.TblRoomImages.Any())
-                            {
-                                // Kiro: FIXED - Use the path directly from DB
-                                imageUrl = room.TblRoomImages.First().ImageUrl;
-                            }
-
-                            <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="400">
-                                <div class="minimal-room-card">
-                                    <div class="room-image">
-                                        <img src="@Url.Content(imageUrl)" alt="@room.RoomType" class="img-fluid">
-                                        <div class="hover-overlay">
-                                            <a asp-controller="Rooms" asp-action="Details" asp-route-id="@room.RoomId" class="view-room">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="room-summary">
-                                        <h5>@room.RoomType</h5>
-                                        <div class="price-tag">$@room.Price.ToString("F0")<span>/night</span></div>
-                                        <div class="basic-amenities">
-                                            <i class="bi bi-wifi"></i>
-                                            <i class="bi bi-tv"></i>
-                                            <i class="bi bi-telephone"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="col-12 text-center">
-                            <p>No featured rooms are available at the moment. Please check back later.</p>
-                        </div>
-                    }
-
-                </div> <div class="text-center" data-aos="fade-up" data-aos-delay="600">
+                <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="600">
                     <a asp-controller="Rooms" asp-action="Index" class="explore-all-link">
                         <span>Explore All Accommodations</span>
                         <i class="bi bi-arrow-right"></i>
@@ -282,5 +268,4 @@
     </main>
 
 </body>
-
 </html>

@@ -3,7 +3,8 @@
 @{
     ViewData["Title"] = Model.RoomType;
 
-    string imageUrl = "/images/placeholder.png";
+    // Kiro: Set default image to unknown_room.png
+    string imageUrl = "/images/rooms/unknown_room.jpg";
     if (Model.TblRoomImages != null && Model.TblRoomImages.Any())
     {
         imageUrl = Model.TblRoomImages.First().ImageUrl;
@@ -19,7 +20,7 @@
             <div class="row align-items-center mb-5">
                 <div class="col-lg-7" data-aos="fade-right" data-aos-delay="200">
                     <div class="room-header-image">
-                        <img src=@imageUrl alt="@Model.RoomType" class="img-fluid rounded">
+                        <img src="@Url.Content(imageUrl)" alt="@Model.RoomType" class="img-fluid rounded">
                     </div>
                 </div>
                 <div class="col-lg-5" data-aos="fade-left" data-aos-delay="300">
@@ -57,10 +58,9 @@
                         }
                         else
                         {
-
                             <a asp-area="" asp-controller="Rooms" asp-action="Index" class="ColorBtn btn-lg">Explore other Rooms</a>
-
                         }
+
                         @if (User.IsInRole("admin") || User.IsInRole("staff"))
                         {
                             <a asp-action="Edit" asp-route-id="@Model.RoomId" class="ColorBtn">Edit</a>
@@ -92,7 +92,7 @@
                     else
                     {
                         <div class="gallery-main">
-                            <img src="/images/placeholder.png" alt="No images available" class="img-fluid">
+                            <img src="/images/unknown_room.png" alt="No images available" class="img-fluid">
                         </div>
                     }
                 </div>
@@ -146,20 +146,20 @@
                     </div>
                 </div>
             </div>
+
             <div class="booking-cta" data-aos="fade-up" data-aos-delay="200">
                 <div class="booking-card">
                     <div class="row align-items-center">
                         <div class="col-lg-8">
                             <h4>Ready to book your stay?</h4>
                             <p>
-                                Indulge in the perfect blend of luxury, comfort, and breathtaking views in our Deluxe Ocean View Suite. 
-                                Wake up to the sound of the waves, relax in elegant surroundings, and enjoy every moment of your stay. 
+                                Indulge in the perfect blend of luxury, comfort, and breathtaking views in our Deluxe Ocean View Suite.
+                                Wake up to the sound of the waves, relax in elegant surroundings, and enjoy every moment of your stay.
                                 Book now to experience an unforgettable escape filled with serenity, sophistication, and lasting memories.
                             </p>
                         </div>
                         <div class="col-lg-4 text-center text-lg-end">
                             <div class="price-display">
-
                                 @if (Model.Available == true)
                                 {
                                     <span class="price">@Model.Price</span>
