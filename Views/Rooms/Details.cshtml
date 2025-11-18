@@ -57,13 +57,13 @@
                         }
                         else
                         {
-                            
+
                             <a asp-area="" asp-controller="Rooms" asp-action="Index" class="ColorBtn btn-lg">Explore other Rooms</a>
-                            
+
                         }
                         @if (User.IsInRole("admin") || User.IsInRole("staff"))
                         {
-                                <a asp-action="Edit" asp-route-id="@Model.RoomId" class="ColorBtn">Edit</a>
+                            <a asp-action="Edit" asp-route-id="@Model.RoomId" class="ColorBtn">Edit</a>
                         }
                     </div>
                 </div>
@@ -102,7 +102,15 @@
                 <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
                     <div class="room-description">
                         <h3 class="section-subtitle">Room Overview</h3>
-                        <p>@Html.Raw(Model.Description.Replace("\n", "<br>"))</p>
+
+                        @if (string.IsNullOrEmpty(Model.Description))
+                        {
+                            <p><i>There is no description available for this room at the moment.</i></p>
+                        }
+                        else
+                        {
+                            <p>@Html.Raw(Model.Description.Replace("\n", "<br>"))</p>
+                        }
                     </div>
                 </div>
             </div>
@@ -143,9 +151,11 @@
                     <div class="row align-items-center">
                         <div class="col-lg-8">
                             <h4>Ready to book your stay?</h4>
-                            <p>Indulge in the perfect blend of luxury, comfort, and breathtaking views in our Deluxe Ocean View Suite. 
-                                Wake up to the sound of the waves, relax in elegant surroundings, and enjoy every moment of your stay. 
-                                Book now to experience an unforgettable escape filled with serenity, sophistication, and lasting memories. </p>
+                            <p>
+                                Indulge in the perfect blend of luxury, comfort, and breathtaking views in our Deluxe Ocean View Suite. 
+                                Wake up to the sound of the waves, relax in elegant surroundings, and enjoy every moment of your stay. 
+                                Book now to experience an unforgettable escape filled with serenity, sophistication, and lasting memories.
+                            </p>
                         </div>
                         <div class="col-lg-4 text-center text-lg-end">
                             <div class="price-display">
