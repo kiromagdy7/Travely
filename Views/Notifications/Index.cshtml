@@ -1,82 +1,108 @@
 ﻿@model IEnumerable<Travely.Models.TblNotification>
 
-@{
-    var canManageAny = User.IsInRole("admin") || User.IsInRole("staff");
-    var userIdClaim = User.FindFirst("UserId");
-    var currentUserId = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
-}
+<div class="profile-page-container">
 
-<div class="notifications-page">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>All Notifications</h1>
-        @if (User.IsInRole("admin") || User.IsInRole("staff"))
-        {
-            <a asp-action="Create" asp-controller="Notifications" class="ColorBtn">
-                <i class="fas fa-plus-circle me-2"></i> Create New Notification
-            </a>
-        }
-    </div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            @{
+                var imagePathClaim = User.FindFirst("ImagePath");
+                var fullNameClaim = User.FindFirst("Fullname");
+                var roleClaim = User.FindFirst("Role");
 
-    <div class="notifications-layout">
-        <div class="notifications-list">
-            @if (!Model.Any())
-            {
-                <div class="empty-state text-center text-muted py-5">
-                    <i class="fas fa-bell-slash fa-3x mb-3"></i>
-                    <p>No notifications yet.</p>
-                </div>
+                var imagePath = (imagePathClaim != null && !string.IsNullOrEmpty(imagePathClaim.Value))
+                ? imagePathClaim.Value
+                : "~/images/profiles/Unknown_person.jpg";
+
+                var fullName = fullNameClaim != null ? fullNameClaim.Value : "User";
+                var role = roleClaim != null ? roleClaim.Value : "";
             }
-            else
-            {
-                foreach (var n in Model)
-                {
-                    bool canDelete = canManageAny || (n.UserId.HasValue && n.UserId.Value == currentUserId);
-                    <div class="notification-card @(n.IsRead ? "" : "unread")" data-id="@n.NotificationId">
-                        <div class="notif-main" onclick="showNotification('@n.Title', '@n.Message', '@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")')">
-                            <h6 class="notif-title">@n.Title</h6>
-                            <small class="text-muted">@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
-                        </div>
-                        <div class="notif-actions mt-2 d-flex gap-2">
-                            @if (!n.IsRead)
-                            {
-                                <button type="button" class="btn btn-sm btn-outline-secondary mark-read-btn" data-id="@n.NotificationId" title="Mark as read">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            }
-                            @if (canDelete)
-                            {
-                                <button type="button" class="btn btn-sm btn-outline-danger delete-notif-btn" data-id="@n.NotificationId" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            }
-                        </div>
-                    </div>
-                }
-            }
+
+            <img src="@Url.Content(imagePath)" alt="Profile Picture" class="profile-avatar-image" />
+
         </div>
 
-        <div class="notification-details" id="notifDetails">
-            <div class="empty-details text-center text-muted">
-                <i class="far fa-bell fa-4x mb-3"></i>
-                <p>Select a notification to view details</p>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a asp-action="Profile" asp-controller="Account"><i class="fas fa-briefcase"></i> My Bookings</a></li>
+                <li><a asp-action="Edit" asp-controller="Account"><i class="fas fa-user"></i> Personal Info</a></li>
+                <li><a asp-action="Index" asp-controller="Notifications" class="active"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a asp-action="Wishlist" asp-controller="Account"><i class="fas fa-heart"></i> My Wishlist</a></li>
+            </ul>
+        </nav>
+
+        <div class="logout-link">
+            <form asp-controller="Account" asp-action="Logout" method="post" id="sidebarLogoutForm">
+                @Html.AntiForgeryToken()
+                <a href="javascript:void(0);" onclick="document.getElementById('sidebarLogoutForm').submit();" class="sidebar-logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="notifications-page">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>All Notifications</h1>
+                @if (User.IsInRole("admin") || User.IsInRole("staff"))
+                {
+                    <a asp-action="Create" asp-controller="Notifications" class="ColorBtn">
+                        <i class="fas fa-plus-circle me-2"></i> Create New Notification
+                    </a>
+                }
+            </div>
+
+            <div class="notifications-layout">
+                <!-- Right Column (Notification List) -->
+                <div class="notifications-list">
+                    @if (!Model.Any())
+                    {
+                        <div class="empty-state text-center text-muted py-5">
+                            <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                            <p>No notifications yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var n in Model)
+                        {
+                            <div class="notification-card @(n.IsRead ? "" : "unread")" onclick="showNotification('@n.Title', '@n.Message', '@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")')">
+                                <h6 class="notif-title">@n.Title</h6>
+                                <small class="text-muted">@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Left Column (Notification Details) -->
+                <div class="notification-details" id="notifDetails">
+                    <div class="empty-details text-center text-muted">
+                        <i class="far fa-bell fa-4x mb-3"></i>
+                        <p>Select a notification to view details</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 </div>
 
 @section Scripts {
     <style>
+        /* === Layout === */
         .notifications-layout {
             display: grid;
             grid-template-columns: 1fr 2fr;
             gap: 20px;
         }
 
+        /* === Notification List === */
         .notifications-list {
             background: #fff;
             border-radius: 15px;
             padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             height: 420px;
             overflow-y: auto;
         }
@@ -87,89 +113,75 @@
             border-radius: 10px;
             padding: 12px 15px;
             margin-bottom: 10px;
-            transition: all .3s ease;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-
-            .notification-card.unread {
-                background-color: #edf5ff;
-                border-left: 4px solid color-mix(in srgb,#2f5d50,white 5%);
-            }
 
             .notification-card:hover {
                 background-color: #eef6ff;
+                transform: translateY(-2px);
             }
 
-        .notif-actions .btn {
-            padding: 3px 8px;
+            .notification-card.unread {
+                background-color: #edf5ff;
+                border-left: 4px solid color-mix(in srgb, #2f5d50, white 5%);
+            }
+
+        .notif-title {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* === Details Panel === */
+        .notification-details {
+            background: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            min-height: 420px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow-y: auto;
+        }
+
+        .notif-details-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2f5d50;
+            margin-bottom: 15px;
+        }
+
+        .notif-details-message {
+            font-size: 1rem;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .notif-details-time {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        /* === Empty States === */
+        .empty-state, .empty-details {
+            padding: 60px 20px;
+        }
+
+        /* === Page Header === */
+        .page-title {
+            font-weight: 700;
+            color: #2f5d50;
         }
     </style>
 
     <script>
-        async function refreshUnreadBadge() {
-            const role = document.querySelector('meta[name="user-role"]')?.content || "User";
-            const userId = document.querySelector('meta[name="user-id"]')?.content || 0;
-            try {
-                const res = await fetch(`/Notifications/Count?role=${role}&userId=${userId}`);
-                if (res.ok) {
-                    const count = await res.json();
-                    const badge = document.getElementById("notifBadge");
-                    if (badge) {
-                        if (count > 0) {
-                            badge.textContent = count;
-                            badge.hidden = false;
-                        } else {
-                            badge.hidden = true;
-                        }
-                    }
-                }
-            } catch { /* ignore */ }
+        function showNotification(title, message, time) {
+            const container = document.getElementById("notifDetails");
+            container.innerHTML = `
+                <h2 class="notif-details-title">${title}</h2>
+                <p class="notif-details-message">${message}</p>
+                <div class="notif-details-time"><i class="far fa-clock me-2"></i>${time}</div>
+            `;
         }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const listEl = document.querySelector(".notifications-list");
-
-            listEl.addEventListener("click", async function (e) {
-                const markBtn = e.target.closest(".mark-read-btn");
-                const delBtn = e.target.closest(".delete-notif-btn");
-
-                if (markBtn) {
-                    const id = markBtn.getAttribute("data-id");
-                    try {
-                        const res = await fetch(`/Notifications/MarkAsRead?id=${id}`, { method: "POST" });
-                        if (res.ok) {
-                            const data = await res.json();
-                            const card = document.querySelector(`.notification-card[data-id='${id}']`);
-                            if (card) {
-                                card.classList.remove("unread");
-                                markBtn.remove(); // remove button after marking
-                            }
-                            refreshUnreadBadge();
-                        }
-                    } catch { }
-                }
-
-                if (delBtn) {
-                    if (!confirm("Delete this notification?")) return;
-                    const id = delBtn.getAttribute("data-id");
-                    try {
-                        const res = await fetch(`/Notifications/Delete?id=${id}`, { method: "POST" });
-                        if (res.ok) {
-                            const data = await res.json();
-                            const card = document.querySelector(`.notification-card[data-id='${id}']`);
-                            if (card) card.remove();
-                            if (document.querySelectorAll(".notification-card").length === 0) {
-                                listEl.innerHTML = `<div class="empty-state text-center text-muted py-5">
-                                    <i class="fas fa-bell-slash fa-3x mb-3"></i>
-                                    <p>No notifications yet.</p>
-                                </div>`;
-                            }
-                            refreshUnreadBadge();
-                        }
-                    } catch { }
-                }
-            });
-
-            refreshUnreadBadge();
-        });
     </script>
 }

@@ -1,11 +1,5 @@
 ﻿@model IEnumerable<Travely.Models.TblNotification>
 
-@{
-    var canManageAny = User.IsInRole("admin") || User.IsInRole("staff");
-    var userIdClaim = User.FindFirst("UserId");
-    var currentUserId = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
-}
-
 @if (!Model.Any())
 {
     <div class="p-3 text-center text-muted">There are no notifications</div>
@@ -14,45 +8,10 @@ else
 {
     foreach (var n in Model)
     {
-        bool canDelete = canManageAny || (n.UserId.HasValue && n.UserId.Value == currentUserId);
         <div class="notif-item @(n.IsRead ? "" : "unread")" data-id="@n.NotificationId">
-            <div class="notif-text">
-                <strong>@n.Title</strong><br />
-                <small>@n.Message</small><br />
-                <span class="text-muted" style="font-size:11px;">@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
-            </div>
-            <div class="notif-inline-actions mt-1">
-                @if (!n.IsRead)
-                {
-                    <button type="button" class="btn btn-sm btn-outline-secondary mark-read-inline" data-id="@n.NotificationId" title="Mark as read">
-                        <i class="fas fa-check"></i>
-                    </button>
-                }
-                @if (canDelete)
-                {
-                    <button type="button" class="btn btn-sm btn-outline-danger delete-inline" data-id="@n.NotificationId" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                }
-            </div>
+            <strong>@n.Title</strong><br />
+            <small>@n.Message</small><br />
+            <span class="text-muted" style="font-size:11px;">@n.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
         </div>
     }
 }
-
-<style>
-    .notif-item {
-        position: relative;
-        padding: 8px 10px;
-        border-bottom: 1px solid #eee;
-        cursor: pointer;
-    }
-
-        .notif-item.unread {
-            background-color: #edf5ff;
-        }
-
-    .notif-inline-actions .btn {
-        padding: 2px 6px;
-        font-size: 11px;
-    }
-</style>
