@@ -6,7 +6,7 @@ using Travely.Services.Hotels;
 using Travely.Services.Storage;
 using Travely.Services.Bookings; 
 using Travely.Services.Bookings;
-
+using Stripe; 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -16,7 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IImageStorage, FileSystemImageStorage>();
 builder.Services.AddScoped<IBookingService, BookingService>();
-
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

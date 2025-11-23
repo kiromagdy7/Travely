@@ -130,12 +130,14 @@ namespace Travely.Services.Bookings
         {
             // Overlap when: startDate < existing.CheckOut AND existing.CheckIn < endDate
             return await _context.TblBookings
-                .AsNoTracking()
-                .Where(b => b.RoomId == roomId)
-                .Where(b => !string.Equals(b.Status, StatusCancelled, StringComparison.OrdinalIgnoreCase))
-                .Where(b => b.CheckIn.HasValue && b.CheckOut.HasValue)
-                .Where(b => excludeBookingId == null || b.BookingId != excludeBookingId.Value)
-                .AnyAsync(b => startDate < b.CheckOut!.Value && b.CheckIn!.Value < endDate);
+                   .AsNoTracking()
+                   .Where(b => b.RoomId == roomId)
+                   // --- FIX START: Use simple inequality instead of string.Equals ---
+                   .Where(b => b.Status != StatusCancelled)
+                   // --- FIX END ---
+                   .Where(b => b.CheckIn.HasValue && b.CheckOut.HasValue)
+                   .Where(b => excludeBookingId == null || b.BookingId != excludeBookingId.Value)
+                   .AnyAsync(b => startDate < b.CheckOut.Value && b.CheckIn.Value < endDate);
         }
 
         private async Task<string> GenerateUniqueBookingReferenceAsync()
