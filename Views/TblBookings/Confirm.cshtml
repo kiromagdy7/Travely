@@ -2,6 +2,14 @@
 
 @{
     ViewData["Title"] = "Confirm Booking";
+
+    // منطق الصورة البديلة
+    var roomImage = ViewBag.ImageUrl as string;
+    if (string.IsNullOrWhiteSpace(roomImage))
+    {
+        // تأكد من وجود الصورة في هذا المسار في مشروعك
+        roomImage = "~/images/rooms/unknown_room.jpg";
+    }
 }
 
 <main class="main">
@@ -18,6 +26,14 @@
                     <div class="booking-form-section" data-aos="fade-right" data-aos-delay="300">
                         <div class="form-container">
                             <form class="reservation-form" asp-action="Confirm" method="POST">
+                                @if (!ViewData.ModelState.IsValid)
+                                {
+                                    <div class="alert alert-danger text-center" role="alert">
+                                        <div asp-validation-summary="All" class="text-danger"></div>
+                                    </div>
+                                }
+                                <input type="hidden" name="RoomId" value="@ViewBag.RoomId" />
+                                <input type="hidden" asp-for="UserId" />
 
                                 <div class="form-section">
                                     <h4>Booking Details</h4>
@@ -25,15 +41,16 @@
                                         <div class="form-group">
                                             <label for="arrival-date" class="form-label">Arrival Date</label>
                                             <input asp-for="CheckIn" type="date" id="arrival-date" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                            <span asp-validation-for="CheckIn" class="text-danger"></span>
                                         </div>
                                         <div class="form-group">
                                             <label for="departure-date" class="form-label">Departure Date</label>
                                             <input asp-for="CheckOut" type="date" class="form-control" id="departure-date" required min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                            <span asp-validation-for="CheckOut" class="text-danger"></span>
                                         </div>
                                         <div class="form-group">
                                             <label for="guest-count" class="form-label">Adults</label>
-                                            <select asp-for="Adults" class="form-select" id="guest-count" name="guest_count" min="1" required>
-                                                <option value="">How many Adults</option>
+                                            <select asp-for="Adults" class="form-select" id="guest-count" required>
                                                 <option value="1">1 Adult</option>
                                                 <option value="2">2 Adults</option>
                                                 <option value="3">3 Adults</option>
@@ -42,9 +59,8 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="room-count" class="form-label">Children</label>
-                                            <select asp-for="Children" class="form-select" id="guest-count" name="guest_count" min="0" required>
-                                                <option value="">How many Childrens</option>
+                                            <label for="children-count" class="form-label">Children</label>
+                                            <select asp-for="Children" class="form-select" id="children-count" required>
                                                 <option value="0">No Children</option>
                                                 <option value="1">1 Child</option>
                                                 <option value="2">2 Children</option>
@@ -56,7 +72,7 @@
                                 </div>
 
                                 <div class="form-section">
-                                        <div class="form-group">
+                                    <div class="form-group">
                                         <label for="additional-notes" class="form-label">Additional Requirements</label>
                                         <textarea class="form-control" id="additional-notes" name="additional_notes" rows="3" placeholder="Please specify any special arrangements or preferences..."></textarea>
                                     </div>
@@ -67,26 +83,24 @@
                                     <div class="form-grid">
                                         <div class="form-group full-width">
                                             <label for="primary-guest" class="form-label">Primary Guest Name</label>
-                                            <input type="text" class="form-control" id="primary-guest" name="primary_guest" required="">
+                                            <input type="text" class="form-control" id="primary-guest" name="primary_guest" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="contact-email" class="form-label">Email Address</label>
-                                            <input type="email" class="form-control" id="contact-email" name="contact_email" required="">
+                                            <input type="email" class="form-control" id="contact-email" name="contact_email" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="contact-phone" class="form-label">Contact Number</label>
-                                            <input type="tel" class="form-control" id="contact-phone" name="contact_phone" required="">
+                                            <input type="tel" class="form-control" id="contact-phone" name="contact_phone" required>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="form-section">
                                     <h4>Pricing Summary</h4>
-
                                     <div class="price-box p-3 mb-3" style="background:#f8f9fa;border-radius:8px;">
                                         <p><strong>Price per night:</strong> @ViewBag.RoomPrice EG</p>
                                         <p><strong>Nights:</strong> <span id="nights-count">0</span></p>
-
                                         <h5 class="mt-2">
                                             <span id="calc-price">0 x 0</span> =
                                             <strong id="total-price" style="color:#2f5d50;">0</strong> EG
@@ -95,155 +109,132 @@
                                 </div>
 
                                 <div class="form-actions">
-                                    <button type="submit" class="btn btn-primary"><i class="bi bi-calendar-plus me-2"></i>Confirm Booking & Go to Paymente</button>
+                                    <button type="submit" class="btn btn-primary" style="width:100%">
+                                        <i class="bi bi-credit-card me-2"></i>Confirm Booking & Go to Payment
+                                    </button>
                                 </div>
-
                             </form>
                         </div>
                     </div>
 
                     <div class="hotel-showcase" data-aos="fade-left" data-aos-delay="400">
                         <div class="showcase-image">
-                            <img src="@ViewBag.ImageUrl" alt="@ViewBag.RoomType" class="img-fluid" />
+                            <img src="@Url.Content(roomImage)" alt="@ViewBag.RoomType" class="img-fluid"
+                                 style="width:100%; height:300px; object-fit:cover; border-radius:12px;" />
                         </div>
 
-                        <div class="hotel-highlights">
+                        <div class="hotel-highlights mt-4">
                             <h3>Why Choose Our Hotel</h3>
                             <div class="highlights-grid">
                                 <div class="highlight-item">
-                                    <div class="highlight-icon">
-                                        <i class="bi bi-wifi"></i>
-                                    </div>
+                                    <div class="highlight-icon"><i class="bi bi-wifi"></i></div>
                                     <div class="highlight-content">
                                         <h5>Premium Connectivity</h5>
-                                        <p>High-speed internet access in all areas</p>
+                                        <p>High-speed internet access</p>
                                     </div>
                                 </div>
                                 <div class="highlight-item">
-                                    <div class="highlight-icon">
-                                        <i class="bi bi-clock"></i>
-                                    </div>
+                                    <div class="highlight-icon"><i class="bi bi-clock"></i></div>
                                     <div class="highlight-content">
                                         <h5>24/7 Service</h5>
-                                        <p>Round-the-clock assistance and support</p>
+                                        <p>Round-the-clock support</p>
                                     </div>
                                 </div>
                                 <div class="highlight-item">
-                                    <div class="highlight-icon">
-                                        <i class="bi bi-car-front"></i>
-                                    </div>
+                                    <div class="highlight-icon"><i class="bi bi-shield-check"></i></div>
                                     <div class="highlight-content">
-                                        <h5>Valet Parking</h5>
-                                        <p>Complimentary parking with valet service</p>
+                                        <h5>Secure Booking</h5>
+                                        <p>100% Secure payment</p>
                                     </div>
                                 </div>
-                                <div class="highlight-item">
-                                    <div class="highlight-icon">
-                                        <i class="bi bi-heart-pulse"></i>
-                                    </div>
-                                    <div class="highlight-content">
-                                        <h5>Wellness Center</h5>
-                                        <p>Full-service spa and fitness facilities</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="booking-guarantees">
-                            <div class="guarantee-item">
-                                <i class="bi bi-shield-check"></i>
-                                <span>Secure Booking</span>
-                            </div>
-                            <div class="guarantee-item">
-                                <i class="bi bi-arrow-clockwise"></i>
-                                <span>Flexible Cancellation</span>
-                            </div>
-                            <div class="guarantee-item">
-                                <i class="bi bi-telephone"></i>
-                                <span>24/7 Support</span>
                             </div>
                         </div>
                     </div>
 
                 </div>
-
             </div>
-
         </div>
-
     </section>
 </main>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const pricePerNight = parseFloat("@ViewBag.RoomPrice");
+        // 1. تنظيف السعر من أي نصوص مثل "EG" وتحويله لرقم
+        var rawPrice = "@ViewBag.RoomPrice";
+        const pricePerNight = parseFloat(rawPrice.replace(/[^0-9.]/g, '')) || 0;
 
-    const checkInInput = document.getElementById("arrival-date");
-    const checkOutInput = document.getElementById("departure-date");
+        const checkInInput = document.getElementById("arrival-date");
+        const checkOutInput = document.getElementById("departure-date");
 
-    const nightsCount = document.getElementById("nights-count");
-    const calcPrice = document.getElementById("calc-price");
-    const totalPrice = document.getElementById("total-price");
+        const nightsCountSpan = document.getElementById("nights-count");
+        const calcPriceSpan = document.getElementById("calc-price");
+        const totalPriceStrong = document.getElementById("total-price");
 
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-    }
-    const today = new Date();
-    checkInInput.min = formatDate(today);
-
-    function updateCheckOutMin() {
-        if (!checkInInput.value) return;
-
-        const checkInDate = new Date(checkInInput.value);
-        const nextDay = new Date(checkInDate);
-        nextDay.setDate(nextDay.getDate() + 1);
-
-        const minCheckOut = formatDate(nextDay);
-
-        checkOutInput.min = minCheckOut;
-        if (!checkOutInput.value || checkOutInput.value < minCheckOut) {
-            checkOutInput.value = minCheckOut;
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
         }
 
+        // تعيين الحد الأدنى لتاريخ الدخول (اليوم)
+        const today = new Date();
+        checkInInput.min = formatDate(today);
+
+        function updateCheckOutMin() {
+            if (!checkInInput.value) return;
+
+            const checkInDate = new Date(checkInInput.value);
+            const nextDay = new Date(checkInDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+
+            const minCheckOut = formatDate(nextDay);
+            checkOutInput.min = minCheckOut;
+
+            // إذا كان تاريخ الخروج الحالي غير صالح، قم بتحديثه
+            if (!checkOutInput.value || new Date(checkOutInput.value) <= checkInDate) {
+                checkOutInput.value = minCheckOut;
+            }
+
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const checkInVal = checkInInput.value;
+            const checkOutVal = checkOutInput.value;
+
+            if (!checkInVal || !checkOutVal) {
+                updateDisplay(0);
+                return;
+            }
+
+            const date1 = new Date(checkInVal);
+            const date2 = new Date(checkOutVal);
+
+            const diffTime = date2 - date1;
+            // Math.ceil يضمن حساب اليوم حتى لو في فرق توقيت بسيط
+            let nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (nights <= 0) {
+                nights = 0;
+            }
+
+            updateDisplay(nights);
+        }
+
+        function updateDisplay(nights) {
+            const total = nights * pricePerNight;
+
+            if(nightsCountSpan) nightsCountSpan.textContent = nights;
+            if(calcPriceSpan) calcPriceSpan.textContent = `${pricePerNight} x ${nights}`;
+            if(totalPriceStrong) totalPriceStrong.textContent = total.toFixed(2);
+        }
+
+        checkInInput.addEventListener("change", updateCheckOutMin);
+        checkOutInput.addEventListener("change", calculateTotal);
+
+        // الحساب الفوري عند تحميل الصفحة
         calculateTotal();
-    }
-
-    function calculateTotal() {
-        const checkInValue = checkInInput.value;
-        const checkOutValue = checkOutInput.value;
-
-        if (!checkInValue || !checkOutValue) {
-            nightsCount.textContent = "0";
-            calcPrice.textContent = `${pricePerNight} x 0`;
-            totalPrice.textContent = "0";
-            return;
-        }
-
-        const checkIn = new Date(checkInValue);
-        const checkOut = new Date(checkOutValue);
-
-        const diffTime = checkOut - checkIn;
-        const nights = diffTime / (1000 * 3600 * 24);
-
-        if (nights <= 0) {
-            nightsCount.textContent = "0";
-            calcPrice.textContent = `${pricePerNight} x 0`;
-            totalPrice.textContent = "0";
-            return;
-        }
-
-        const total = nights * pricePerNight;
-
-        nightsCount.textContent = nights;
-        calcPrice.textContent = `${pricePerNight} x ${nights}`;
-        totalPrice.textContent = total.toFixed(2);
-    }
-    checkInInput.addEventListener("change", updateCheckOutMin);
-    checkOutInput.addEventListener("change", calculateTotal);
-    updateCheckOutMin();
-
+    });
 </script>
-
